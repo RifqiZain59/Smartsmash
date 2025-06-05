@@ -1,0 +1,403 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:smartsmashapp/app/modules/login/controllers/login_controller.dart';
+
+class LoginView extends StatefulWidget {
+  // Ubah menjadi StatefulWidget
+  LoginView({Key? key}) : super(key: key);
+
+  @override
+  _LoginViewState createState() => _LoginViewState();
+}
+
+class _LoginViewState extends State<LoginView> {
+  // Buat State class
+  final LoginController controller = Get.put(LoginController());
+
+  // Deklarasikan TextEditingController di dalam State class
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Menambahkan listener untuk memvalidasi input dan mengaktifkan/menonaktifkan tombol login
+    _emailController.addListener(_validateInputs);
+    _passwordController.addListener(_validateInputs);
+
+    // Menambahkan logika untuk mengisi email jika datang dari reset password
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (Get.arguments != null && Get.arguments is Map<String, dynamic>) {
+        final Map<String, dynamic> args = Get.arguments;
+        if (args.containsKey('email') && args['email'] is String) {
+          _emailController.text = args['email'];
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    // Memastikan TextEditingController dibuang saat widget ditutup
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  /// Memvalidasi input email dan password untuk mengaktifkan tombol login
+  void _validateInputs() {
+    controller.validateInputs(
+      // Panggil metode di controller dengan parameter
+      email: _emailController.text,
+      password: _passwordController.text,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          // Top Blue Background
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height:
+                MediaQuery.of(context).size.height *
+                0.45, // Adjust height as needed
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFF2196F3), // Darker blue (Material Blue 500)
+                    Color(0xFF64B5F6), // Lighter blue (Material Blue 300)
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // White Card for Login Form
+          Positioned(
+            top:
+                MediaQuery.of(context).size.height *
+                0.25, // Start white card lower
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
+                ),
+              ),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 32,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      "Welcome Back",
+                      style: GoogleFonts.poppins(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF212121),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      "Enter your details below",
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.grey[600],
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 32),
+                    _emailInput(),
+                    const SizedBox(height: 16),
+                    _passwordInput(),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: () {
+                          Get.toNamed('/forgot-password');
+                        },
+                        child: Text(
+                          'Forgot your password?',
+                          style: GoogleFonts.poppins(
+                            color: const Color(
+                              0xFF2196F3,
+                            ), // Matching blue from gradient
+                            fontWeight: FontWeight.w500,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    _errorText(),
+                    const SizedBox(height: 20),
+                    _loginButton(),
+                    const SizedBox(height: 24),
+                    _dividerWithText(),
+                    const SizedBox(height: 16),
+                    _googleSignInButton(),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // App Bar like section (Smart Smash text and SMASH APP Anda)
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 60), // Adjust spacing
+                    Text(
+                      "Smart Smash",
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontSize: 42, // Larger font size for "Smart Smash"
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 4,
+                    ), // Space between title and tagline
+                    Text(
+                      "SMASH APP Anda", // Added this text
+                      style: GoogleFonts.poppins(
+                        color: Colors.white70, // Slightly less prominent
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _emailInput() {
+    return TextField(
+      controller: _emailController, // Gunakan controller lokal
+      keyboardType: TextInputType.emailAddress,
+      style: GoogleFonts.poppins(fontSize: 16, color: Colors.black87),
+      decoration: InputDecoration(
+        labelText: "Email Address", // Use labelText for the top label
+        labelStyle: GoogleFonts.poppins(color: Colors.grey[600], fontSize: 14),
+        hintText: "user@ergemla.com", // Example hint text
+        hintStyle: GoogleFonts.poppins(color: Colors.grey[500]),
+        filled: true,
+        fillColor: Colors.white, // Background of the text field itself
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: Colors.grey.shade300, // Lighter border
+            width: 1,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(
+            color: Color(0xFF2196F3), // Matching blue for focused border
+            width: 2,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.redAccent, width: 1),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.red, width: 2),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 16,
+        ),
+      ),
+    );
+  }
+
+  Widget _passwordInput() {
+    return Obx(() {
+      return TextField(
+        controller: _passwordController, // Gunakan controller lokal
+        obscureText: !controller.isPasswordVisible.value,
+        style: GoogleFonts.poppins(fontSize: 16, color: Colors.black87),
+        decoration: InputDecoration(
+          labelText: "Password", // Label for password input
+          labelStyle: GoogleFonts.poppins(
+            color: Colors.grey[600],
+            fontSize: 14,
+          ),
+          hintText: "**********", // Masked hint for password
+          hintStyle: GoogleFonts.poppins(color: Colors.grey[500]),
+          filled: true,
+          fillColor: Colors.white,
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Color(0xFF2196F3), width: 2),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Colors.redAccent, width: 1),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Colors.red, width: 2),
+          ),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 16,
+          ),
+          suffixIcon: IconButton(
+            icon: Icon(
+              controller.isPasswordVisible.value
+                  ? Icons.visibility
+                  : Icons.visibility_off,
+              color: Colors.grey[600],
+            ),
+            onPressed: controller.togglePasswordVisibility,
+            splashRadius: 24,
+          ),
+        ),
+      );
+    });
+  }
+
+  Widget _errorText() {
+    return Obx(() {
+      return controller.errorMessage.isNotEmpty
+          ? Padding(
+            padding: const EdgeInsets.only(top: 10),
+            child: Text(
+              controller.errorMessage.value,
+              style: GoogleFonts.poppins(
+                color: Colors.red,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          )
+          : const SizedBox.shrink();
+    });
+  }
+
+  Widget _loginButton() {
+    return Obx(() {
+      return ElevatedButton(
+        onPressed:
+            controller.isButtonEnabled.value
+                ? () {
+                  controller.login(
+                    // Panggil metode login dengan parameter dari controller lokal
+                    email: _emailController.text,
+                    password: _passwordController.text,
+                  );
+                }
+                : null,
+        style: ElevatedButton.styleFrom(
+          minimumSize: const Size.fromHeight(55),
+          backgroundColor:
+              controller.isButtonEnabled.value
+                  ? const Color(0xFF2196F3) // Matching blue
+                  : Colors.grey[400],
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 5,
+        ),
+        child:
+            controller.isLoading.value
+                ? const SizedBox(
+                  height: 28,
+                  width: 28,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 3,
+                  ),
+                )
+                : Text(
+                  "Sign In", // Changed text to "Sign In"
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+      );
+    });
+  }
+
+  Widget _dividerWithText() {
+    return Row(
+      children: [
+        Expanded(child: Divider(color: Colors.grey[300], thickness: 1)),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Text(
+            "Or sign in with", // Changed text to "Or sign in with"
+            style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[600]),
+          ),
+        ),
+        Expanded(child: Divider(color: Colors.grey[300], thickness: 1)),
+      ],
+    );
+  }
+
+  Widget _googleSignInButton() {
+    return OutlinedButton.icon(
+      onPressed: controller.loginWithGoogle,
+      icon: Image.asset(
+        'assets/logo/logo_google.png', // Assuming you have a Google logo at this path
+        height: 24,
+      ),
+      label: Text(
+        "Google", // Changed text to "Google"
+        style: GoogleFonts.poppins(
+          color: Colors.black87,
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      style: OutlinedButton.styleFrom(
+        minimumSize: const Size.fromHeight(55),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        side: BorderSide(color: Colors.grey.shade300, width: 1.5),
+        backgroundColor: Colors.white,
+        elevation: 2,
+      ),
+    );
+  }
+}

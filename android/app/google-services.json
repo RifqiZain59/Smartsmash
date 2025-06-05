@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "414434641618",
+    "project_id": "smart-smash-16e79",
+    "storage_bucket": "smart-smash-16e79.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:414434641618:android:490728ececdbecb2014f0b",
+        "android_client_info": {
+          "package_name": "com.example.smartsmashapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAC3F3a7NIBSh4dzvBRgu9ZPY-tksgBu4Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
