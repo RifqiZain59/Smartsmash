@@ -119,11 +119,10 @@ class ProfileView extends StatelessWidget {
                 },
               ),
               _accountTile(
-                Ionicons.people_outline,
-                'Referral',
-                badge: '+5rb',
+                Ionicons.shield_outline,
+                'History Login',
                 onTap: () {
-                  // Tangani ketukan untuk Referral
+                  controller.navigateToHistoryLogin();
                 },
               ),
               _accountTile(

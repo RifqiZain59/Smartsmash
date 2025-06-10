@@ -93,4 +93,10 @@ class ProfileController extends GetxController {
     Get.toNamed('/chatdengankami');
     debugPrint('Navigating to /chatdengankami');
   }
+
+  /// Navigates to the help center page.
+  void navigateToHistoryLogin() {
+    Get.toNamed('/history-login');
+    debugPrint('Navigating to /pusat-bantuan');
+  }
 }
