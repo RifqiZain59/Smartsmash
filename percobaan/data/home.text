@@ -1,0 +1,519 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:ionicons/ionicons.dart';
+import 'package:smartsmashapp/app/modules/Acara/views/acara_view.dart';
+import 'package:smartsmashapp/app/modules/Gerakan/views/gerakan_view.dart';
+import 'package:smartsmashapp/app/modules/Juara/views/juara_view.dart';
+import 'package:smartsmashapp/app/modules/berita/views/berita_view.dart';
+import '../controllers/home_controller.dart'; // Pastikan path ini benar
+
+class HomeView extends GetView<HomeController> {
+  const HomeView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      final selectedIndex = controller.selectedIndex.value;
+      final greetingData = controller.greetingByTime();
+      final String greetingText = greetingData['text'];
+      final IconData greetingIcon = greetingData['icon'];
+
+      // Calculate the height of the custom bottom navigation bar
+      // This is a crucial step to correctly pad the scrollable content.
+      // We assume a minimum height or calculate based on the padding you've given.
+      // The default height of a Material BottomNavigationBar is about 56.
+      // Your custom one has vertical padding of 10, so roughly 50-60 is a good estimate.
+      // For precise measurement, you might need a LayoutBuilder around the bottomNavBar,
+      // but a reasonable estimate is often sufficient.
+      // Let's estimate its height to be around 70 (padding + content height) for safety.
+      final double customBottomNavBarHeight =
+          70.0; // Adjust if your design is significantly taller/shorter
+
+      return Scaffold(
+        backgroundColor: Colors.white,
+        // Using Stack in the body allows content to draw over or under each other.
+        // For managing safe areas and bottom navigation, `Scaffold` itself
+        // is usually enough, but let's ensure padding is right.
+        body: IndexedStack(
+          // Use IndexedStack to preserve state of other pages
+          index: selectedIndex,
+          children: [
+            // Page 0 (Home Page)
+            SafeArea(
+              // `top: true` is default, ensures space for status bar.
+              // `bottom: false` is important here. We manage bottom padding manually
+              // to account for both system safe area and our custom bottom nav bar.
+              bottom: false,
+              child: SingleChildScrollView(
+                padding: EdgeInsets.fromLTRB(
+                  20, // Left padding
+                  20, // Top padding (after SafeArea)
+                  20, // Right padding
+                  // Crucial: Add padding for the system's bottom safe area AND our custom bottom nav bar.
+                  MediaQuery.of(context).padding.bottom +
+                      customBottomNavBarHeight +
+                      20, // Added 20 for extra buffer
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              greetingIcon,
+                              size: 24,
+                              color: Colors.blueAccent,
+                            ),
+                            const SizedBox(width: 8),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  greetingText,
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                                Obx(
+                                  () => Text(
+                                    controller.namaUser.value,
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const Icon(Ionicons.notifications_outline),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Search Box
+                    Container(
+                      height: 50,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: const [
+                          Icon(Ionicons.search_outline, color: Colors.grey),
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: TextField(
+                              decoration: InputDecoration(
+                                hintText: 'Search',
+                                border: InputBorder.none,
+                                isCollapsed: true,
+                              ),
+                            ),
+                          ),
+                          Icon(Ionicons.options_outline, color: Colors.grey),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Special Offers
+                    const Text(
+                      'Special Offers',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Image.asset(
+                        'assets/Banner/Banner.jpg',
+                        width: double.infinity,
+                        height: 160,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Services
+                    const Text(
+                      'Services',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    GridView.count(
+                      crossAxisCount: 4,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      mainAxisSpacing: 16,
+                      crossAxisSpacing: 16,
+                      children: [
+                        ServiceIcon(
+                          label: 'Gerakan',
+                          icon: Ionicons.body_outline,
+                          onTap: () {
+                            Get.to(() => GerakanView());
+                          },
+                        ),
+                        ServiceIcon(
+                          label: 'Juara',
+                          icon: Ionicons.trophy_outline,
+                          onTap: () {
+                            Get.to(() => JuaraView());
+                          },
+                        ),
+                        ServiceIcon(
+                          label: 'Acara',
+                          icon: Ionicons.calendar_outline,
+                          onTap: () {
+                            Get.to(() => AcaraView());
+                          },
+                        ),
+                        ServiceIcon(
+                          label: 'Berita',
+                          icon: Ionicons.newspaper_outline,
+                          onTap: () {
+                            Get.to(() => BeritaView());
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Most Popular Services
+                    const Text(
+                      'Most Popular Services',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Filter Chips
+                    Wrap(
+                      spacing: 12,
+                      children: const [
+                        FilterChipWidget(label: 'All', selected: true),
+                        FilterChipWidget(label: 'Cleaning'),
+                        FilterChipWidget(label: 'Repairing'),
+                        FilterChipWidget(label: 'Painting'),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Service Cards
+                    const ServiceCard(
+                      name: 'Kylee Danford',
+                      service: 'House Cleaning',
+                      price: 25,
+                      rating: 4.8,
+                      reviews: 2809,
+                      image: 'assets/user1.png',
+                    ),
+                    const ServiceCard(
+                      name: 'Alfonso Schuessler',
+                      service: 'Floor Cleaning',
+                      price: 20,
+                      rating: 4.9,
+                      reviews: 6102,
+                      image: 'assets/user2.png',
+                    ),
+                    const ServiceCard(
+                      name: 'Sanjuanita Ordanez',
+                      service: 'Washing Clothes',
+                      price: 22,
+                      rating: 4.7,
+                      reviews: 7038,
+                      image: 'assets/user3.png',
+                    ),
+                    const ServiceCard(
+                      name: 'Freda Varnes',
+                      service: 'Bathroom Cleaning',
+                      price: 24,
+                      rating: 4.9,
+                      reviews: 9125,
+                      image: 'assets/user4.png',
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            // Other pages (e.g., GerakanView, JuaraView, AcaraView, BeritaView)
+            // You should ensure these pages also handle their own SafeArea and padding
+            // if they contain scrollable content.
+            // For simplicity, I'm using the controller.pages here.
+            // If these pages themselves are full-screen views that don't need
+            // specific bottom padding for *your* custom bottom nav, then they are fine.
+            // However, if they are designed to be "under" the bottom nav, they too
+            // should be wrapped in SafeArea(bottom: true) or have padding at the bottom.
+            SafeArea(
+              // Apply SafeArea to other pages too, or they might get clipped
+              child:
+                  controller
+                      .pages[1], // Assuming controller.pages[1] is the next page (GerakanView)
+              // You might need to make sure each page in `controller.pages`
+              // handles its own SafeArea/padding or is properly wrapped here.
+              // For demonstration, apply SafeArea here.
+            ),
+            SafeArea(child: controller.pages[2]),
+            SafeArea(child: controller.pages[3]),
+            SafeArea(
+              child: controller.pages[4],
+            ), // Assuming 5 pages in total based on 5 nav items
+          ],
+        ),
+        bottomNavigationBar: Container(
+          // For consistency, let's also wrap the custom bottom nav bar in SafeArea
+          // to ensure it respects the system's bottom safe area (e.g., iPhone home indicator).
+          // `minimum: EdgeInsets.only(bottom: 0)` allows us to control it.
+          // Or, more commonly, put the SafeArea *inside* the Container, but for the whole bar, it's fine outside.
+          // Let's apply it directly to the Container as a child of `bottomNavigationBar`
+          // for more control.
+          child: SafeArea(
+            // Ensures the bottom navigation bar itself is not obscured by system UI
+            minimum: const EdgeInsets.only(
+              bottom: 0,
+            ), // Use this to only consider the system safe area, no extra padding
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(24),
+                ),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10,
+                    offset: Offset(0, -2),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 10,
+                  horizontal: 12,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: List.generate(controller.navItems.length, (index) {
+                    final item = controller.navItems[index];
+                    final isSelected = selectedIndex == index;
+
+                    return GestureDetector(
+                      onTap: () => controller.changePage(index),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 250),
+                        padding: EdgeInsets.symmetric(
+                          vertical: 8,
+                          horizontal: isSelected ? 16 : 0,
+                        ),
+                        decoration:
+                            isSelected
+                                ? BoxDecoration(
+                                  color: Colors.blueAccent.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(30),
+                                )
+                                : null,
+                        child: Row(
+                          children: [
+                            Icon(
+                              item['icon'],
+                              color:
+                                  isSelected
+                                      ? Colors.blueAccent
+                                      : Colors.black54,
+                            ),
+                            if (isSelected) ...[
+                              const SizedBox(width: 8),
+                              Text(
+                                item['label'],
+                                style: const TextStyle(
+                                  color: Colors.blueAccent,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    });
+  }
+}
+
+// =========================================
+// Definisi Widget Pembantu (jika berada dalam file yang sama)
+// =========================================
+
+class ServiceIcon extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final VoidCallback? onTap;
+  final Color? iconColor;
+  final Color? backgroundColor;
+
+  const ServiceIcon({
+    super.key,
+    required this.label,
+    required this.icon,
+    this.onTap,
+    this.iconColor,
+    this.backgroundColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: backgroundColor ?? Colors.grey[100],
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: iconColor ?? Colors.blueAccent),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 12),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class FilterChipWidget extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback? onTap;
+
+  const FilterChipWidget({
+    super.key,
+    required this.label,
+    this.selected = false,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Chip(
+        label: Text(label),
+        backgroundColor: selected ? Colors.blueAccent : Colors.grey[200],
+        labelStyle: TextStyle(color: selected ? Colors.white : Colors.black),
+        side:
+            selected
+                ? const BorderSide(color: Colors.blueAccent)
+                : BorderSide.none,
+      ),
+    );
+  }
+}
+
+class ServiceCard extends StatelessWidget {
+  final String name;
+  final String service;
+  final double price;
+  final double rating;
+  final int reviews;
+  final String image;
+  final VoidCallback? onTap;
+
+  const ServiceCard({
+    super.key,
+    required this.name,
+    required this.service,
+    required this.price,
+    required this.rating,
+    required this.reviews,
+    required this.image,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.shade200,
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            CircleAvatar(radius: 30, backgroundImage: AssetImage(image)),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    service,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  Text(
+                    '\$$price',
+                    style: const TextStyle(
+                      color: Colors.blueAccent,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.star,
+                        size: 14,
+                        color: Colors.blueAccent,
+                      ),
+                      const SizedBox(width: 4),
+                      Text('$rating • $reviews reviews'),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Ionicons.bookmark_outline),
+          ],
+        ),
+      ),
+    );
+  }
+}

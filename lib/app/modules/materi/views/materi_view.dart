@@ -82,21 +82,22 @@ class MateriView extends GetView<MateriController> {
                           hintStyle: TextStyle(
                             color: subtleTextColor.withOpacity(0.8),
                           ),
-                          prefixIcon: Padding(
-                            padding: const EdgeInsets.only(
-                              left: 16.0,
-                              right: 12.0,
-                            ),
-                            child: Icon(
-                              Ionicons.search_circle_outline,
-                              color: primaryColor,
-                              size: 26,
-                            ),
-                          ),
+                          // Bagian prefixIcon ini dihapus/dikomentari
+                          // prefixIcon: Padding(
+                          //   padding: const EdgeInsets.only(
+                          //     left: 16.0,
+                          //     right: 12.0,
+                          //   ),
+                          //   child: Icon(
+                          //     Ionicons.search_circle_outline,
+                          //     color: primaryColor,
+                          //     size: 26,
+                          //   ),
+                          // ),
                           filled: false, // fillColor diatur oleh Container
                           contentPadding: const EdgeInsets.symmetric(
                             vertical: 16,
-                            horizontal: 20,
+                            horizontal: 20, // Sesuaikan padding horizontal
                           ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),

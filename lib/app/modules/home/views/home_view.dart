@@ -5,267 +5,328 @@ import 'package:smartsmashapp/app/modules/Acara/views/acara_view.dart';
 import 'package:smartsmashapp/app/modules/Gerakan/views/gerakan_view.dart';
 import 'package:smartsmashapp/app/modules/Juara/views/juara_view.dart';
 import 'package:smartsmashapp/app/modules/berita/views/berita_view.dart';
-import '../controllers/home_controller.dart'; // Pastikan path ini benar
+import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
-  const HomeView({super.key});
+  const HomeView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    const Color primaryColor = Color(0xFF007BFF);
+    const Color accentColor = Color(0xFF6C757D);
+    const Color lightGrey = Color(0xFFF8F9FA);
+
     return Obx(() {
       final selectedIndex = controller.selectedIndex.value;
-      // Dapatkan data sapaan dan ikon dari controller
       final greetingData = controller.greetingByTime();
       final String greetingText = greetingData['text'];
       final IconData greetingIcon = greetingData['icon'];
 
       return Scaffold(
-        backgroundColor:
-            Colors.white, // Latar belakang putih untuk seluruh halaman
-        body:
-            selectedIndex == 0
-                ? SafeArea(
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.fromLTRB(
-                      20,
-                      20,
-                      20,
-                      MediaQuery.of(context).padding.bottom +
-                          20, // Padding bottom disesuaikan dengan tinggi bottom navigation bar
+        backgroundColor: lightGrey,
+        body: IndexedStack(
+          index: selectedIndex,
+          children: [
+            SafeArea(
+              bottom: false,
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 90),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildHeader(
+                      greetingIcon,
+                      greetingText,
+                      primaryColor,
+                      accentColor,
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Header
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                // Ikon waktu yang dinamis
-                                Icon(
-                                  greetingIcon,
-                                  size: 24,
-                                  color: Colors.blueAccent,
-                                ),
-                                const SizedBox(
-                                  width: 8,
-                                ), // Spasi antara ikon dan teks
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      greetingText, // Menggunakan teks sapaan dari controller
-                                      style: const TextStyle(fontSize: 14),
-                                    ),
-                                    Obx(
-                                      () => Text(
-                                        controller
-                                            .namaUser
-                                            .value, // Akses namaUser yang reaktif
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            const Icon(Ionicons.notifications_outline),
-                          ],
-                        ),
-                        const SizedBox(height: 24),
+                    const SizedBox(height: 28),
+                    _buildSearchBox(accentColor),
+                    const SizedBox(height: 28),
+                    _buildSpecialOffers(),
+                    const SizedBox(height: 28),
+                    const Text(
+                      'Menu Apps',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    _buildServices(primaryColor),
+                    const SizedBox(height: 28),
+                    _buildPopularServices(primaryColor, accentColor),
+                  ],
+                ),
+              ),
+            ),
+            SafeArea(child: controller.pages[1]),
+            SafeArea(child: controller.pages[2]),
+            SafeArea(child: controller.pages[3]),
+            SafeArea(child: controller.pages[4]),
+          ],
+        ),
+        bottomNavigationBar: _buildBottomNavigationBar(
+          selectedIndex,
+          primaryColor,
+          accentColor,
+        ),
+      );
+    });
+  }
 
-                        // Search Box
-                        Container(
-                          height: 50,
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Row(
-                            children: const [
-                              Icon(Ionicons.search_outline, color: Colors.grey),
-                              SizedBox(width: 8),
-                              Expanded(
-                                child: TextField(
-                                  decoration: InputDecoration(
-                                    hintText: 'Search',
-                                    border: InputBorder.none,
-                                    isCollapsed:
-                                        true, // Mengurangi padding internal TextField
-                                  ),
-                                ),
-                              ),
-                              Icon(
-                                Ionicons.options_outline,
-                                color: Colors.grey,
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-
-                        // Special Offers
-                        const Text(
-                          'Special Offers',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: Image.asset(
-                            'assets/Banner/Banner.jpg',
-                            width: double.infinity,
-                            height: 160,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-
-                        // Services
-                        const Text(
-                          'Services',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-
-                        GridView.count(
-                          crossAxisCount: 4,
-                          shrinkWrap: true,
-                          physics:
-                              const NeverScrollableScrollPhysics(), // Menonaktifkan scroll GridView
-                          mainAxisSpacing: 16,
-                          crossAxisSpacing: 16,
-                          children: [
-                            // Menggunakan ServiceIcon yang sudah diperbaiki dengan onTap
-                            ServiceIcon(
-                              label: 'Gerakan',
-                              icon: Ionicons.body_outline,
-                              onTap: () {
-                                Get.to(
-                                  () => GerakanView(),
-                                ); // Navigasi ke GerakanPage
-                              },
-                            ),
-                            ServiceIcon(
-                              label: 'Juara',
-                              icon: Ionicons.trophy_outline,
-                              onTap: () {
-                                Get.to(
-                                  () => JuaraView(),
-                                ); // Navigasi ke JuaraPage
-                              },
-                            ),
-                            ServiceIcon(
-                              label: 'Acara',
-                              icon: Ionicons.calendar_outline,
-                              onTap: () {
-                                Get.to(
-                                  () => AcaraView(),
-                                ); // Navigasi ke AcaraPage
-                              },
-                            ),
-                            ServiceIcon(
-                              label: 'Berita',
-                              icon: Ionicons.newspaper_outline,
-                              onTap: () {
-                                Get.to(
-                                  () => BeritaView(),
-                                ); // Navigasi ke CommunityPage
-                              },
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 24),
-
-                        // Most Popular Services
-                        const Text(
-                          'Most Popular Services',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Filter Chips
-                        Wrap(
-                          spacing: 12,
-                          children: const [
-                            FilterChipWidget(label: 'All', selected: true),
-                            FilterChipWidget(label: 'Cleaning'),
-                            FilterChipWidget(label: 'Repairing'),
-                            FilterChipWidget(label: 'Painting'),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Service Cards
-                        const ServiceCard(
-                          name: 'Kylee Danford',
-                          service: 'House Cleaning',
-                          price: 25,
-                          rating: 4.8,
-                          reviews: 2809,
-                          image: 'assets/user1.png',
-                        ),
-                        const ServiceCard(
-                          name: 'Alfonso Schuessler',
-                          service: 'Floor Cleaning',
-                          price: 20,
-                          rating: 4.9,
-                          reviews: 6102,
-                          image: 'assets/user2.png',
-                        ),
-                        const ServiceCard(
-                          name: 'Sanjuanita Ordanez',
-                          service: 'Washing Clothes',
-                          price: 22,
-                          rating: 4.7,
-                          reviews: 7038,
-                          image: 'assets/user3.png',
-                        ),
-                        const ServiceCard(
-                          name: 'Freda Varnes',
-                          service: 'Bathroom Cleaning',
-                          price: 24,
-                          rating: 4.9,
-                          reviews: 9125,
-                          image: 'assets/user4.png',
-                        ),
-                      ],
+  Widget _buildHeader(
+    IconData greetingIcon,
+    String greetingText,
+    Color primaryColor,
+    Color accentColor,
+  ) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            Icon(greetingIcon, size: 28, color: primaryColor),
+            const SizedBox(width: 10),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  greetingText,
+                  style: TextStyle(fontSize: 16, color: accentColor),
+                ),
+                Obx(
+                  () => Text(
+                    controller.namaUser.value,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                )
-                : Container(
-                  color: Colors.white,
-                  child:
-                      controller
-                          .pages[selectedIndex], // Menampilkan halaman yang dipilih dari controller
                 ),
-        bottomNavigationBar: Container(
+              ],
+            ),
+          ],
+        ),
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.1),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: const Icon(
+            Ionicons.settings_outline,
+            color: Color(0xFF6C757D),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSearchBox(Color accentColor) {
+    return Container(
+      height: 50,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          const Icon(Ionicons.search_outline, color: Color(0xFF6C757D)),
+          const SizedBox(width: 10),
+          Expanded(
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Cari layanan atau berita...',
+                hintStyle: const TextStyle(color: Color(0xFF6C757D)),
+                border: InputBorder.none,
+                isCollapsed: true,
+              ),
+              style: const TextStyle(color: Colors.black87),
+            ),
+          ),
+          const Icon(Ionicons.options_outline, color: Color(0xFF6C757D)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSpecialOffers() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Penawaran Spesial',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 16),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Image.asset(
+            'assets/Banner/Banner.jpg',
+            width: double.infinity,
+            height: 160,
+            fit: BoxFit.cover,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildServices(Color primaryColor) {
+    // Ini adalah kotak putih yang membungkus GRID ikon layanan
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(20),
+      child: GridView.count(
+        crossAxisCount: 4,
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        mainAxisSpacing: 16,
+        crossAxisSpacing: 16,
+        children: [
+          ServiceIcon(
+            label: 'Gerakan',
+            icon: Ionicons.body_outline,
+            iconColor: primaryColor,
+            onTap: () => Get.to(() => GerakanView()),
+          ),
+          ServiceIcon(
+            label: 'Juara',
+            icon: Ionicons.trophy_outline,
+            iconColor: primaryColor,
+            onTap: () => Get.to(() => JuaraView()),
+          ),
+          ServiceIcon(
+            label: 'Acara',
+            icon: Ionicons.calendar_outline,
+            iconColor: primaryColor,
+            onTap: () => Get.to(() => AcaraView()),
+          ),
+          ServiceIcon(
+            label: 'Berita',
+            icon: Ionicons.newspaper_outline,
+            iconColor: primaryColor,
+            onTap: () => Get.to(() => BeritaView()),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPopularServices(Color primaryColor, Color accentColor) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Layanan Terpopuler',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 16),
+        // BAGIAN INI DIHAPUS:
+        // Wrap(
+        //   spacing: 12,
+        //   children: [
+        //     FilterChipWidget(
+        //       label: 'Semua',
+        //       selected: true,
+        //       primaryColor: primaryColor,
+        //     ),
+        //     FilterChipWidget(label: 'Pembersihan', primaryColor: primaryColor),
+        //     FilterChipWidget(label: 'Perbaikan', primaryColor: primaryColor),
+        //     FilterChipWidget(label: 'Pengecatan', primaryColor: primaryColor),
+        //   ],
+        // ),
+        // const SizedBox(height: 16), // SizedBox ini juga dihapus karena tidak ada lagi Wrap di atasnya
+        ServiceCard(
+          name: 'Kylee Danford',
+          service: 'Pembersihan Rumah',
+          price: 25,
+          rating: 4.8,
+          reviews: 2809,
+          image: 'assets/user1.png',
+          primaryColor: primaryColor,
+          accentColor: accentColor,
+        ),
+        ServiceCard(
+          name: 'Alfonso Schuessler',
+          service: 'Pembersihan Lantai',
+          price: 20,
+          rating: 4.9,
+          reviews: 6102,
+          image: 'assets/user2.png',
+          primaryColor: primaryColor,
+          accentColor: accentColor,
+        ),
+        ServiceCard(
+          name: 'Sanjuanita Ordanez',
+          service: 'Mencuci Pakaian',
+          price: 22,
+          rating: 4.7,
+          reviews: 7038,
+          image: 'assets/user3.png',
+          primaryColor: primaryColor,
+          accentColor: accentColor,
+        ),
+        ServiceCard(
+          name: 'Freda Varnes',
+          service: 'Pembersihan Kamar Mandi',
+          price: 24,
+          rating: 4.9,
+          reviews: 9125,
+          image: 'assets/user4.png',
+          primaryColor: primaryColor,
+          accentColor: accentColor,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBottomNavigationBar(
+    int selectedIndex,
+    Color primaryColor,
+    Color accentColor,
+  ) {
+    return Container(
+      child: SafeArea(
+        minimum: const EdgeInsets.only(bottom: 0),
+        child: Container(
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(24),
               topRight: Radius.circular(24),
             ),
-            boxShadow: const [
+            boxShadow: [
               BoxShadow(
                 color: Colors.black12,
                 blurRadius: 10,
-                offset: Offset(0, -2),
+                offset: const Offset(0, -2),
               ),
             ],
           ),
@@ -288,7 +349,7 @@ class HomeView extends GetView<HomeController> {
                     decoration:
                         isSelected
                             ? BoxDecoration(
-                              color: Colors.blueAccent.withOpacity(0.1),
+                              color: primaryColor.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(30),
                             )
                             : null,
@@ -296,15 +357,14 @@ class HomeView extends GetView<HomeController> {
                       children: [
                         Icon(
                           item['icon'],
-                          color:
-                              isSelected ? Colors.blueAccent : Colors.black54,
+                          color: isSelected ? primaryColor : accentColor,
                         ),
                         if (isSelected) ...[
                           const SizedBox(width: 8),
                           Text(
                             item['label'],
-                            style: const TextStyle(
-                              color: Colors.blueAccent,
+                            style: TextStyle(
+                              color: primaryColor,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -317,52 +377,33 @@ class HomeView extends GetView<HomeController> {
             ),
           ),
         ),
-      );
-    });
+      ),
+    );
   }
 }
-
-// =========================================
-// Definisi Widget Pembantu (jika berada dalam file yang sama)
-// =========================================
 
 class ServiceIcon extends StatelessWidget {
   final String label;
   final IconData icon;
-  final VoidCallback? onTap; // Tambahkan properti onTap opsional
-  final Color? iconColor; // Tambahkan properti untuk warna ikon kustom
-  final Color?
-  backgroundColor; // Tambahkan properti untuk warna latar belakang kustom
+  final VoidCallback? onTap;
+  final Color? iconColor;
 
   const ServiceIcon({
-    super.key,
+    Key? key,
     required this.label,
     required this.icon,
-    this.onTap, // Masukkan ke konstruktor
+    this.onTap,
     this.iconColor,
-    this.backgroundColor,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      // Bungkus dengan GestureDetector
-      onTap: onTap, // Gunakan properti onTap
+      onTap: onTap,
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color:
-                  backgroundColor ??
-                  Colors.grey[100], // Gunakan warna kustom atau default
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              icon,
-              color: iconColor ?? Colors.blueAccent,
-            ), // Gunakan warna kustom atau default
-          ),
+          Icon(icon, color: iconColor ?? Colors.blueAccent, size: 28),
           const SizedBox(height: 8),
           Text(
             label,
@@ -375,17 +416,21 @@ class ServiceIcon extends StatelessWidget {
   }
 }
 
+// Widget FilterChipWidget ini tidak lagi digunakan, tapi saya biarkan di sini
+// jika Anda mungkin memerlukannya lagi di masa depan.
 class FilterChipWidget extends StatelessWidget {
   final String label;
   final bool selected;
-  final VoidCallback? onTap; // Tambahkan onTap untuk filter chip
+  final VoidCallback? onTap;
+  final Color primaryColor;
 
   const FilterChipWidget({
-    super.key,
+    Key? key,
     required this.label,
     this.selected = false,
     this.onTap,
-  });
+    required this.primaryColor,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -393,12 +438,16 @@ class FilterChipWidget extends StatelessWidget {
       onTap: onTap,
       child: Chip(
         label: Text(label),
-        backgroundColor: selected ? Colors.blueAccent : Colors.grey[200],
-        labelStyle: TextStyle(color: selected ? Colors.white : Colors.black),
-        side:
-            selected
-                ? const BorderSide(color: Colors.blueAccent)
-                : BorderSide.none, // Tambahkan border jika dipilih
+        backgroundColor: selected ? primaryColor : Colors.white,
+        labelStyle: TextStyle(color: selected ? Colors.white : Colors.black87),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+          side: BorderSide(
+            color: selected ? primaryColor : Colors.grey.shade300,
+            width: 1,
+          ),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       ),
     );
   }
@@ -411,10 +460,12 @@ class ServiceCard extends StatelessWidget {
   final double rating;
   final int reviews;
   final String image;
-  final VoidCallback? onTap; // Tambahkan onTap untuk ServiceCard
+  final VoidCallback? onTap;
+  final Color primaryColor;
+  final Color accentColor;
 
   const ServiceCard({
-    super.key,
+    Key? key,
     required this.name,
     required this.service,
     required this.price,
@@ -422,31 +473,36 @@ class ServiceCard extends StatelessWidget {
     required this.reviews,
     required this.image,
     this.onTap,
-  });
+    required this.primaryColor,
+    required this.accentColor,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      // Bungkus dengan GestureDetector
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.shade200,
-              blurRadius: 10,
-              offset: const Offset(0, 4),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
             ),
           ],
         ),
         child: Row(
           children: [
-            CircleAvatar(radius: 30, backgroundImage: AssetImage(image)),
-            const SizedBox(width: 12),
+            CircleAvatar(
+              radius: 32,
+              backgroundImage: AssetImage(image),
+              backgroundColor: Colors.grey[200],
+            ),
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -455,31 +511,47 @@ class ServiceCard extends StatelessWidget {
                     service,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontSize: 17,
                     ),
                   ),
+                  const SizedBox(height: 4),
                   Text(
-                    '\$$price',
-                    style: const TextStyle(
-                      color: Colors.blueAccent,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    'Oleh $name',
+                    style: TextStyle(color: Colors.grey[600], fontSize: 13),
                   ),
+                  const SizedBox(height: 8),
                   Row(
                     children: [
-                      const Icon(
-                        Icons.star,
-                        size: 14,
-                        color: Colors.blueAccent,
+                      const Icon(Ionicons.star, size: 16, color: Colors.amber),
+                      const SizedBox(width: 6),
+                      Text(
+                        '$rating ($reviews ulasan)',
+                        style: TextStyle(fontSize: 13, color: Colors.grey[700]),
                       ),
-                      const SizedBox(width: 4),
-                      Text('$rating • $reviews reviews'),
                     ],
                   ),
                 ],
               ),
             ),
-            const Icon(Ionicons.bookmark_outline),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  '\$${price.toStringAsFixed(0)}',
+                  style: TextStyle(
+                    color: primaryColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+                const Text(
+                  '/jam',
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                ),
+                const SizedBox(height: 8),
+                Icon(Ionicons.bookmark_outline, color: accentColor),
+              ],
+            ),
           ],
         ),
       ),

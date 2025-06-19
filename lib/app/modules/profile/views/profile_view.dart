@@ -125,14 +125,14 @@ class ProfileView extends StatelessWidget {
                   controller.navigateToHistoryLogin();
                 },
               ),
-              _accountTile(
-                Ionicons.location_outline,
-                'Daftar Alamat',
-                isLast: true,
-                onTap: () {
-                  // Tangani ketukan untuk Daftar Alamat
-                },
-              ),
+              // _accountTile(
+              //   Ionicons.location_outline,
+              //   'Daftar Alamat',
+              //   isLast: true,
+              //   onTap: () {
+              //     // Tangani ketukan untuk Daftar Alamat
+              //   },
+              // ),
             ]),
 
             const SizedBox(height: 30),
@@ -368,13 +368,14 @@ class ProfileView extends StatelessWidget {
             horizontal: 0,
           ), // Sesuaikan padding untuk ListTile
         ),
-        if (!isLast)
-          const Divider(
-            height: 1,
-            indent: 60, // Indentasi pembatas agar sejajar dengan teks
-            endIndent: 10,
-            color: Color(0xFFD0D0D0), // Warna divider sedikit lebih gelap
-          ),
+        // Hapus atau komentari baris di bawah ini untuk menghilangkan garis tipis
+        // if (!isLast)
+        //   const Divider(
+        //     height: 1,
+        //     indent: 60, // Indentasi pembatas agar sejajar dengan teks
+        //     endIndent: 10,
+        //     color: Color(0xFFD0D0D0), // Warna divider sedikit lebih gelap
+        //   ),
       ],
     );
   }

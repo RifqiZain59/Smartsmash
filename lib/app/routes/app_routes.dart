@@ -24,6 +24,7 @@ abstract class Routes {
   static const FORGOT_PASSWORD = _Paths.FORGOT_PASSWORD;
   static const PUSAT_BANTUAN = _Paths.PUSAT_BANTUAN;
   static const CHATDENGANKAMI = _Paths.CHATDENGANKAMI;
+  static const HISTORY_LOGIN = _Paths.HISTORY_LOGIN;
 }
 
 abstract class _Paths {
@@ -49,4 +50,5 @@ abstract class _Paths {
   static const FORGOT_PASSWORD = '/forgot-password';
   static const PUSAT_BANTUAN = '/pusat-bantuan';
   static const CHATDENGANKAMI = '/chatdengankami';
+  static const HISTORY_LOGIN = '/history-login';
 }

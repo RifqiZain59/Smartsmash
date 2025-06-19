@@ -271,14 +271,20 @@ class PoseCameraController {
               correctnessStatus.value = 'Salah';
             }
 
-            // logInfo("Predicted pose: ${labels[maxIndex]} (Confidence: ${maxValue.toStringAsFixed(2)}) - Status: ${correctnessStatus.value}");
+            // *** AKTIFKAN BARIS INI UNTUK MUNCUL DI TERMINAL ***
+            logInfo(
+              "Predicted pose: ${labels[maxIndex]} (Confidence: ${maxValue.toStringAsFixed(2)}) - Status: ${correctnessStatus.value}",
+            );
           } else {
             predictedLabel.value = 'unknown (invalid index)';
             predictedConfidence.value = 0.0;
             correctnessStatus.value = 'N/A';
           }
         } else {
-          // logError("Keypoints length mismatch: Expected 99, got ${keypoints.length}");
+          // *** AKTIFKAN BARIS INI JUGA JIKA INGIN MELIHAT ERROR KEYPOINTS ***
+          logError(
+            "Keypoints length mismatch: Expected 99, got ${keypoints.length}",
+          );
           predictedLabel.value = 'unknown (keypoints mismatch)';
           predictedConfidence.value = 0.0;
           correctnessStatus.value = 'Error';

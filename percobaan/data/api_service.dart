@@ -4,6 +4,7 @@ import 'dart:io'; // Untuk SocketException
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart'; // Untuk kDebugMode
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:device_info_plus/device_info_plus.dart'; // Import for device info
 
 class ApiService {
   // PASTIKAN URL INI BENAR DAN DAPAT DIAKSES DARI PERANGKAT/EMULATOR ANDA
@@ -26,10 +27,11 @@ class ApiService {
     await prefs.setString('access_token', token);
     await prefs.setString(
       'token_update_time',
+      // Menggunakan toUtc() untuk memastikan timestamp selalu disimpan sebagai UTC
       DateTime.now().toUtc().toIso8601String(),
     );
     if (kDebugMode) {
-      print('Token disimpan: $token');
+      print('Token disimpan: $token (UTC ISO 8601)');
     }
   }
 
@@ -45,6 +47,68 @@ class ApiService {
     if (kDebugMode) {
       print('Token dihapus.');
     }
+  }
+
+  // Helper function to get detailed device information
+  static Future<String> getDeviceInfoString() async {
+    final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    String deviceName = 'Unknown Device';
+
+    try {
+      if (Platform.isAndroid) {
+        AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+        // Example: Xiaomi 24115RA8EG (Android 14)
+        deviceName =
+            '${androidInfo.manufacturer ?? 'Android'} ${androidInfo.model ?? 'Device'} (Android ${androidInfo.version.release ?? ''})';
+        if (kDebugMode) {
+          print('DEBUG getDeviceInfoString: Android Info: $deviceName');
+        }
+      } else if (Platform.isIOS) {
+        IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+        deviceName =
+            '${iosInfo.name ?? 'iOS'} ${iosInfo.model ?? 'Device'} (iOS ${iosInfo.systemVersion ?? ''})';
+        if (kDebugMode) {
+          print('DEBUG getDeviceInfoString: iOS Info: $deviceName');
+        }
+      } else if (Platform.isWindows) {
+        WindowsDeviceInfo windowsInfo = await deviceInfo.windowsInfo;
+        deviceName =
+            '${windowsInfo.computerName ?? 'Windows PC'} (Windows ${windowsInfo.majorVersion ?? ''}.${windowsInfo.minorVersion ?? ''})';
+        if (kDebugMode) {
+          print('DEBUG getDeviceInfoString: Windows Info: $deviceName');
+        }
+      } else if (Platform.isMacOS) {
+        MacOsDeviceInfo macOsInfo = await deviceInfo.macOsInfo;
+        deviceName =
+            '${macOsInfo.model ?? 'Mac'} (macOS ${macOsInfo.osRelease ?? ''})';
+        if (kDebugMode) {
+          print('DEBUG getDeviceInfoString: macOS Info: $deviceName');
+        }
+      } else if (Platform.isLinux) {
+        LinuxDeviceInfo linuxInfo = await deviceInfo.linuxInfo;
+        deviceName = '${linuxInfo.name ?? 'Linux Device'} (Linux)';
+        if (kDebugMode) {
+          print('DEBUG getDeviceInfoString: Linux Info: $deviceName');
+        }
+      } else if (kIsWeb) {
+        // Check if running on web
+        WebBrowserInfo webBrowserInfo = await deviceInfo.webBrowserInfo;
+        deviceName =
+            '${webBrowserInfo.browserName.name} on ${webBrowserInfo.platform ?? 'Web'}';
+        if (kDebugMode) {
+          print('DEBUG getDeviceInfoString: Web Info: $deviceName');
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error getting device info in getDeviceInfoString: $e');
+      }
+      deviceName = 'Failed to get device info';
+    }
+    if (kDebugMode) {
+      print('DEBUG: getDeviceInfoString() final return: $deviceName');
+    }
+    return deviceName.trim().isEmpty ? 'Unknown Device' : deviceName.trim();
   }
 
   // Updated tryDecode to check Content-Type
@@ -71,6 +135,7 @@ class ApiService {
       }
       String message =
           'Format respons server tidak valid. Diterima $contentType bukan application/json. (Status Code: $statusCode)';
+      // FIX: Added null check for contentType before calling .contains()
       if (contentType != null && contentType.contains('text/html')) {
         message =
             'Server mengembalikan halaman HTML, bukan JSON. Periksa konfigurasi server atau URL. (Status Code: $statusCode)';
@@ -240,7 +305,15 @@ class ApiService {
     required String password,
   }) async {
     final url = Uri.parse('$baseUrl/login');
-    final requestBody = jsonEncode({'email': email, 'password': password});
+    // Pastikan `device_info_plus` sudah ditambahkan ke pubspec.yaml
+    // dan `flutter pub get` sudah dijalankan.
+    // Juga pastikan import `package:device_info_plus/device_info_plus.dart` ada di paling atas.
+    String deviceDetails = await getDeviceInfoString(); // Get device info
+    final requestBody = jsonEncode({
+      'email': email,
+      'password': password,
+      'device_details': deviceDetails, // Send device info to backend
+    });
     if (kDebugMode) {
       print('Calling API Login URL: $url');
       print('Request Body: $requestBody');
@@ -490,7 +563,11 @@ class ApiService {
   }) async {
     // FIX: Changed endpoint to match Flask backend's /login-google
     final url = Uri.parse('$baseUrl/login-google');
-    Map<String, dynamic> requestBodyMap = {'id_token': idToken};
+    String deviceDetails = await getDeviceInfoString(); // Get device info
+    Map<String, dynamic> requestBodyMap = {
+      'id_token': idToken,
+      'device_details': deviceDetails, // Send device info to backend
+    };
 
     if (kDebugMode) {
       print('Calling API loginWithGoogle URL: $url');
@@ -764,12 +841,27 @@ class ApiService {
       final dynamic responseData = body['data'];
 
       if (response.statusCode == 200 && isSuccessFromServer) {
-        return {
-          'success': true,
-          'message':
-              body['message'] as String? ?? 'Profil berhasil diperbarui.',
-          'data': responseData,
-        };
+        // PERHATIAN: Respons dari endpoint profile PUT sekarang mengembalikan objek user.
+        // Jika Anda sebelumnya mengharapkan 'materi' di sini, itu adalah salah.
+        // Asumsi: 'data' langsung berisi objek user yang diupdate.
+        if (responseData is Map<String, dynamic> &&
+            responseData.containsKey('user') && // Pastikan ada kunci 'user'
+            responseData['user'] is Map<String, dynamic>) {
+          final Map<String, dynamic> updatedUserData =
+              responseData['user'] as Map<String, dynamic>;
+          return {
+            'success': true,
+            'message':
+                body['message'] as String? ?? 'Profil berhasil diperbarui.',
+            'data': updatedUserData, // Mengembalikan objek user yang diupdate
+          };
+        } else {
+          return _errorResponse(
+            'Format data profil yang diperbarui tidak valid dari server (kunci "user" tidak ditemukan atau bukan objek).',
+            data: responseData,
+            statusCode: response.statusCode,
+          );
+        }
       } else if (response.statusCode == 401 || response.statusCode == 403) {
         await removeToken();
         return _errorResponse(
@@ -798,12 +890,13 @@ class ApiService {
     }
   }
 
+  // NEW METHOD: Meminta OTP reset password
   static Future<Map<String, dynamic>> requestPasswordResetOtp({
     required String email,
   }) async {
     final url = Uri.parse(
       '$baseUrl/forgot-password',
-    ); // FIX: Changed endpoint to match Flask backend's /forgot-password
+    ); // Endpoint /forgot-password di server Flask
     final requestBody = jsonEncode({'email': email});
     if (kDebugMode) {
       print('Calling API Request Password Reset OTP URL: $url');
@@ -939,7 +1032,7 @@ class ApiService {
     }
   }
 
-  // UPDATED METHOD: Mereset password menggunakan reset_token
+  // NEW METHOD: Mereset password menggunakan reset_token
   static Future<Map<String, dynamic>> resetPassword({
     required String email,
     required String resetToken, // Parameter baru: resetToken
@@ -1324,6 +1417,146 @@ class ApiService {
         print('Exception saat update materi: $e');
       }
       return _errorResponse('Gagal memperbarui materi: Terjadi kesalahan.');
+    }
+  }
+
+  // NEW METHOD: Send message to chatbot endpoint
+  static Future<Map<String, dynamic>> sendMessageToChatbot(
+    String message,
+  ) async {
+    final url = Uri.parse('$baseUrl/chatbot'); // Endpoint chatbot di Flask
+    final requestBody = jsonEncode({'message': message});
+
+    if (kDebugMode) {
+      print('Calling API Chatbot URL: $url');
+      print('Request Body: $requestBody');
+    }
+
+    try {
+      final http.Response response = await http
+          .post(
+            url,
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'X-API-Key': apiKey,
+              // Tambahkan Authorization header jika endpoint chatbot di Flask dilindungi JWT
+              // 'Authorization': 'Bearer ${await getToken()}',
+            },
+            body: requestBody,
+          )
+          .timeout(timeoutDuration);
+
+      final body = tryDecode(response);
+      if (kDebugMode) {
+        print(
+          'Respons API Chatbot: Status Code: ${response.statusCode}, Raw Body: ${response.body}',
+        );
+      }
+
+      bool isSuccessFromServer = body['success'] == true;
+      final dynamic responseData = body['data'];
+
+      if (response.statusCode == 200 &&
+          isSuccessFromServer &&
+          responseData is Map<String, dynamic> &&
+          responseData.containsKey('response') &&
+          responseData['response'] is String) {
+        return {
+          'success': true,
+          'message': body['message'] as String? ?? 'Pesan chatbot berhasil.',
+          'data':
+              responseData['response']
+                  as String, // Mengembalikan respons chatbot
+        };
+      } else {
+        return _errorResponse(
+          body['message'] as String? ?? 'Gagal mendapatkan respons chatbot.',
+          data: body['data'],
+          statusCode: response.statusCode,
+        );
+      }
+    } on SocketException {
+      return _errorResponse('Tidak ada koneksi internet.');
+    } on TimeoutException {
+      return _errorResponse('Koneksi ke server timeout.');
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error saat mengirim pesan ke chatbot: $e');
+      }
+      return _errorResponse(
+        'Terjadi kesalahan saat berinteraksi dengan chatbot.',
+      );
+    }
+  }
+
+  // NEW METHOD: Logout user
+  static Future<Map<String, dynamic>> logout() async {
+    final token = await getToken();
+    if (token == null) {
+      // Jika tidak ada token, anggap user sudah logout secara lokal
+      await removeToken(); // Pastikan token dihapus
+      return {
+        'success': true,
+        'message': 'Tidak ada sesi aktif, Anda telah logout secara lokal.',
+      };
+    }
+
+    final url = Uri.parse('$baseUrl/logout');
+    if (kDebugMode) {
+      print('Calling API Logout URL: $url');
+    }
+
+    try {
+      final http.Response response = await http
+          .post(
+            url,
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'Authorization': 'Bearer $token', // Kirim token untuk identifikasi user
+              'X-API-Key': apiKey,
+            },
+          )
+          .timeout(timeoutDuration);
+
+      final body = tryDecode(response);
+      if (kDebugMode) {
+        print(
+          'Respons API Logout: Status Code: ${response.statusCode}, Raw Body: ${response.body}',
+        );
+      }
+
+      bool isSuccessFromServer = body['success'] == true;
+
+      // Terlepas dari respons server, hapus token dari sisi klien
+      await removeToken();
+
+      if (response.statusCode == 200 && isSuccessFromServer) {
+        return {
+          'success': true,
+          'message': body['message'] as String? ?? 'Anda telah berhasil logout.',
+        };
+      } else {
+        // Jika server mengembalikan error, tetapi token sudah dihapus di klien
+        return _errorResponse(
+          body['message'] as String? ?? 'Logout gagal di server, tetapi sesi lokal Anda telah dihapus.',
+          data: body['data'],
+          statusCode: response.statusCode,
+        );
+      }
+    } on SocketException {
+      await removeToken(); // Hapus token jika tidak ada koneksi internet
+      return _errorResponse('Tidak ada koneksi internet. Sesi lokal Anda telah dihapus.');
+    } on TimeoutException {
+      await removeToken(); // Hapus token jika timeout
+      return _errorResponse('Koneksi ke server timeout. Sesi lokal Anda telah dihapus.');
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error saat logout: $e');
+      }
+      await removeToken(); // Hapus token jika ada error tak terduga
+      return _errorResponse('Terjadi kesalahan saat logout. Sesi lokal Anda telah dihapus.');
     }
   }
 }

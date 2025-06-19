@@ -6,6 +6,11 @@ import '../controllers/update_profile_controller.dart'; // Pastikan jalur ini be
 class UpdateProfileView extends GetView<UpdateProfileController> {
   const UpdateProfileView({super.key});
 
+  // Warna biru tua kustom yang akan kita gunakan
+  static const Color _darkBlue = Color(
+    0xFF1A237E,
+  ); // Define the dark blue color here
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,7 +20,7 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         centerTitle: true,
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: _darkBlue, // Mengubah warna AppBar menjadi biru tua
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
@@ -45,7 +50,8 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                     right: 0,
                     child: CircleAvatar(
                       radius: 20,
-                      backgroundColor: Colors.blueAccent,
+                      backgroundColor:
+                          _darkBlue, // Mengubah warna latar belakang ikon kamera menjadi biru tua
                       child: IconButton(
                         icon: const Icon(
                           Icons.camera_alt,
@@ -57,7 +63,9 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                             'Fitur Belum Tersedia',
                             'Fungsi ubah gambar profil akan segera hadir!',
                             snackPosition: SnackPosition.BOTTOM,
-                            backgroundColor: Colors.orangeAccent,
+                            backgroundColor:
+                                Colors
+                                    .orangeAccent, // Warna snackbar tetap orangeAccent atau bisa diganti
                             colorText: Colors.white,
                             duration: const Duration(seconds: 2),
                           );
@@ -78,6 +86,7 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                   controller
                       .nameController, // <-- Terhubung dengan nameController
               icon: Icons.person_outline,
+              darkBlueColor: _darkBlue, // Pass the dark blue color
             ),
             const SizedBox(height: 16.0),
 
@@ -90,15 +99,16 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                       .emailController, // <-- Terhubung dengan emailController
               icon: Icons.email_outlined,
               keyboardType: TextInputType.emailAddress,
+              darkBlueColor: _darkBlue, // Pass the dark blue color
             ),
             const SizedBox(height: 24.0),
 
-            const Text(
+            Text(
               'Ubah Kata Sandi (Opsional)',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Colors.blueAccent,
+                color: _darkBlue, // Mengubah warna teks judul menjadi biru tua
               ),
             ),
             const SizedBox(height: 16.0),
@@ -107,6 +117,7 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
               label: 'Kata Sandi Lama',
               hintText: 'Masukkan kata sandi lama Anda',
               controller: controller.oldPasswordController,
+              darkBlueColor: _darkBlue, // Pass the dark blue color
             ),
             const SizedBox(height: 16.0),
 
@@ -114,6 +125,7 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
               label: 'Kata Sandi Baru',
               hintText: 'Masukkan kata sandi baru Anda',
               controller: controller.newPasswordController,
+              darkBlueColor: _darkBlue, // Pass the dark blue color
             ),
             const SizedBox(height: 16.0),
 
@@ -121,6 +133,7 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
               label: 'Konfirmasi Kata Sandi Baru',
               hintText: 'Ketik ulang kata sandi baru Anda',
               controller: controller.confirmPasswordController,
+              darkBlueColor: _darkBlue, // Pass the dark blue color
             ),
             const SizedBox(height: 32.0),
 
@@ -133,7 +146,8 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                           controller.updateProfile();
                         },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blueAccent,
+                  backgroundColor:
+                      _darkBlue, // Mengubah warna tombol menjadi biru tua
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12.0),
@@ -173,6 +187,7 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
     required TextEditingController controller,
     IconData? icon,
     TextInputType keyboardType = TextInputType.text,
+    required Color darkBlueColor, // Add darkBlueColor parameter
   }) {
     return TextFormField(
       controller: controller,
@@ -193,7 +208,10 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.0),
-          borderSide: const BorderSide(color: Colors.blueAccent, width: 2.0),
+          borderSide: BorderSide(
+            color: darkBlueColor,
+            width: 2.0,
+          ), // Mengubah warna border menjadi biru tua
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.0),
@@ -208,12 +226,14 @@ class PasswordFieldWidget extends StatefulWidget {
   final String label;
   final String hintText;
   final TextEditingController controller;
+  final Color darkBlueColor; // Add darkBlueColor parameter
 
   const PasswordFieldWidget({
     super.key,
     required this.label,
     required this.hintText,
     required this.controller,
+    required this.darkBlueColor, // Initialize darkBlueColor
   });
 
   @override
@@ -255,7 +275,10 @@ class _PasswordFieldWidgetState extends State<PasswordFieldWidget> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.0),
-          borderSide: const BorderSide(color: Colors.blueAccent, width: 2.0),
+          borderSide: BorderSide(
+            color: widget.darkBlueColor,
+            width: 2.0,
+          ), // Mengubah warna border menjadi biru tua
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.0),

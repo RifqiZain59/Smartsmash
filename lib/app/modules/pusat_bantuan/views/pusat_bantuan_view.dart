@@ -1,125 +1,104 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/pusat_bantuan_controller.dart'; // Assuming this controller exists and is still needed
+import 'package:ionicons/ionicons.dart'; // Import Ionicons jika digunakan untuk ikon lain
 
 class PusatBantuanView extends GetView<PusatBantuanController> {
   const PusatBantuanView({super.key});
 
+  // Warna biru tua kustom yang akan kita gunakan (konsisten dengan HistoryLoginView)
+  static const Color _darkBlue = Color(0xFF1A237E);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Pusat Bantuan',
-          style: TextStyle(fontWeight: FontWeight.bold),
+      backgroundColor: Colors.white, // Memastikan latar belakang Scaffold putih
+      body: ClipRRect(
+        // Menerapkan lengkungan di sudut atas body
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(
+            24,
+          ), // Radius lengkungan yang konsisten dengan Home/HistoryLogin
+          topRight: Radius.circular(24), // Radius lengkungan yang konsisten
         ),
-        centerTitle: true,
-        backgroundColor: Colors.blue, // Changed from Colors.teal
-        foregroundColor: Colors.white,
-        elevation: 6,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header Section (Removed as per user request)
-            // Container(
-            //   padding: const EdgeInsets.all(20),
-            //   decoration: BoxDecoration(
-            //     color: Colors.teal.shade50,
-            //     borderRadius: BorderRadius.circular(15),
-            //     border: Border.all(color: Colors.teal.shade100),
-            //   ),
-            //   child: const Row(
-            //     children: [
-            //       Icon(Icons.help_outline, size: 50, color: Colors.blue), // Changed from Colors.teal
-            //       SizedBox(width: 15),
-            //       Expanded(
-            //         child: Column(
-            //           crossAxisAlignment: CrossAxisAlignment.start,
-            //           children: [
-            //             Text(
-            //               'Halo, Ada yang bisa kami bantu?',
-            //               style: TextStyle(
-            //                 fontSize: 22,
-            //                 fontWeight: FontWeight.bold,
-            //                 color: Colors.blue, // Changed from Colors.teal
-            //               ),
-            //             ),
-            //             SizedBox(height: 5),
-            //             Text(
-            //               'Cari jawaban pertanyaan Anda atau hubungi kami.',
-            //               style: TextStyle(fontSize: 16, color: Colors.grey),
-            //             ),
-            //           ],
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
-            // const SizedBox(height: 30), // Also remove the SizedBox below the header if it was only for spacing after the header
-
-            // --- Pertanyaan Umum (FAQ) ---
-            Text(
-              'Pertanyaan Umum (FAQ)',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color:
-                    Colors.blue.shade800, // Changed from Colors.teal.shade800
+        child: SafeArea(
+          // Menjaga area aman dari status bar
+          child: Column(
+            // Menggunakan Column untuk menata header kustom dan konten utama
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header Kustom
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  20,
+                  20,
+                  20,
+                  28,
+                ), // Padding bawah header sedikit diperbesar
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        IconButton(
+                          // Menggunakan IconButton untuk ikon kembali
+                          icon: const Icon(Icons.arrow_back),
+                          color: _darkBlue, // Warna ikon konsisten
+                          iconSize: 28,
+                          onPressed:
+                              () =>
+                                  Get.back(), // Fungsi untuk kembali ke halaman sebelumnya
+                        ),
+                        const SizedBox(
+                          width: 16,
+                        ), // Jarak antara ikon dan teks judul sedikit diperbesar
+                        const Text(
+                          'Pusat Bantuan',
+                          style: TextStyle(
+                            fontSize:
+                                24, // Ukuran font judul tetap besar untuk penekanan
+                            fontWeight: FontWeight.bold,
+                            color: _darkBlue, // Warna judul konsisten
+                          ),
+                        ),
+                      ],
+                    ),
+                    // Anda bisa menambahkan ikon lain di sini jika diperlukan
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 15),
-            _buildFaqSection(), // Extracted FAQ section into a helper method
-            // const SizedBox(height: 30), // Removed spacing before "Butuh Bantuan Lebih Lanjut?" section
-
-            // --- Butuh Bantuan Lebih Lanjut? --- (Removed as per user request)
-            // Text(
-            //   'Butuh Bantuan Lebih Lanjut?',
-            //   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            //         fontWeight: FontWeight.bold,
-            //         color: Colors.blue.shade800, // Changed from Colors.teal.shade800
-            //       ),
-            // ),
-            // const SizedBox(height: 15),
-            // Card(
-            //   elevation: 3,
-            //   shape: RoundedRectangleBorder(
-            //     borderRadius: BorderRadius.circular(12),
-            //   ),
-            //   child: Padding(
-            //     padding: const EdgeInsets.all(20.0),
-            //     child: Column(
-            //       crossAxisAlignment: CrossAxisAlignment.start,
-            //       children: [
-            //         _buildContactOption(
-            //           icon: Icons.email,
-            //           title: 'Email Dukungan',
-            //           subtitle: 'Kirimkan pertanyaan Anda melalui email',
-            //           onTap: () => Get.snackbar('Aksi', 'Membuka aplikasi email'),
-            //         ),
-            //         const Divider(height: 25),
-            //         _buildContactOption(
-            //           icon: Icons.phone,
-            //           title: 'Telepon Kami',
-            //           subtitle: 'Hubungi tim dukungan kami langsung',
-            //           onTap: () => Get.snackbar(
-            //             'Aksi',
-            //             'Melakukan panggilan telepon',
-            //           ),
-            //         ),
-            //         const Divider(height: 25),
-            //         _buildContactOption(
-            //           icon: Icons.chat_bubble,
-            //           title: 'Live Chat',
-            //           subtitle: 'Obrolan langsung dengan agen kami',
-            //           onTap: () => Get.snackbar('Aksi', 'Membuka fitur live chat'),
-            //         ),
-            //       ],
-            //     ),
-            //   ),
-            // ),
-          ],
+              Expanded(
+                // Memastikan SingleChildScrollView mengambil sisa ruang yang tersedia
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(
+                    20.0,
+                    0,
+                    20.0,
+                    20.0,
+                  ), // Padding disesuaikan, tambahkan padding bawah
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // --- Pertanyaan Umum (FAQ) ---
+                      Text(
+                        'Pertanyaan Umum (FAQ)',
+                        style: Theme.of(
+                          context,
+                        ).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: _darkBlue, // Menggunakan warna _darkBlue
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ), // Jarak antara judul FAQ dan daftar FAQ
+                      _buildFaqSection(), // Extracted FAQ section into a helper method
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -160,51 +139,69 @@ class PusatBantuanView extends GetView<PusatBantuanController> {
       children:
           faqs.map((faq) {
             return Card(
-              elevation: 2,
-              margin: const EdgeInsets.only(bottom: 10),
+              elevation:
+                  4, // Meningkatkan elevasi card untuk efek bayangan yang lebih baik
+              margin: const EdgeInsets.only(
+                bottom: 16,
+              ), // Margin bawah sedikit diperbesar
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(
+                  16,
+                ), // Meningkatkan radius sudut card
+                side: BorderSide(
+                  color: _darkBlue.withOpacity(0.1),
+                  width: 1,
+                ), // Menambahkan border tipis
               ),
               child: ExpansionTile(
                 collapsedShape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(16),
                 ),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(16),
                 ),
-                leading: Icon(
+                tilePadding: const EdgeInsets.symmetric(
+                  horizontal: 20.0,
+                  vertical: 12.0,
+                ), // Padding tile lebih lega
+                leading: const Icon(
                   Icons.help_outline,
-                  color: Colors.blue,
-                ), // Added leading icon
+                  color: _darkBlue, // Menggunakan warna _darkBlue
+                  size: 28, // Ukuran ikon lebih besar
+                ),
                 title: Text(
                   faq['question']!,
                   style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                    color: Colors.blue, // Changed from Colors.teal
+                    fontWeight:
+                        FontWeight.bold, // Membuat pertanyaan lebih tebal
+                    fontSize: 18, // Ukuran font pertanyaan sedikit lebih besar
+                    color: _darkBlue, // Menggunakan warna _darkBlue
                   ),
                 ),
                 children: [
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
+                    padding: const EdgeInsets.fromLTRB(
+                      20.0,
+                      0,
+                      20.0,
+                      20.0,
+                    ), // Padding konten jawaban
                     child: Text(
                       faq['answer']!,
                       style: const TextStyle(
-                        fontSize: 14,
+                        fontSize: 15, // Ukuran font jawaban sedikit lebih besar
                         color: Colors.black87,
+                        height:
+                            1.6, // Menambah tinggi baris untuk keterbacaan yang optimal
                       ),
                     ),
                   ),
                 ],
-                iconColor: Colors.blue, // Changed from Colors.teal
-                collapsedIconColor: Colors.blue, // Changed from Colors.teal
+                iconColor: _darkBlue, // Menggunakan warna _darkBlue
+                collapsedIconColor: _darkBlue, // Menggunakan warna _darkBlue
               ),
             );
           }).toList(),
     );
   }
-
-  // Helper widget for contact options (retained from original)
-  // This helper is no longer used after removing the "Butuh Bantuan Lebih Lanjut?" section.
-  // However, it's kept here in case it's needed for future additions.
 }

@@ -51,6 +51,7 @@ dependencies:
   get_storage: ^2.1.1
   intl: ^0.18.0
   lucide_icons: ^0.257.0
+  device_info_plus: ^10.0.0 # Gunakan versi terbaru yang stabil
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -83,11 +84,6 @@ flutter:
     - assets/logo/logo_app.jpg
     - assets/logo/logo_google.png
     - assets/sounds/opening.mp3
-    - assets/illustrasi/gerakan.png
-    - assets/illustrasi/grafik.png
-    - assets/illustrasi/materi.png
-    - assets/illustrasi/tenis meja.png
-    - assets/illustrasi/otp.png
     - assets/Banner/Banner.jpg
     - assets/gambar/Backhand.jpeg
     - assets/gambar/Backspin.jpeg

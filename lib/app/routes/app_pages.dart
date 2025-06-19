@@ -18,6 +18,8 @@ import '../modules/forgot_password/bindings/forgot_password_binding.dart';
 import '../modules/forgot_password/views/forgot_password_view.dart';
 import '../modules/grafik/bindings/grafik_binding.dart';
 import '../modules/grafik/views/grafik_view.dart';
+import '../modules/history_login/bindings/history_login_binding.dart';
+import '../modules/history_login/views/history_login_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/login/bindings/login_binding.dart';
@@ -46,7 +48,7 @@ part 'app_routes.dart';
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.PILIHAN;
+  static const INITIAL = Routes.HOME;
 
   static final routes = [
     GetPage(
@@ -148,6 +150,11 @@ class AppPages {
       name: _Paths.CHATDENGANKAMI,
       page: () => const ChatdengankamiView(),
       binding: ChatdengankamiBinding(),
+    ),
+    GetPage(
+      name: _Paths.HISTORY_LOGIN,
+      page: () => const HistoryLoginView(),
+      binding: HistoryLoginBinding(),
     ),
   ];
 }
