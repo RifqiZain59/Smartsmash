@@ -11,8 +11,12 @@ class UpdateProfileController extends GetxController {
   final TextEditingController confirmPasswordController =
       TextEditingController();
 
-  // Observable untuk menunjukkan status loading
+  // Observable untuk menunjukkan status loading pada tombol atau bagian kecil
   var isLoading = false.obs;
+
+  // BARU: Observable untuk menunjukkan status loading overlay penuh layar
+  var isLoadingOverlay =
+      false.obs; // NEW: Indikator loading untuk overlay full-screen
 
   @override
   void onInit() {
@@ -114,6 +118,7 @@ class UpdateProfileController extends GetxController {
   // Metode untuk memuat data profil dari API
   Future<void> _loadProfileData() async {
     isLoading.value = true;
+    isLoadingOverlay.value = true; // Aktifkan overlay saat mulai memuat data
     try {
       final response = await ApiService.getProfile();
       if (response['success']) {
@@ -137,12 +142,16 @@ class UpdateProfileController extends GetxController {
       );
     } finally {
       isLoading.value = false;
+      isLoadingOverlay.value =
+          false; // Nonaktifkan overlay setelah selesai (berhasil/gagal)
     }
   }
 
   // Metode untuk memperbarui profil
   Future<void> updateProfile() async {
     isLoading.value = true;
+    isLoadingOverlay.value =
+        true; // Aktifkan overlay saat mulai memperbarui profil
 
     final String name = nameController.text;
     final String oldPassword = oldPasswordController.text;
@@ -158,6 +167,8 @@ class UpdateProfileController extends GetxController {
         icon: Icons.error_outline,
       );
       isLoading.value = false;
+      isLoadingOverlay.value =
+          false; // Pastikan overlay dinonaktifkan jika ada validasi gagal
       return;
     }
 
@@ -171,6 +182,8 @@ class UpdateProfileController extends GetxController {
         icon: Icons.warning_amber_rounded,
       );
       isLoading.value = false;
+      isLoadingOverlay.value =
+          false; // Pastikan overlay dinonaktifkan jika ada validasi gagal
       return;
     }
 
@@ -226,6 +239,8 @@ class UpdateProfileController extends GetxController {
       );
     } finally {
       isLoading.value = false;
+      isLoadingOverlay.value =
+          false; // Nonaktifkan overlay setelah selesai (berhasil/gagal)
     }
   }
 }

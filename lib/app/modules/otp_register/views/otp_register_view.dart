@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Import for TextInputFormatter
 import 'package:get/get.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart'; // Add this import
 import 'package:smartsmashapp/app/modules/otp_register/controllers/otp_register_controller.dart';
 
 class OtpRegisterView extends StatefulWidget {
@@ -232,216 +233,263 @@ class _OtpViewState extends State<OtpRegisterView> {
                   .dark, // Set status bar icons based on theme
       child: Scaffold(
         backgroundColor: lightBackground, // Adaptive background color
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Bagian atas konten (ilustrasi, teks, field OTP)
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 24.0,
-                vertical: 40,
-              ),
-              child: Column(
+        body: Obx(() {
+          // Wrap with Obx to react to controller.isLoadingOverlay
+          return Stack(
+            children: [
+              Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Container(
-                    width: 120,
-                    height: 120,
-                    decoration: BoxDecoration(
-                      color: primaryBlue.withOpacity(
-                        0.1,
-                      ), // Adaptive icon background color
-                      shape: BoxShape.circle,
+                  // Bagian atas konten (ilustrasi, teks, field OTP)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24.0,
+                      vertical: 40,
                     ),
-                    child: Center(
-                      child: Icon(
-                        Ionicons.mail_outline,
-                        size: 70,
-                        color: primaryBlue, // Adaptive icon color
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    'Enter Verification code',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: textColorDark, // Adaptive text color
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Obx(
-                    () => Text(
-                      'Masukkan kode dari email yang kami kirimkan ke\n${controller.userEmail.value}',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: textColorGrey,
-                        fontSize: 14,
-                      ), // Adaptive text color
-                    ),
-                  ),
-                  const SizedBox(height: 30),
-                  // Replaced PinCodeTextField with TextFormField for a single input box
-                  Container(
-                    width:
-                        MediaQuery.of(context).size.width *
-                        0.7, // Adjust width as needed
-                    child: TextFormField(
-                      controller: _otpTextController,
-                      readOnly: true, // Set to true to use the custom keyboard
-                      textAlign: TextAlign.center,
-                      keyboardType: TextInputType.number,
-                      maxLength: _otpLength, // Set max length to 6 digits
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: textColorDark, // Adaptive text color
-                        letterSpacing: 8.0,
-                      ),
-                      decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 16.0,
-                          horizontal: 12.0,
-                        ),
-                        filled: true,
-                        fillColor: textFieldFillColor, // Adaptive fill color
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(
-                            color:
-                                textFieldBorderColor, // Adaptive border color
-                            width: 1.0,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 120,
+                          height: 120,
+                          decoration: BoxDecoration(
+                            color: primaryBlue.withOpacity(
+                              0.1,
+                            ), // Adaptive icon background color
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: Icon(
+                              Ionicons.mail_outline,
+                              size: 70,
+                              color: primaryBlue, // Adaptive icon color
+                            ),
                           ),
                         ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(
-                            color:
-                                textFieldBorderColor, // Adaptive border color
-                            width: 1.0,
+                        const SizedBox(height: 20),
+                        Text(
+                          'Enter Verification code',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: textColorDark, // Adaptive text color
                           ),
                         ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(
-                            color: primaryBlue, // Adaptive focused border color
-                            width: 2.0,
+                        const SizedBox(height: 10),
+                        Obx(
+                          () => Text(
+                            'Masukkan kode dari email yang kami kirimkan ke\n${controller.userEmail.value}',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: textColorGrey,
+                              fontSize: 14,
+                            ), // Adaptive text color
                           ),
                         ),
-                        counterText: "", // Hide the default character counter
-                        hintText: "------", // Visual hint for 6 digits
-                        hintStyle: TextStyle(
-                          color: textColorGrey.withOpacity(
-                            0.5,
-                          ), // Adaptive hint style
-                          letterSpacing: 8.0,
+                        const SizedBox(height: 30),
+                        // Replaced PinCodeTextField with TextFormField for a single input box
+                        Container(
+                          width:
+                              MediaQuery.of(context).size.width *
+                              0.7, // Adjust width as needed
+                          child: TextFormField(
+                            controller: _otpTextController,
+                            readOnly:
+                                true, // Set to true to use the custom keyboard
+                            textAlign: TextAlign.center,
+                            keyboardType: TextInputType.number,
+                            maxLength: _otpLength, // Set max length to 6 digits
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: textColorDark, // Adaptive text color
+                              letterSpacing: 8.0,
+                            ),
+                            decoration: InputDecoration(
+                              contentPadding: const EdgeInsets.symmetric(
+                                vertical: 16.0,
+                                horizontal: 12.0,
+                              ),
+                              filled: true,
+                              fillColor:
+                                  textFieldFillColor, // Adaptive fill color
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color:
+                                      textFieldBorderColor, // Adaptive border color
+                                  width: 1.0,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color:
+                                      textFieldBorderColor, // Adaptive border color
+                                  width: 1.0,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color:
+                                      primaryBlue, // Adaptive focused border color
+                                  width: 2.0,
+                                ),
+                              ),
+                              counterText:
+                                  "", // Hide the default character counter
+                              hintText: "------", // Visual hint for 6 digits
+                              hintStyle: TextStyle(
+                                color: textColorGrey.withOpacity(
+                                  0.5,
+                                ), // Adaptive hint style
+                                letterSpacing: 8.0,
+                              ),
+                            ),
+                            inputFormatters: [
+                              FilteringTextInputFormatter
+                                  .digitsOnly, // Allow only digits
+                            ],
+                          ),
                         ),
-                      ),
-                      inputFormatters: [
-                        FilteringTextInputFormatter
-                            .digitsOnly, // Allow only digits
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  Obx(() {
-                    if (controller.errorMessage.value.isNotEmpty) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 10.0),
-                        child: Text(
-                          controller.errorMessage.value,
-                          style: const TextStyle(
-                            color: Colors.red,
-                            fontSize: 14,
+                        const SizedBox(height: 15),
+                        Obx(() {
+                          if (controller.errorMessage.value.isNotEmpty) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 10.0),
+                              child: Text(
+                                controller.errorMessage.value,
+                                style: const TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 14,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            );
+                          }
+                          return const SizedBox.shrink();
+                        }),
+                        const SizedBox(height: 10),
+                        Text.rich(
+                          TextSpan(
+                            text: "Didn't receive the code? ",
+                            style: TextStyle(
+                              color: textColorGrey,
+                              fontSize: 14,
+                            ), // Adaptive text color
+                            children: [
+                              TextSpan(
+                                text: "Resend code",
+                                style: TextStyle(
+                                  color: primaryBlue, // Adaptive link color
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                                recognizer: _tapRecognizer,
+                              ),
+                            ],
                           ),
                           textAlign: TextAlign.center,
                         ),
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  }),
-                  const SizedBox(height: 10),
-                  Text.rich(
-                    TextSpan(
-                      text: "Didn't receive the code? ",
-                      style: TextStyle(
-                        color: textColorGrey,
-                        fontSize: 14,
-                      ), // Adaptive text color
-                      children: [
-                        TextSpan(
-                          text: "Resend code",
-                          style: TextStyle(
-                            color: primaryBlue, // Adaptive link color
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                          recognizer: _tapRecognizer,
-                        ),
                       ],
                     ),
-                    textAlign: TextAlign.center,
                   ),
+                  // Added a SizedBox to control the spacing between "Resend code" and "Verify" button
+                  const SizedBox(height: 20),
+                  // Tombol Verify dan Keyboard Kustom
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          width: double.infinity,
+                          child: Obx(
+                            () => ElevatedButton(
+                              onPressed:
+                                  controller.isLoading.value ||
+                                          controller.otpCode.value.length <
+                                              _otpLength
+                                      ? null
+                                      : () => controller.verifyOtp(),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    primaryBlue, // Adaptive button background color
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 14,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                disabledBackgroundColor: primaryBlue
+                                    .withOpacity(
+                                      0.5,
+                                    ), // Adaptive disabled color
+                              ),
+                              child:
+                                  controller.isLoading.value
+                                      ? LoadingAnimationWidget.threeArchedCircle(
+                                        // Changed to threeArchedCircle
+                                        color:
+                                            Colors
+                                                .white, // Use white color for contrast
+                                        size: 28, // Adjust size as needed
+                                      )
+                                      : const Text(
+                                        "Verify",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 30,
+                        ), // Jarak setelah tombol Verify
+                        _buildNumericKeyboard(
+                          isDarkMode,
+                        ), // Pass isDarkMode to the keyboard builder
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20), // Padding di bagian bawah
                 ],
               ),
-            ),
-            // Added a SizedBox to control the spacing between "Resend code" and "Verify" button
-            const SizedBox(height: 20),
-            // Tombol Verify dan Keyboard Kustom
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: Column(
-                children: [
-                  SizedBox(
-                    width: double.infinity,
-                    child: Obx(
-                      () => ElevatedButton(
-                        onPressed:
-                            controller.isLoading.value ||
-                                    controller.otpCode.value.length < _otpLength
-                                ? null
-                                : () => controller.verifyOtp(),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              primaryBlue, // Adaptive button background color
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+              // Loading Overlay (similar to login_view.dart)
+              if (controller.isLoadingOverlay.value)
+                Positioned.fill(
+                  child: Container(
+                    color: lightBackground.withOpacity(0.7),
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          LoadingAnimationWidget.threeArchedCircle(
+                            color: primaryBlue,
+                            size: 100,
                           ),
-                          disabledBackgroundColor: primaryBlue.withOpacity(
-                            0.5,
-                          ), // Adaptive disabled color
-                        ),
-                        child:
-                            controller.isLoading.value
-                                ? const CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 3,
-                                )
-                                : const Text(
-                                  "Verify",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                          const SizedBox(height: 25),
+                          Text(
+                            "Loading...",
+                            style: TextStyle(
+                              color: textColorDark,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                  const SizedBox(height: 30), // Jarak setelah tombol Verify
-                  _buildNumericKeyboard(
-                    isDarkMode,
-                  ), // Pass isDarkMode to the keyboard builder
-                ],
-              ),
-            ),
-            const SizedBox(height: 20), // Padding di bagian bawah
-          ],
-        ),
+                ),
+            ],
+          );
+        }),
       ),
     );
   }

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:ui'; // Untuk ImageFilter (blur)
+import 'package:loading_animation_widget/loading_animation_widget.dart'; // <--- Tambahkan import ini
 
 import '../controllers/materi_controller.dart';
 // import '../views/materi_detail_view.dart'; // <--- Uncomment ini jika Anda memiliki MateriDetailView dan ingin menavigasi ke sana
@@ -12,7 +13,9 @@ class MateriView extends GetView<MateriController> {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(MateriController()); // Inisialisasi controller
+    // Inisialisasi controller jika belum terdaftar, atau temukan yang sudah ada
+    // Jika Anda sudah mendaftarkannya di Binding, Anda bisa menghapus baris ini.
+    Get.put(MateriController());
 
     // Determine if dark mode is active based on system brightness
     final isDarkMode =
@@ -83,156 +86,192 @@ class MateriView extends GetView<MateriController> {
           ),
         ),
       ),
-      body: SafeArea(
-        child: Column(
+      body: Obx(
+        () => Stack(
+          // <--- Bungkus seluruh konten body dengan Stack
           children: [
-            // 🔍 Search Box and Search Button
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20.0,
-                vertical: 16.0,
-              ),
-              child: Row(
+            SafeArea(
+              child: Column(
                 children: [
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: cardBackgroundColor,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: shadowColor,
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: TextField(
-                        controller: controller.searchTextInputController,
-                        style: TextStyle(color: textColor, fontSize: 16),
-                        decoration: InputDecoration(
-                          hintText: "Cari materi favoritmu...",
-                          hintStyle: TextStyle(
-                            color: subtleTextColor.withOpacity(0.8),
-                          ),
-                          filled: false, // fillColor diatur oleh Container
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 16,
-                            horizontal: 20, // Sesuaikan padding horizontal
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            borderSide:
-                                BorderSide
-                                    .none, // Hapus border default, sudah ada shadow
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            borderSide: BorderSide.none,
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            borderSide: BorderSide(
-                              color: primaryColor.withOpacity(0.5),
-                              width: 1.5,
+                  // 🔍 Search Box and Search Button
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20.0,
+                      vertical: 16.0,
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: cardBackgroundColor,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: shadowColor,
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: TextField(
+                              controller: controller.searchTextInputController,
+                              style: TextStyle(color: textColor, fontSize: 16),
+                              decoration: InputDecoration(
+                                hintText: "Cari materi favoritmu...",
+                                hintStyle: TextStyle(
+                                  color: subtleTextColor.withOpacity(0.8),
+                                ),
+                                filled:
+                                    false, // fillColor diatur oleh Container
+                                contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                  horizontal:
+                                      20, // Sesuaikan padding horizontal
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide:
+                                      BorderSide
+                                          .none, // Hapus border default, sudah ada shadow
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide.none,
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide(
+                                    color: primaryColor.withOpacity(0.5),
+                                    width: 1.5,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
+                        const SizedBox(width: 12),
+                        ElevatedButton(
+                          onPressed: () {
+                            controller.searchQuery.value =
+                                controller.searchTextInputController.text;
+                            FocusScope.of(context).unfocus(); // Tutup keyboard
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: primaryColor,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 16,
+                            ),
+                            elevation: 2,
+                            shadowColor: primaryColor.withOpacity(0.4),
+                          ),
+                          child: const Icon(Ionicons.search_outline, size: 24),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  ElevatedButton(
-                    onPressed: () {
-                      controller.searchQuery.value =
-                          controller.searchTextInputController.text;
-                      FocusScope.of(context).unfocus(); // Tutup keyboard
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryColor,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 16,
-                      ),
-                      elevation: 2,
-                      shadowColor: primaryColor.withOpacity(0.4),
-                    ),
-                    child: const Icon(Ionicons.search_outline, size: 24),
+                  // 📦 List Content
+                  Expanded(
+                    child: Obx(() {
+                      // Obx ini untuk merespons isLoading, errorMessage, materiList
+                      if (controller.isLoading.value) {
+                        return Center(
+                          child: CircularProgressIndicator(
+                            color: primaryColor,
+                            strokeWidth: 3,
+                          ),
+                        );
+                      } else if (controller.errorMessage.isNotEmpty) {
+                        return _buildErrorState(
+                          controller,
+                          primaryColor,
+                          cardBackgroundColor,
+                          textColor,
+                          isDarkMode, // Pass isDarkMode to error state
+                        );
+                      } else if (controller.materiList.isEmpty) {
+                        return _buildEmptyState(
+                          subtleTextColor,
+                          cardBackgroundColor,
+                          isDarkMode,
+                        );
+                      } else {
+                        return RefreshIndicator(
+                          onRefresh:
+                              () =>
+                                  controller
+                                      .refreshMateri(), // Memanggil refreshMateri
+                          color: primaryColor,
+                          backgroundColor:
+                              cardBackgroundColor, // Adapt refresh indicator background
+                          child: ListView.builder(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 8,
+                            ),
+                            itemCount: controller.materiList.length,
+                            itemBuilder: (context, index) {
+                              final materi = controller.materiList[index];
+                              final String title =
+                                  materi['title'] as String? ??
+                                  'Judul Tidak Tersedia';
+                              final String youtubeLink =
+                                  materi['youtube_link'] as String? ?? '';
+                              final bool isYoutube = youtubeLink.isNotEmpty;
+
+                              return _buildMateriCard(
+                                context,
+                                title,
+                                youtubeLink,
+                                isYoutube,
+                                materi,
+                                primaryColor,
+                                secondaryColor,
+                                accentColor,
+                                textColor,
+                                subtleTextColor,
+                                cardBackgroundColor,
+                                cardShadowColor,
+                                borderCardColor,
+                                isDarkMode, // Pass isDarkMode to materi card
+                              );
+                            },
+                          ),
+                        );
+                      }
+                    }),
                   ),
                 ],
               ),
             ),
-            // 📦 List Content
-            Expanded(
-              child: Obx(() {
-                if (controller.isLoading.value) {
-                  return Center(
-                    child: CircularProgressIndicator(
-                      color: primaryColor,
-                      strokeWidth: 3,
-                    ),
-                  );
-                } else if (controller.errorMessage.isNotEmpty) {
-                  return _buildErrorState(
-                    controller,
-                    primaryColor,
-                    cardBackgroundColor,
-                    textColor,
-                    isDarkMode, // Pass isDarkMode to error state
-                  );
-                } else if (controller.materiList.isEmpty) {
-                  return _buildEmptyState(
-                    subtleTextColor,
-                    cardBackgroundColor,
-                    isDarkMode,
-                  );
-                } else {
-                  return RefreshIndicator(
-                    onRefresh: () => controller.refreshMateri(),
-                    color: primaryColor,
-                    backgroundColor:
-                        cardBackgroundColor, // Adapt refresh indicator background
-                    child: ListView.builder(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 8,
-                      ),
-                      itemCount: controller.materiList.length,
-                      itemBuilder: (context, index) {
-                        final materi = controller.materiList[index];
-                        final String title =
-                            materi['title'] as String? ??
-                            'Judul Tidak Tersedia';
-                        final String youtubeLink =
-                            materi['youtube_link'] as String? ?? '';
-                        final bool isYoutube = youtubeLink.isNotEmpty;
 
-                        return _buildMateriCard(
-                          context,
-                          title,
-                          youtubeLink,
-                          isYoutube,
-                          materi,
-                          primaryColor,
-                          secondaryColor,
-                          accentColor,
-                          textColor,
-                          subtleTextColor,
-                          cardBackgroundColor,
-                          cardShadowColor,
-                          borderCardColor,
-                          isDarkMode, // Pass isDarkMode to materi card
-                        );
-                      },
+            // <--- BARU: Loading Overlay Penuh Layar
+            if (controller.isLoadingOverlay.value)
+              Positioned.fill(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(
+                    sigmaX: 5.0,
+                    sigmaY: 5.0,
+                  ), // Efek blur
+                  child: Container(
+                    color: Colors.black.withOpacity(
+                      0.5,
+                    ), // Latar belakang gelap transparan
+                    child: Center(
+                      child: LoadingAnimationWidget.threeArchedCircle(
+                        color: Colors.white,
+                        size: 100,
+                      ),
                     ),
-                  );
-                }
-              }),
-            ),
+                  ),
+                ),
+              ),
+            // BARU: Loading Overlay Penuh Layar --->
           ],
         ),
       ),

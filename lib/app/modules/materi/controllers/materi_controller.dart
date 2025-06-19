@@ -16,8 +16,14 @@ class MateriController extends GetxController {
   // List inilah yang akan ditampilkan di UI
   final RxList<Map<String, dynamic>> materiList = <Map<String, dynamic>>[].obs;
 
-  // Observable boolean untuk menunjukkan status loading saat mengambil data
+  // Observable boolean untuk menunjukkan status loading saat mengambil data (internal list/component)
   final RxBool isLoading = true.obs;
+
+  // <--- BARU: Observable boolean untuk menunjukkan status loading overlay full-screen
+  final RxBool isLoadingOverlay =
+      false.obs; // NEW: Indikator loading untuk overlay full-screen
+  // BARU --->
+
   // Observable string untuk menyimpan pesan error jika terjadi kegagalan
   final RxString errorMessage = ''.obs;
 
@@ -77,7 +83,17 @@ class MateriController extends GetxController {
 
   /// Fungsi untuk mengambil data materi dari API
   Future<void> fetchMateri() async {
-    isLoading.value = true; // Set loading menjadi true saat memulai fetch
+    // isLoading.value = true; // Ini untuk indikator lokal (misal: di tengah list).
+    // Jika fetchMateri dipanggil sebagai bagian dari refresh/initial load yang lebih global,
+    // maka kita bisa menggunakan isLoadingOverlay.
+    // Untuk fetchMateri yang dipicu oleh search, isLoading lokal lebih cocok.
+    // Kita akan tetap menggunakan isLoading untuk indikator tengah saat pertama kali masuk halaman.
+
+    if (!isLoadingOverlay.value) {
+      // Hanya set isLoading jika overlay belum aktif (initial load/search)
+      isLoading.value = true;
+    }
+
     errorMessage.value = ''; // Reset pesan error
     if (kDebugMode) {
       print('MateriController: Memulai fetchMateri().');
@@ -183,7 +199,7 @@ class MateriController extends GetxController {
 
             if (kDebugMode) {
               print(
-                '  Materi: "${materi['title']}" (lowercase: "$title") | Query (trimmed): "$query" | Matches (contains): $matches',
+                '   Materi: "${materi['title']}" (lowercase: "$title") | Query (trimmed): "$query" | Matches (contains): $matches',
               );
             }
             return matches;
@@ -201,9 +217,29 @@ class MateriController extends GetxController {
     if (kDebugMode) {
       print('MateriController: Memulai refreshMateri().');
     }
-    // Opsional: bersihkan teks pencarian saat refresh jika diinginkan
-    // searchTextInputController.clear();
-    await fetchMateri(); // `WorkspaceMateri` akan memanggil `_applyFilter` setelah data dimuat
+
+    isLoadingOverlay.value = true; // <--- Aktifkan overlay saat refresh dimulai
+    // Tambahkan sedikit delay agar overlay sempat terlihat sebelum data dimuat
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    try {
+      // Opsional: bersihkan teks pencarian saat refresh jika diinginkan
+      // searchTextInputController.clear();
+      // searchQuery.value = ''; // Jika Anda ingin pencarian direset saat refresh
+
+      await fetchMateri(); // Panggil `fetchMateri` untuk memuat ulang data
+    } catch (e) {
+      errorMessage.value = 'Gagal me-refresh materi: ${e.toString()}';
+      if (kDebugMode) {
+        print('Exception saat refreshMateri: $e');
+      }
+    } finally {
+      isLoadingOverlay.value =
+          false; // <--- Nonaktifkan overlay setelah refresh selesai
+      if (kDebugMode) {
+        print('MateriController: refreshMateri() selesai.');
+      }
+    }
   }
 
   @override

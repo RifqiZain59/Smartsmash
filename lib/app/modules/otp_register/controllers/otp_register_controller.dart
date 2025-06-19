@@ -10,6 +10,8 @@ class OtpRegisterController extends GetxController {
   var userEmail = ''.obs; // Email yang akan ditampilkan di UI
   var otpCode = ''.obs; // Kode OTP yang diinput pengguna
   var isLoading = false.obs; // Indikator loading untuk mencegah double submit
+  var isLoadingOverlay =
+      false.obs; // New: Indikator loading untuk overlay full-screen
   var errorMessage = ''.obs; // Untuk menampilkan pesan error di UI
 
   // TextEditingController untuk input OTP
@@ -111,6 +113,7 @@ class OtpRegisterController extends GetxController {
     }
 
     isLoading.value = true;
+    isLoadingOverlay.value = true; // Set overlay to true
     errorMessage.value = ''; // Reset error message
 
     try {
@@ -125,6 +128,7 @@ class OtpRegisterController extends GetxController {
             'Respons server tidak dikenali (missing success status).';
         _showSnackbar('Error Server', errorMessage.value, Colors.deepOrange);
         isLoading.value = false;
+        isLoadingOverlay.value = false; // Set overlay to false on error
         return;
       }
 
@@ -170,6 +174,7 @@ class OtpRegisterController extends GetxController {
       );
     } finally {
       isLoading.value = false;
+      isLoadingOverlay.value = false; // Always set overlay to false in finally
     }
   }
 
@@ -192,6 +197,7 @@ class OtpRegisterController extends GetxController {
     }
 
     isLoading.value = true;
+    isLoadingOverlay.value = true; // Set overlay to true
     errorMessage.value = ''; // Reset error message
 
     try {
@@ -205,6 +211,7 @@ class OtpRegisterController extends GetxController {
             'Respons server tidak dikenali (missing success status).';
         _showSnackbar('Error Server', errorMessage.value, Colors.deepOrange);
         isLoading.value = false;
+        isLoadingOverlay.value = false; // Set overlay to false on error
         return;
       }
 
@@ -231,6 +238,7 @@ class OtpRegisterController extends GetxController {
       );
     } finally {
       isLoading.value = false;
+      isLoadingOverlay.value = false; // Always set overlay to false in finally
     }
   }
 

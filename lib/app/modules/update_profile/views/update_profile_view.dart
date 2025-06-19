@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ionicons/ionicons.dart'; // Import Ionicons for consistency
+import 'package:loading_animation_widget/loading_animation_widget.dart'; // Import ini untuk LoadingAnimationWidget
 
 import '../controllers/update_profile_controller.dart'; // Pastikan jalur ini benar
 
@@ -31,214 +32,246 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
     final Color iconColor =
         isDarkMode ? const Color(0xFFB0B0B0) : Colors.grey[600]!;
 
-    return Scaffold(
-      backgroundColor: backgroundColor, // Use dynamic background color
-      appBar: AppBar(
-        title: Text(
-          'Edit Profil',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color:
-                isDarkMode
-                    ? Colors.white
-                    : Colors.black87, // Adapt app bar title color
-          ),
-        ),
-        centerTitle: true,
-        backgroundColor:
-            backgroundColor, // Use dynamic background color for app bar
-        elevation: 0,
-        iconTheme: IconThemeData(
-          color:
-              isDarkMode
-                  ? Colors.white
-                  : Colors.black87, // Adapt app bar icon color
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Center(
-              child: Stack(
+    return Obx(
+      () => Stack(
+        // Menggunakan Stack untuk menempatkan overlay di atas Scaffold
+        children: [
+          Scaffold(
+            backgroundColor: backgroundColor, // Use dynamic background color
+            appBar: AppBar(
+              title: Text(
+                'Edit Profil',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color:
+                      isDarkMode
+                          ? Colors.white
+                          : Colors.black87, // Adapt app bar title color
+                ),
+              ),
+              centerTitle: true,
+              backgroundColor:
+                  backgroundColor, // Use dynamic background color for app bar
+              elevation: 0,
+              iconTheme: IconThemeData(
+                color:
+                    isDarkMode
+                        ? Colors.white
+                        : Colors.black87, // Adapt app bar icon color
+              ),
+            ),
+            body: SingleChildScrollView(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  CircleAvatar(
-                    radius: 60,
-                    backgroundColor: surfaceColor.withOpacity(
-                      0.95,
-                    ), // Adapt to surface color
-                    // Mengganti URL placeholder gambar
-                    backgroundImage: const NetworkImage(
-                      'https://placehold.co/150x150/0000FF/FFFFFF?text=User', // Menggunakan placehold.co
-                    ),
-                    child: Icon(
-                      Ionicons.person_outline, // Use Ionicons for consistency
-                      size: 60,
-                      color: primaryColor.withOpacity(
-                        0.8,
-                      ), // Adapt to primary color
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: CircleAvatar(
-                      radius: 20,
-                      backgroundColor: primaryColor, // Use primary color
-                      child: IconButton(
-                        icon: const Icon(
-                          Ionicons.camera, // Use Ionicons for consistency
-                          color:
-                              Colors
-                                  .white, // Camera icon remains white for contrast
-                          size: 18,
+                  Center(
+                    child: Stack(
+                      children: [
+                        CircleAvatar(
+                          radius: 60,
+                          backgroundColor: surfaceColor.withOpacity(
+                            0.95,
+                          ), // Adapt to surface color
+                          // Mengganti URL placeholder gambar
+                          backgroundImage: const NetworkImage(
+                            'https://placehold.co/150x150/0000FF/FFFFFF?text=User', // Menggunakan placehold.co
+                          ),
+                          child: Icon(
+                            Ionicons
+                                .person_outline, // Use Ionicons for consistency
+                            size: 60,
+                            color: primaryColor.withOpacity(
+                              0.8,
+                            ), // Adapt to primary color
+                          ),
                         ),
-                        onPressed: () {
-                          Get.snackbar(
-                            'Fitur Belum Tersedia',
-                            'Fungsi ubah gambar profil akan segera hadir!',
-                            snackPosition: SnackPosition.BOTTOM,
-                            backgroundColor:
-                                accentColor, // Use accent color for snackbar
-                            colorText:
-                                isDarkMode
-                                    ? Colors.black87
-                                    : Colors.white, // Text color on accent
-                            duration: const Duration(seconds: 2),
-                          );
-                        },
-                      ),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: CircleAvatar(
+                            radius: 20,
+                            backgroundColor: primaryColor, // Use primary color
+                            child: IconButton(
+                              icon: const Icon(
+                                Ionicons.camera, // Use Ionicons for consistency
+                                color:
+                                    Colors
+                                        .white, // Camera icon remains white for contrast
+                                size: 18,
+                              ),
+                              onPressed: () {
+                                Get.snackbar(
+                                  'Fitur Belum Tersedia',
+                                  'Fungsi ubah gambar profil akan segera hadir!',
+                                  snackPosition: SnackPosition.BOTTOM,
+                                  backgroundColor:
+                                      accentColor, // Use accent color for snackbar
+                                  colorText:
+                                      isDarkMode
+                                          ? Colors.black87
+                                          : Colors
+                                              .white, // Text color on accent
+                                  duration: const Duration(seconds: 2),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
+                  const SizedBox(height: 32.0),
+
+                  // Ini adalah bagian di mana nama akan muncul secara otomatis
+                  _buildInputField(
+                    label: 'Nama Lengkap',
+                    hintText: 'Masukkan nama lengkap Anda',
+                    controller:
+                        controller
+                            .nameController, // <-- Terhubung dengan nameController
+                    icon: Ionicons.person_outline, // Use Ionicons
+                    primaryColor:
+                        primaryColor, // Pass the dynamic primary color
+                    textColor: textColor,
+                    hintColor: hintColor,
+                    inputFillColor: inputFillColor,
+                    iconColor: iconColor,
+                  ),
+                  const SizedBox(height: 16.0),
+
+                  // Ini adalah bagian di mana email akan muncul secara otomatis
+                  _buildInputField(
+                    label: 'Email',
+                    hintText: 'Masukkan alamat email Anda',
+                    controller:
+                        controller
+                            .emailController, // <-- Terhubung dengan emailController
+                    icon: Ionicons.mail_outline, // Use Ionicons
+                    keyboardType: TextInputType.emailAddress,
+                    primaryColor:
+                        primaryColor, // Pass the dynamic primary color
+                    textColor: textColor,
+                    hintColor: hintColor,
+                    inputFillColor: inputFillColor,
+                    iconColor: iconColor,
+                  ),
+                  const SizedBox(height: 24.0),
+
+                  Text(
+                    'Ubah Kata Sandi (Opsional)',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: sectionTitleColor(
+                        isDarkMode,
+                      ), // Use consistent section title color logic
+                    ),
+                  ),
+                  const SizedBox(height: 16.0),
+
+                  PasswordFieldWidget(
+                    label: 'Kata Sandi Lama',
+                    hintText: 'Masukkan kata sandi lama Anda',
+                    controller: controller.oldPasswordController,
+                    primaryColor:
+                        primaryColor, // Pass the dynamic primary color
+                    textColor: textColor,
+                    hintColor: hintColor,
+                    inputFillColor: inputFillColor,
+                    iconColor: iconColor,
+                  ),
+                  const SizedBox(height: 16.0),
+
+                  PasswordFieldWidget(
+                    label: 'Kata Sandi Baru',
+                    hintText: 'Masukkan kata sandi baru Anda',
+                    controller: controller.newPasswordController,
+                    primaryColor:
+                        primaryColor, // Pass the dynamic primary color
+                    textColor: textColor,
+                    hintColor: hintColor,
+                    inputFillColor: inputFillColor,
+                    iconColor: iconColor,
+                  ),
+                  const SizedBox(height: 16.0),
+
+                  PasswordFieldWidget(
+                    label: 'Konfirmasi Kata Sandi Baru',
+                    hintText: 'Ketik ulang kata sandi baru Anda',
+                    controller: controller.confirmPasswordController,
+                    primaryColor:
+                        primaryColor, // Pass the dynamic primary color
+                    textColor: textColor,
+                    hintColor: hintColor,
+                    inputFillColor: inputFillColor,
+                    iconColor: iconColor,
+                  ),
+                  const SizedBox(height: 32.0),
+
+                  Obx(
+                    () => ElevatedButton(
+                      onPressed:
+                          controller.isLoading.value
+                              ? null
+                              : () {
+                                controller.updateProfile();
+                              },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            primaryColor, // Use dynamic primary color for button
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                        elevation: 3,
+                      ),
+                      child:
+                          controller.isLoading.value
+                              ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                              : const Text(
+                                'Simpan Perubahan',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color:
+                                      Colors
+                                          .white, // Button text remains white for contrast
+                                ),
+                              ),
+                    ),
+                  ),
+                  const SizedBox(height: 20.0),
                 ],
               ),
             ),
-            const SizedBox(height: 32.0),
-
-            // Ini adalah bagian di mana nama akan muncul secara otomatis
-            _buildInputField(
-              label: 'Nama Lengkap',
-              hintText: 'Masukkan nama lengkap Anda',
-              controller:
-                  controller
-                      .nameController, // <-- Terhubung dengan nameController
-              icon: Ionicons.person_outline, // Use Ionicons
-              primaryColor: primaryColor, // Pass the dynamic primary color
-              textColor: textColor,
-              hintColor: hintColor,
-              inputFillColor: inputFillColor,
-              iconColor: iconColor,
-            ),
-            const SizedBox(height: 16.0),
-
-            // Ini adalah bagian di mana email akan muncul secara otomatis
-            _buildInputField(
-              label: 'Email',
-              hintText: 'Masukkan alamat email Anda',
-              controller:
-                  controller
-                      .emailController, // <-- Terhubung dengan emailController
-              icon: Ionicons.mail_outline, // Use Ionicons
-              keyboardType: TextInputType.emailAddress,
-              primaryColor: primaryColor, // Pass the dynamic primary color
-              textColor: textColor,
-              hintColor: hintColor,
-              inputFillColor: inputFillColor,
-              iconColor: iconColor,
-            ),
-            const SizedBox(height: 24.0),
-
-            Text(
-              'Ubah Kata Sandi (Opsional)',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: sectionTitleColor(
-                  isDarkMode,
-                ), // Use consistent section title color logic
-              ),
-            ),
-            const SizedBox(height: 16.0),
-
-            PasswordFieldWidget(
-              label: 'Kata Sandi Lama',
-              hintText: 'Masukkan kata sandi lama Anda',
-              controller: controller.oldPasswordController,
-              primaryColor: primaryColor, // Pass the dynamic primary color
-              textColor: textColor,
-              hintColor: hintColor,
-              inputFillColor: inputFillColor,
-              iconColor: iconColor,
-            ),
-            const SizedBox(height: 16.0),
-
-            PasswordFieldWidget(
-              label: 'Kata Sandi Baru',
-              hintText: 'Masukkan kata sandi baru Anda',
-              controller: controller.newPasswordController,
-              primaryColor: primaryColor, // Pass the dynamic primary color
-              textColor: textColor,
-              hintColor: hintColor,
-              inputFillColor: inputFillColor,
-              iconColor: iconColor,
-            ),
-            const SizedBox(height: 16.0),
-
-            PasswordFieldWidget(
-              label: 'Konfirmasi Kata Sandi Baru',
-              hintText: 'Ketik ulang kata sandi baru Anda',
-              controller: controller.confirmPasswordController,
-              primaryColor: primaryColor, // Pass the dynamic primary color
-              textColor: textColor,
-              hintColor: hintColor,
-              inputFillColor: inputFillColor,
-              iconColor: iconColor,
-            ),
-            const SizedBox(height: 32.0),
-
-            Obx(
-              () => ElevatedButton(
-                onPressed:
-                    controller.isLoading.value
-                        ? null
-                        : () {
-                          controller.updateProfile();
-                        },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      primaryColor, // Use dynamic primary color for button
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0),
+          ),
+          // <--- Perubahan di sini: Menggunakan LoadingAnimationWidget.threeArchedCircle --->
+          if (controller.isLoadingOverlay.value)
+            Positioned.fill(
+              child: Container(
+                color: Colors.black.withOpacity(
+                  0.5,
+                ), // Latar belakang transparan
+                child: Center(
+                  child: LoadingAnimationWidget.threeArchedCircle(
+                    // Mengubah jenis animasi loading
+                    color:
+                        primaryColor, // Warna animasi, gunakan primaryColor Anda
+                    size: 50,
                   ),
-                  elevation: 3,
                 ),
-                child:
-                    controller.isLoading.value
-                        ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          ),
-                        )
-                        : const Text(
-                          'Simpan Perubahan',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color:
-                                Colors
-                                    .white, // Button text remains white for contrast
-                          ),
-                        ),
               ),
             ),
-            const SizedBox(height: 20.0),
-          ],
-        ),
+          // <--- Akhir Perubahan --->
+        ],
       ),
     );
   }
