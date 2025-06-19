@@ -12,9 +12,53 @@ class HomeView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    const Color primaryColor = Color(0xFF007BFF);
-    const Color accentColor = Color(0xFF6C757D);
-    const Color lightGrey = Color(0xFFF8F9FA);
+    // Determine if dark mode is active based on system brightness
+    final isDarkMode =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
+
+    // Define colors based on the theme mode
+    final Color primaryColor = const Color(
+      0xFF007BFF,
+    ); // Blue (remains constant)
+
+    final Color backgroundColor =
+        isDarkMode
+            ? const Color(0xFF121212)
+            : const Color(0xFFF8F9FA); // Dark or light grey
+    final Color surfaceColor =
+        isDarkMode
+            ? const Color(0xFF1E1E1E)
+            : Colors.white; // Dark or white for cards/containers
+    final Color textColor =
+        isDarkMode
+            ? const Color(0xFFE0E0E0)
+            : Colors.black87; // Light grey or dark for general text
+    final Color hintTextColor =
+        isDarkMode
+            ? const Color(0xFF9E9E9E)
+            : const Color(0xFF6C757D); // Muted grey
+    final Color accentColor =
+        isDarkMode
+            ? const Color(0xFFADB5BD)
+            : const Color(
+              0xFF6C757D,
+            ); // Lighter grey for dark, darker for light
+    final Color shadowColor =
+        isDarkMode
+            ? Colors.black.withOpacity(0.3)
+            : Colors.grey.withOpacity(0.1); // Darker or lighter shadow
+    final Color avatarPlaceholderColor =
+        isDarkMode
+            ? Colors.grey[700]!
+            : Colors.grey[200]!; // Darker or lighter avatar placeholder
+    final Color chipUnselectedBgColor =
+        isDarkMode
+            ? Colors.grey[800]!
+            : Colors.white; // Darker or white chip background
+    final Color chipUnselectedBorderColor =
+        isDarkMode
+            ? Colors.grey.shade600
+            : Colors.grey.shade300; // Darker or lighter chip border
 
     return Obx(() {
       final selectedIndex = controller.selectedIndex.value;
@@ -23,7 +67,7 @@ class HomeView extends GetView<HomeController> {
       final IconData greetingIcon = greetingData['icon'];
 
       return Scaffold(
-        backgroundColor: lightGrey,
+        backgroundColor: backgroundColor,
         body: IndexedStack(
           index: selectedIndex,
           children: [
@@ -38,24 +82,45 @@ class HomeView extends GetView<HomeController> {
                       greetingIcon,
                       greetingText,
                       primaryColor,
-                      accentColor,
+                      textColor,
+                      surfaceColor,
+                      shadowColor,
                     ),
                     const SizedBox(height: 28),
-                    _buildSearchBox(accentColor),
+                    _buildSearchBox(
+                      surfaceColor,
+                      textColor,
+                      hintTextColor,
+                      accentColor,
+                      shadowColor,
+                    ),
                     const SizedBox(height: 28),
-                    _buildSpecialOffers(),
+                    _buildSpecialOffers(textColor),
                     const SizedBox(height: 28),
-                    const Text(
+                    Text(
                       'Menu Apps',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
+                        color: textColor,
                       ),
                     ),
                     const SizedBox(height: 16),
-                    _buildServices(primaryColor),
+                    _buildServices(
+                      primaryColor,
+                      surfaceColor,
+                      textColor,
+                      shadowColor,
+                    ),
                     const SizedBox(height: 28),
-                    _buildPopularServices(primaryColor, accentColor),
+                    _buildPopularServices(
+                      primaryColor,
+                      accentColor,
+                      textColor,
+                      surfaceColor,
+                      shadowColor,
+                      avatarPlaceholderColor,
+                    ),
                   ],
                 ),
               ),
@@ -70,6 +135,8 @@ class HomeView extends GetView<HomeController> {
           selectedIndex,
           primaryColor,
           accentColor,
+          surfaceColor,
+          shadowColor,
         ),
       );
     });
@@ -79,7 +146,9 @@ class HomeView extends GetView<HomeController> {
     IconData greetingIcon,
     String greetingText,
     Color primaryColor,
-    Color accentColor,
+    Color textColor,
+    Color surfaceColor,
+    Color shadowColor,
   ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -93,14 +162,18 @@ class HomeView extends GetView<HomeController> {
               children: [
                 Text(
                   greetingText,
-                  style: TextStyle(fontSize: 16, color: accentColor),
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: textColor.withOpacity(0.7),
+                  ),
                 ),
                 Obx(
                   () => Text(
                     controller.namaUser.value,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
+                      color: textColor,
                     ),
                   ),
                 ),
@@ -111,35 +184,41 @@ class HomeView extends GetView<HomeController> {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: surfaceColor,
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.1),
+                color: shadowColor,
                 blurRadius: 8,
                 offset: const Offset(0, 4),
               ),
             ],
           ),
-          child: const Icon(
+          child: Icon(
             Ionicons.settings_outline,
-            color: Color(0xFF6C757D),
+            color: textColor.withOpacity(0.8),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildSearchBox(Color accentColor) {
+  Widget _buildSearchBox(
+    Color surfaceColor,
+    Color textColor,
+    Color hintColor,
+    Color iconColor,
+    Color shadowColor,
+  ) {
     return Container(
       height: 50,
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: surfaceColor,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: shadowColor,
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -147,32 +226,36 @@ class HomeView extends GetView<HomeController> {
       ),
       child: Row(
         children: [
-          const Icon(Ionicons.search_outline, color: Color(0xFF6C757D)),
+          Icon(Ionicons.search_outline, color: iconColor),
           const SizedBox(width: 10),
           Expanded(
             child: TextField(
               decoration: InputDecoration(
                 hintText: 'Cari layanan atau berita...',
-                hintStyle: const TextStyle(color: Color(0xFF6C757D)),
+                hintStyle: TextStyle(color: hintColor),
                 border: InputBorder.none,
                 isCollapsed: true,
               ),
-              style: const TextStyle(color: Colors.black87),
+              style: TextStyle(color: textColor),
             ),
           ),
-          const Icon(Ionicons.options_outline, color: Color(0xFF6C757D)),
+          Icon(Ionicons.options_outline, color: iconColor),
         ],
       ),
     );
   }
 
-  Widget _buildSpecialOffers() {
+  Widget _buildSpecialOffers(Color textColor) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Penawaran Spesial',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: textColor,
+          ),
         ),
         const SizedBox(height: 16),
         ClipRRect(
@@ -188,15 +271,19 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _buildServices(Color primaryColor) {
-    // Ini adalah kotak putih yang membungkus GRID ikon layanan
+  Widget _buildServices(
+    Color primaryColor,
+    Color surfaceColor,
+    Color textColor,
+    Color shadowColor,
+  ) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: surfaceColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: shadowColor,
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -214,24 +301,28 @@ class HomeView extends GetView<HomeController> {
             label: 'Gerakan',
             icon: Ionicons.body_outline,
             iconColor: primaryColor,
+            textColor: textColor,
             onTap: () => Get.to(() => GerakanView()),
           ),
           ServiceIcon(
             label: 'Juara',
             icon: Ionicons.trophy_outline,
             iconColor: primaryColor,
+            textColor: textColor,
             onTap: () => Get.to(() => JuaraView()),
           ),
           ServiceIcon(
             label: 'Acara',
             icon: Ionicons.calendar_outline,
             iconColor: primaryColor,
+            textColor: textColor,
             onTap: () => Get.to(() => AcaraView()),
           ),
           ServiceIcon(
             label: 'Berita',
             icon: Ionicons.newspaper_outline,
             iconColor: primaryColor,
+            textColor: textColor,
             onTap: () => Get.to(() => BeritaView()),
           ),
         ],
@@ -239,30 +330,26 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _buildPopularServices(Color primaryColor, Color accentColor) {
+  Widget _buildPopularServices(
+    Color primaryColor,
+    Color accentColor,
+    Color textColor,
+    Color surfaceColor,
+    Color shadowColor,
+    Color avatarPlaceholderColor,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Layanan Terpopuler',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: textColor,
+          ),
         ),
         const SizedBox(height: 16),
-        // BAGIAN INI DIHAPUS:
-        // Wrap(
-        //   spacing: 12,
-        //   children: [
-        //     FilterChipWidget(
-        //       label: 'Semua',
-        //       selected: true,
-        //       primaryColor: primaryColor,
-        //     ),
-        //     FilterChipWidget(label: 'Pembersihan', primaryColor: primaryColor),
-        //     FilterChipWidget(label: 'Perbaikan', primaryColor: primaryColor),
-        //     FilterChipWidget(label: 'Pengecatan', primaryColor: primaryColor),
-        //   ],
-        // ),
-        // const SizedBox(height: 16), // SizedBox ini juga dihapus karena tidak ada lagi Wrap di atasnya
         ServiceCard(
           name: 'Kylee Danford',
           service: 'Pembersihan Rumah',
@@ -272,6 +359,10 @@ class HomeView extends GetView<HomeController> {
           image: 'assets/user1.png',
           primaryColor: primaryColor,
           accentColor: accentColor,
+          textColor: textColor,
+          surfaceColor: surfaceColor,
+          shadowColor: shadowColor,
+          avatarPlaceholderColor: avatarPlaceholderColor,
         ),
         ServiceCard(
           name: 'Alfonso Schuessler',
@@ -282,6 +373,10 @@ class HomeView extends GetView<HomeController> {
           image: 'assets/user2.png',
           primaryColor: primaryColor,
           accentColor: accentColor,
+          textColor: textColor,
+          surfaceColor: surfaceColor,
+          shadowColor: shadowColor,
+          avatarPlaceholderColor: avatarPlaceholderColor,
         ),
         ServiceCard(
           name: 'Sanjuanita Ordanez',
@@ -292,6 +387,10 @@ class HomeView extends GetView<HomeController> {
           image: 'assets/user3.png',
           primaryColor: primaryColor,
           accentColor: accentColor,
+          textColor: textColor,
+          surfaceColor: surfaceColor,
+          shadowColor: shadowColor,
+          avatarPlaceholderColor: avatarPlaceholderColor,
         ),
         ServiceCard(
           name: 'Freda Varnes',
@@ -302,6 +401,10 @@ class HomeView extends GetView<HomeController> {
           image: 'assets/user4.png',
           primaryColor: primaryColor,
           accentColor: accentColor,
+          textColor: textColor,
+          surfaceColor: surfaceColor,
+          shadowColor: shadowColor,
+          avatarPlaceholderColor: avatarPlaceholderColor,
         ),
       ],
     );
@@ -311,20 +414,22 @@ class HomeView extends GetView<HomeController> {
     int selectedIndex,
     Color primaryColor,
     Color accentColor,
+    Color surfaceColor,
+    Color shadowColor,
   ) {
     return Container(
       child: SafeArea(
         minimum: const EdgeInsets.only(bottom: 0),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: surfaceColor,
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(24),
               topRight: Radius.circular(24),
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black12,
+                color: shadowColor,
                 blurRadius: 10,
                 offset: const Offset(0, -2),
               ),
@@ -349,7 +454,7 @@ class HomeView extends GetView<HomeController> {
                     decoration:
                         isSelected
                             ? BoxDecoration(
-                              color: primaryColor.withOpacity(0.1),
+                              color: primaryColor.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(30),
                             )
                             : null,
@@ -387,6 +492,7 @@ class ServiceIcon extends StatelessWidget {
   final IconData icon;
   final VoidCallback? onTap;
   final Color? iconColor;
+  final Color? textColor;
 
   const ServiceIcon({
     Key? key,
@@ -394,6 +500,7 @@ class ServiceIcon extends StatelessWidget {
     required this.icon,
     this.onTap,
     this.iconColor,
+    this.textColor,
   }) : super(key: key);
 
   @override
@@ -408,7 +515,7 @@ class ServiceIcon extends StatelessWidget {
           Text(
             label,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 12),
+            style: TextStyle(fontSize: 12, color: textColor),
           ),
         ],
       ),
@@ -423,6 +530,9 @@ class FilterChipWidget extends StatelessWidget {
   final bool selected;
   final VoidCallback? onTap;
   final Color primaryColor;
+  final Color textColor;
+  final Color chipUnselectedBgColor;
+  final Color chipUnselectedBorderColor;
 
   const FilterChipWidget({
     Key? key,
@@ -430,6 +540,9 @@ class FilterChipWidget extends StatelessWidget {
     this.selected = false,
     this.onTap,
     required this.primaryColor,
+    required this.textColor,
+    required this.chipUnselectedBgColor,
+    required this.chipUnselectedBorderColor,
   }) : super(key: key);
 
   @override
@@ -438,12 +551,12 @@ class FilterChipWidget extends StatelessWidget {
       onTap: onTap,
       child: Chip(
         label: Text(label),
-        backgroundColor: selected ? primaryColor : Colors.white,
-        labelStyle: TextStyle(color: selected ? Colors.white : Colors.black87),
+        backgroundColor: selected ? primaryColor : chipUnselectedBgColor,
+        labelStyle: TextStyle(color: selected ? Colors.white : textColor),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
           side: BorderSide(
-            color: selected ? primaryColor : Colors.grey.shade300,
+            color: selected ? primaryColor : chipUnselectedBorderColor,
             width: 1,
           ),
         ),
@@ -463,6 +576,10 @@ class ServiceCard extends StatelessWidget {
   final VoidCallback? onTap;
   final Color primaryColor;
   final Color accentColor;
+  final Color textColor;
+  final Color surfaceColor;
+  final Color shadowColor;
+  final Color avatarPlaceholderColor;
 
   const ServiceCard({
     Key? key,
@@ -475,6 +592,10 @@ class ServiceCard extends StatelessWidget {
     this.onTap,
     required this.primaryColor,
     required this.accentColor,
+    required this.textColor,
+    required this.surfaceColor,
+    required this.shadowColor,
+    required this.avatarPlaceholderColor,
   }) : super(key: key);
 
   @override
@@ -485,11 +606,11 @@ class ServiceCard extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: surfaceColor,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.shade200,
+              color: shadowColor,
               blurRadius: 12,
               offset: const Offset(0, 6),
             ),
@@ -500,7 +621,7 @@ class ServiceCard extends StatelessWidget {
             CircleAvatar(
               radius: 32,
               backgroundImage: AssetImage(image),
-              backgroundColor: Colors.grey[200],
+              backgroundColor: avatarPlaceholderColor,
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -509,15 +630,19 @@ class ServiceCard extends StatelessWidget {
                 children: [
                   Text(
                     service,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 17,
+                      color: textColor,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     'Oleh $name',
-                    style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                    style: TextStyle(
+                      color: textColor.withOpacity(0.7),
+                      fontSize: 13,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Row(
@@ -526,7 +651,10 @@ class ServiceCard extends StatelessWidget {
                       const SizedBox(width: 6),
                       Text(
                         '$rating ($reviews ulasan)',
-                        style: TextStyle(fontSize: 13, color: Colors.grey[700]),
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: textColor.withOpacity(0.8),
+                        ),
                       ),
                     ],
                   ),
@@ -544,9 +672,12 @@ class ServiceCard extends StatelessWidget {
                     fontSize: 18,
                   ),
                 ),
-                const Text(
+                Text(
                   '/jam',
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: textColor.withOpacity(0.6),
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Icon(Ionicons.bookmark_outline, color: accentColor),

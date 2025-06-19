@@ -1,28 +1,59 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ionicons/ionicons.dart'; // Import Ionicons for consistency
 
 import '../controllers/update_profile_controller.dart'; // Pastikan jalur ini benar
 
 class UpdateProfileView extends GetView<UpdateProfileController> {
   const UpdateProfileView({super.key});
 
-  // Warna biru tua kustom yang akan kita gunakan
-  static const Color _darkBlue = Color(
-    0xFF1A237E,
-  ); // Define the dark blue color here
-
   @override
   Widget build(BuildContext context) {
+    // Determine if dark mode is active based on system brightness
+    final isDarkMode =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
+
+    // Define colors based on the theme mode, consistent with ProfileView
+    final Color primaryColor =
+        isDarkMode ? const Color(0xFF90CAF9) : const Color(0xFF0D47A1);
+    final Color accentColor =
+        isDarkMode ? const Color(0xFF64B5F6) : const Color(0xFF1976D2);
+    final Color backgroundColor =
+        isDarkMode ? const Color(0xFF121212) : const Color(0xFFE3F2FD);
+    final Color surfaceColor =
+        isDarkMode ? const Color(0xFF1E1E1E) : Colors.white;
+    final Color textColor =
+        isDarkMode ? const Color(0xFFE0E0E0) : const Color(0xFF222222);
+    final Color hintColor =
+        isDarkMode ? const Color(0xFFA0A0A0) : const Color(0xFF666666);
+    final Color inputFillColor =
+        isDarkMode ? const Color(0xFF2C2C2C) : Colors.grey[100]!;
+    final Color iconColor =
+        isDarkMode ? const Color(0xFFB0B0B0) : Colors.grey[600]!;
+
     return Scaffold(
+      backgroundColor: backgroundColor, // Use dynamic background color
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Edit Profil',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color:
+                isDarkMode
+                    ? Colors.white
+                    : Colors.black87, // Adapt app bar title color
+          ),
         ),
         centerTitle: true,
-        backgroundColor: _darkBlue, // Mengubah warna AppBar menjadi biru tua
+        backgroundColor:
+            backgroundColor, // Use dynamic background color for app bar
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(
+          color:
+              isDarkMode
+                  ? Colors.white
+                  : Colors.black87, // Adapt app bar icon color
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
@@ -34,15 +65,19 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                 children: [
                   CircleAvatar(
                     radius: 60,
-                    backgroundColor: Colors.grey[300],
+                    backgroundColor: surfaceColor.withOpacity(
+                      0.95,
+                    ), // Adapt to surface color
                     // Mengganti URL placeholder gambar
                     backgroundImage: const NetworkImage(
                       'https://placehold.co/150x150/0000FF/FFFFFF?text=User', // Menggunakan placehold.co
                     ),
                     child: Icon(
-                      Icons.person,
+                      Ionicons.person_outline, // Use Ionicons for consistency
                       size: 60,
-                      color: Colors.grey[600],
+                      color: primaryColor.withOpacity(
+                        0.8,
+                      ), // Adapt to primary color
                     ),
                   ),
                   Positioned(
@@ -50,12 +85,13 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                     right: 0,
                     child: CircleAvatar(
                       radius: 20,
-                      backgroundColor:
-                          _darkBlue, // Mengubah warna latar belakang ikon kamera menjadi biru tua
+                      backgroundColor: primaryColor, // Use primary color
                       child: IconButton(
                         icon: const Icon(
-                          Icons.camera_alt,
-                          color: Colors.white,
+                          Ionicons.camera, // Use Ionicons for consistency
+                          color:
+                              Colors
+                                  .white, // Camera icon remains white for contrast
                           size: 18,
                         ),
                         onPressed: () {
@@ -64,9 +100,11 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                             'Fungsi ubah gambar profil akan segera hadir!',
                             snackPosition: SnackPosition.BOTTOM,
                             backgroundColor:
-                                Colors
-                                    .orangeAccent, // Warna snackbar tetap orangeAccent atau bisa diganti
-                            colorText: Colors.white,
+                                accentColor, // Use accent color for snackbar
+                            colorText:
+                                isDarkMode
+                                    ? Colors.black87
+                                    : Colors.white, // Text color on accent
                             duration: const Duration(seconds: 2),
                           );
                         },
@@ -85,8 +123,12 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
               controller:
                   controller
                       .nameController, // <-- Terhubung dengan nameController
-              icon: Icons.person_outline,
-              darkBlueColor: _darkBlue, // Pass the dark blue color
+              icon: Ionicons.person_outline, // Use Ionicons
+              primaryColor: primaryColor, // Pass the dynamic primary color
+              textColor: textColor,
+              hintColor: hintColor,
+              inputFillColor: inputFillColor,
+              iconColor: iconColor,
             ),
             const SizedBox(height: 16.0),
 
@@ -97,9 +139,13 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
               controller:
                   controller
                       .emailController, // <-- Terhubung dengan emailController
-              icon: Icons.email_outlined,
+              icon: Ionicons.mail_outline, // Use Ionicons
               keyboardType: TextInputType.emailAddress,
-              darkBlueColor: _darkBlue, // Pass the dark blue color
+              primaryColor: primaryColor, // Pass the dynamic primary color
+              textColor: textColor,
+              hintColor: hintColor,
+              inputFillColor: inputFillColor,
+              iconColor: iconColor,
             ),
             const SizedBox(height: 24.0),
 
@@ -108,7 +154,9 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: _darkBlue, // Mengubah warna teks judul menjadi biru tua
+                color: sectionTitleColor(
+                  isDarkMode,
+                ), // Use consistent section title color logic
               ),
             ),
             const SizedBox(height: 16.0),
@@ -117,7 +165,11 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
               label: 'Kata Sandi Lama',
               hintText: 'Masukkan kata sandi lama Anda',
               controller: controller.oldPasswordController,
-              darkBlueColor: _darkBlue, // Pass the dark blue color
+              primaryColor: primaryColor, // Pass the dynamic primary color
+              textColor: textColor,
+              hintColor: hintColor,
+              inputFillColor: inputFillColor,
+              iconColor: iconColor,
             ),
             const SizedBox(height: 16.0),
 
@@ -125,7 +177,11 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
               label: 'Kata Sandi Baru',
               hintText: 'Masukkan kata sandi baru Anda',
               controller: controller.newPasswordController,
-              darkBlueColor: _darkBlue, // Pass the dark blue color
+              primaryColor: primaryColor, // Pass the dynamic primary color
+              textColor: textColor,
+              hintColor: hintColor,
+              inputFillColor: inputFillColor,
+              iconColor: iconColor,
             ),
             const SizedBox(height: 16.0),
 
@@ -133,7 +189,11 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
               label: 'Konfirmasi Kata Sandi Baru',
               hintText: 'Ketik ulang kata sandi baru Anda',
               controller: controller.confirmPasswordController,
-              darkBlueColor: _darkBlue, // Pass the dark blue color
+              primaryColor: primaryColor, // Pass the dynamic primary color
+              textColor: textColor,
+              hintColor: hintColor,
+              inputFillColor: inputFillColor,
+              iconColor: iconColor,
             ),
             const SizedBox(height: 32.0),
 
@@ -147,7 +207,7 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                         },
                 style: ElevatedButton.styleFrom(
                   backgroundColor:
-                      _darkBlue, // Mengubah warna tombol menjadi biru tua
+                      primaryColor, // Use dynamic primary color for button
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12.0),
@@ -169,7 +229,9 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color:
+                                Colors
+                                    .white, // Button text remains white for contrast
                           ),
                         ),
               ),
@@ -181,27 +243,44 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
     );
   }
 
+  // Helper function for section title color, consistent with ProfileView
+  Color sectionTitleColor(bool isDarkMode) {
+    return isDarkMode ? const Color(0xFFB0B0B0) : const Color(0xFF222222);
+  }
+
   Widget _buildInputField({
     required String label,
     required String hintText,
     required TextEditingController controller,
     IconData? icon,
     TextInputType keyboardType = TextInputType.text,
-    required Color darkBlueColor, // Add darkBlueColor parameter
+    required Color primaryColor, // Use primaryColor for active state
+    required Color textColor,
+    required Color hintColor,
+    required Color inputFillColor,
+    required Color iconColor,
   }) {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
+      style: TextStyle(color: textColor), // Apply text color to input
       decoration: InputDecoration(
         labelText: label,
+        labelStyle: TextStyle(color: hintColor), // Label color
         hintText: hintText,
-        prefixIcon: icon != null ? Icon(icon, color: Colors.grey[600]) : null,
+        hintStyle: TextStyle(
+          color: hintColor.withOpacity(0.7),
+        ), // Hint text color
+        prefixIcon:
+            icon != null
+                ? Icon(icon, color: iconColor)
+                : null, // Use dynamic icon color
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.0),
           borderSide: BorderSide.none,
         ),
         filled: true,
-        fillColor: Colors.grey[100],
+        fillColor: inputFillColor, // Use dynamic fill color
         contentPadding: const EdgeInsets.symmetric(
           vertical: 16.0,
           horizontal: 20.0,
@@ -209,9 +288,9 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.0),
           borderSide: BorderSide(
-            color: darkBlueColor,
+            color: primaryColor, // Use primary color for focused border
             width: 2.0,
-          ), // Mengubah warna border menjadi biru tua
+          ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.0),
@@ -226,14 +305,22 @@ class PasswordFieldWidget extends StatefulWidget {
   final String label;
   final String hintText;
   final TextEditingController controller;
-  final Color darkBlueColor; // Add darkBlueColor parameter
+  final Color primaryColor; // Use primaryColor for active state
+  final Color textColor;
+  final Color hintColor;
+  final Color inputFillColor;
+  final Color iconColor;
 
   const PasswordFieldWidget({
     super.key,
     required this.label,
     required this.hintText,
     required this.controller,
-    required this.darkBlueColor, // Initialize darkBlueColor
+    required this.primaryColor, // Initialize primaryColor
+    required this.textColor,
+    required this.hintColor,
+    required this.inputFillColor,
+    required this.iconColor,
   });
 
   @override
@@ -248,14 +335,24 @@ class _PasswordFieldWidgetState extends State<PasswordFieldWidget> {
     return TextFormField(
       controller: widget.controller,
       obscureText: _isPasswordHidden,
+      style: TextStyle(color: widget.textColor), // Apply text color to input
       decoration: InputDecoration(
         labelText: widget.label,
+        labelStyle: TextStyle(color: widget.hintColor), // Label color
         hintText: widget.hintText,
-        prefixIcon: Icon(Icons.lock_outline, color: Colors.grey[600]),
+        hintStyle: TextStyle(
+          color: widget.hintColor.withOpacity(0.7),
+        ), // Hint text color
+        prefixIcon: Icon(
+          Ionicons.lock_closed_outline, // Use Ionicons
+          color: widget.iconColor,
+        ), // Use dynamic icon color
         suffixIcon: IconButton(
           icon: Icon(
-            _isPasswordHidden ? Icons.visibility : Icons.visibility_off,
-            color: Colors.grey[600],
+            _isPasswordHidden
+                ? Ionicons.eye_outline
+                : Ionicons.eye_off_outline, // Use Ionicons
+            color: widget.iconColor, // Use dynamic icon color
           ),
           onPressed: () {
             setState(() {
@@ -268,7 +365,7 @@ class _PasswordFieldWidgetState extends State<PasswordFieldWidget> {
           borderSide: BorderSide.none,
         ),
         filled: true,
-        fillColor: Colors.grey[100],
+        fillColor: widget.inputFillColor, // Use dynamic fill color
         contentPadding: const EdgeInsets.symmetric(
           vertical: 16.0,
           horizontal: 20.0,
@@ -276,9 +373,9 @@ class _PasswordFieldWidgetState extends State<PasswordFieldWidget> {
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.0),
           borderSide: BorderSide(
-            color: widget.darkBlueColor,
+            color: widget.primaryColor, // Use primary color for focused border
             width: 2.0,
-          ), // Mengubah warna border menjadi biru tua
+          ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.0),

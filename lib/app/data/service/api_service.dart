@@ -3,8 +3,9 @@ import 'dart:async';
 import 'dart:io'; // Untuk SocketException
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart'; // Untuk kDebugMode
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:device_info_plus/device_info_plus.dart'; // Import for device info
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // NEW: Import for Google Sign-In
 
 class ApiService {
   // PASTIKAN URL INI BENAR DAN DAPAT DIAKSES DARI PERANGKAT/EMULATOR ANDA
@@ -664,6 +665,59 @@ class ApiService {
         'Terjadi kesalahan saat login dengan Google. Silakan coba lagi nanti.',
       );
     }
+  }
+
+  // NEW METHOD: Handle Google Sign Out
+  static Future<Map<String, dynamic>> signOutGoogle() async {
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      if (await googleSignIn.isSignedIn()) {
+        // Use disconnect() instead of signOut() to force account selection on next login
+        await googleSignIn.disconnect();
+        if (kDebugMode) {
+          print(
+            'Google account disconnected successfully. Will prompt for email selection next time.',
+          );
+        }
+        return {
+          'success': true,
+          'message': 'Berhasil keluar dari akun Google.',
+        };
+      } else {
+        if (kDebugMode) {
+          print('Google account was not signed in.');
+        }
+        return {
+          'success': true,
+          'message': 'Tidak ada akun Google yang terhubung.',
+        };
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error during Google disconnect: $e');
+      }
+      return _errorResponse('Terjadi kesalahan saat keluar dari akun Google.');
+    }
+  }
+
+  // NEW METHOD: Combined Logout for both app token and Google (if applicable)
+  static Future<Map<String, dynamic>> logout() async {
+    // First, remove the application's internal token
+    await removeToken(); // This method already exists
+    if (kDebugMode) {
+      print('Aplikasi token berhasil dihapus.');
+    }
+
+    // Then, attempt to sign out from Google
+    final googleSignOutResult =
+        await signOutGoogle(); // Call the new Google specific logout
+    if (!googleSignOutResult['success'] && kDebugMode) {
+      print(
+        'Peringatan: Gagal keluar dari Google: ${googleSignOutResult['message']}',
+      );
+    }
+
+    return {'success': true, 'message': 'Berhasil logout dari aplikasi.'};
   }
 
   static Future<Map<String, dynamic>> revalidateToken() async {
@@ -1379,7 +1433,7 @@ class ApiService {
             statusCode: response.statusCode,
           );
         }
-      } else if (response.statusCode == 404) {    
+      } else if (response.statusCode == 404) {
         return _errorResponse(
           body['message'] as String? ?? 'Materi tidak ditemukan.',
           data: body['data'],

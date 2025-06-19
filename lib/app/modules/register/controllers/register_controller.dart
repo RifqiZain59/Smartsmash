@@ -5,78 +5,137 @@ import 'package:get_storage/get_storage.dart'; // Untuk menyimpan token nanti (b
 import 'package:flutter/foundation.dart'; // Import ini untuk kDebugMode
 
 class RegisterController extends GetxController {
-  // --- TextEditingControllers untuk input form ---
+  // --- TextEditingControllers for form inputs ---
   final namaController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
-  // --- Observable untuk status UI ---
-  var isLoading = false.obs;
+  // --- Observables for UI status ---
+  var isLoading = false.obs; // Untuk indikator loading di dalam tombol
+  var isLoadingOverlay = false.obs; // Untuk full screen loading overlay
   var isPasswordVisible = false.obs;
   var isConfirmPasswordVisible = false.obs;
 
-  // --- GetStorage untuk menyimpan data lokal (token, user info) ---
-  // Saat ini belum digunakan secara aktif di fungsi register ini,
-  // tapi sudah siap jika diperlukan nanti (misal setelah login atau verifikasi OTP final)
+  // --- Observables for password validation criteria ---
+  var hasUppercase = false.obs;
+  var hasLowercase = false.obs;
+  var hasDigit = false.obs;
+  var hasMinLength = false.obs; // Minimum 8 characters
+  var isPasswordValidOverall = false.obs; // Overall password validity status
+  var isEmailValid = false.obs; // Status validasi format email
+  var isNamaValid = false.obs; // Status validasi nama
+  var isConfirmPasswordMatch = false.obs; // Status konfirmasi password
+
+  // --- Overall form validity ---
+  var isFormValid = false.obs; // Untuk mengaktifkan/menonaktifkan tombol utama
+
+  // --- GetStorage to store local data (token, user info) ---
   final box = GetStorage();
 
-  // --- Toggle visibilitas password ---
+  @override
+  void onInit() {
+    super.onInit();
+    // Listen to changes in all relevant fields to update form validity
+    namaController.addListener(_updateFormValidity);
+    emailController.addListener(_updateFormValidity);
+    passwordController.addListener(
+      _validatePassword,
+    ); // Panggil _validatePassword dulu
+    passwordController.addListener(
+      _updateFormValidity,
+    ); // Lalu update validitas form
+    confirmPasswordController.addListener(_updateFormValidity);
+  }
+
+  @override
+  void onClose() {
+    namaController.dispose();
+    emailController.removeListener(_updateFormValidity); // Hapus listener
+    emailController.dispose();
+    passwordController.removeListener(_validatePassword);
+    passwordController.removeListener(_updateFormValidity); // Hapus listener
+    passwordController.dispose();
+    confirmPasswordController.removeListener(
+      _updateFormValidity,
+    ); // Hapus listener
+    confirmPasswordController.dispose();
+    super.onClose();
+  }
+
+  // --- Toggle password visibility ---
   void togglePasswordVisibility() {
     isPasswordVisible.value = !isPasswordVisible.value;
   }
 
-  // --- Toggle visibilitas konfirmasi password ---
+  // --- Toggle confirm password visibility ---
   void toggleConfirmPasswordVisibility() {
     isConfirmPasswordVisible.value = !isConfirmPasswordVisible.value;
   }
 
-  // --- Validasi format email sederhana ---
-  bool _isValidEmail(String email) {
+  // --- Simple email format validation ---
+  bool _checkEmailFormat(String email) {
     final regex = RegExp(
       r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
     );
     return regex.hasMatch(email);
   }
 
-  // --- Fungsi utama untuk proses registrasi pengguna ---
+  // --- Password validation logic ---
+  void _validatePassword() {
+    final password = passwordController.text;
+
+    hasUppercase.value = password.contains(RegExp(r'[A-Z]'));
+    hasLowercase.value = password.contains(RegExp(r'[a-z]'));
+    hasDigit.value = password.contains(RegExp(r'[0-9]'));
+    hasMinLength.value = password.length >= 8;
+
+    isPasswordValidOverall.value =
+        hasUppercase.value &&
+        hasLowercase.value &&
+        hasDigit.value &&
+        hasMinLength.value;
+
+    // Juga panggil updateFormValidity di sini karena perubahan password memengaruhi validitas form
+    _updateFormValidity();
+  }
+
+  // --- Overall form validity check ---
+  void _updateFormValidity() {
+    isEmailValid.value = _checkEmailFormat(emailController.text.trim());
+    isNamaValid.value = namaController.text.trim().isNotEmpty;
+    isConfirmPasswordMatch.value =
+        passwordController.text == confirmPasswordController.text &&
+        confirmPasswordController.text.isNotEmpty; // Juga pastikan tidak kosong
+
+    isFormValid.value =
+        isNamaValid.value &&
+        isEmailValid.value &&
+        isPasswordValidOverall.value &&
+        isConfirmPasswordMatch.value;
+  }
+
+  // --- Main function for user registration process ---
   Future<void> registerUser() async {
     final String nama = namaController.text.trim();
     final String email = emailController.text.trim();
-    final String password = passwordController.text; // Jangan trim password
+    final String password = passwordController.text; // Do not trim password
     final String confirmPassword =
-        confirmPasswordController.text; // Jangan trim password
+        confirmPasswordController.text; // Do not trim password
 
-    // --- Validasi input form ---
-    if (nama.isEmpty ||
-        email.isEmpty ||
-        password.isEmpty ||
-        confirmPassword.isEmpty) {
-      _showSnackbar('Error', 'Semua field harus diisi.', Colors.red);
-      return;
-    }
-
-    if (!_isValidEmail(email)) {
-      _showSnackbar('Error', 'Format email tidak valid.', Colors.red);
-      return;
-    }
-
-    if (password.length < 6) {
-      _showSnackbar('Error', 'Password minimal 6 karakter.', Colors.red);
-      return;
-    }
-
-    if (password != confirmPassword) {
+    // Re-check form validity one last time before API call
+    _updateFormValidity();
+    if (!isFormValid.value) {
       _showSnackbar(
         'Error',
-        'Konfirmasi password tidak cocok dengan password.',
+        'Mohon lengkapi semua field dan pastikan valid.',
         Colors.red,
       );
       return;
     }
 
-    // --- Mengatur status loading dan memanggil API ---
-    isLoading.value = true;
+    isLoading.value = true; // For button loading
+    isLoadingOverlay.value = true; // For full screen overlay
 
     try {
       final Map<String, dynamic> apiResponse = await ApiService.registerUser(
@@ -90,39 +149,30 @@ class RegisterController extends GetxController {
         print('Register API Response: $apiResponse');
       }
 
-      // `ApiService` dirancang untuk selalu mengembalikan Map dengan 'success'.
-      // Pengecekan ini sebagai lapisan pertahanan ekstra.
       if (apiResponse['success'] == null) {
         _showSnackbar(
           'Error Kritis',
           'Respons API tidak memiliki status \'success\'. Mohon hubungi developer.',
           Colors.orange.shade800,
         );
-        isLoading.value = false;
         return;
       }
 
       if (apiResponse['success'] == true) {
-        // Registrasi berhasil di sisi server
         dynamic responseData = apiResponse['data'];
 
         if (responseData is Map<String, dynamic>) {
-          // Server mungkin mengirim data user langsung di 'data' atau di dalam 'data['user']'
-          // Sesuaikan dengan struktur respons backend Anda
           Map<String, dynamic>? userData;
           if (responseData['user'] is Map<String, dynamic>) {
             userData = responseData['user'] as Map<String, dynamic>;
           } else if (responseData.containsKey('id_user') &&
               responseData.containsKey('email')) {
-            // Jika data user ada di root 'responseData' (bukan di dalam 'responseData['user']')
             userData = responseData;
           }
 
           if (userData != null) {
             final String? userId = userData['id_user'] as String?;
             final String? userEmail = userData['email'] as String?;
-            // Anda bisa juga mengambil 'nama' jika server mengirimkannya kembali
-            // final String? userNameFromResponse = userData['nama'] as String?;
 
             if (userId != null && userEmail != null) {
               _showSnackbar(
@@ -133,15 +183,10 @@ class RegisterController extends GetxController {
               );
 
               Get.toNamed(
-                '/otp-register', // Pastikan route '/otp' sudah terdaftar
-                arguments: {
-                  'email': userEmail,
-                  'id_user': userId,
-                  // 'nama': userNameFromResponse, // Jika perlu
-                },
+                '/otp-register',
+                arguments: {'email': userEmail, 'id_user': userId},
               );
 
-              // Kosongkan field setelah berhasil dan navigasi
               _clearInputFields();
             } else {
               _showSnackbar(
@@ -165,7 +210,7 @@ class RegisterController extends GetxController {
           );
         }
       } else {
-        // Registrasi gagal (apiResponse['success'] == false)
+        // Registration failed (apiResponse['success'] == false)
         _showSnackbar(
           'Gagal Registrasi',
           apiResponse['message'] as String? ??
@@ -179,12 +224,13 @@ class RegisterController extends GetxController {
       }
       _showSnackbar(
         'Error Tak Terduga',
-        // 'Terjadi kesalahan: ${e.toString()}', // Bisa terlalu teknis untuk user
         'Terjadi masalah koneksi atau kesalahan server. Silakan coba beberapa saat lagi.',
         Colors.red,
       );
     } finally {
       isLoading.value = false;
+      isLoadingOverlay.value =
+          false; // Turn off overlay regardless of success/failure
     }
   }
 
@@ -193,12 +239,21 @@ class RegisterController extends GetxController {
     emailController.clear();
     passwordController.clear();
     confirmPasswordController.clear();
+    // Reset validation states after clearing
+    hasUppercase.value = false;
+    hasLowercase.value = false;
+    hasDigit.value = false;
+    hasMinLength.value = false;
+    isPasswordValidOverall.value = false;
+    isEmailValid.value = false;
+    isNamaValid.value = false;
+    isConfirmPasswordMatch.value = false;
+    isFormValid.value = false;
   }
 
-  // Helper untuk menampilkan Snackbar
+  // Helper to show Snackbar
   void _showSnackbar(String title, String message, Color backgroundColor) {
     if (Get.isSnackbarOpen) {
-      // Mencegah snackbar bertumpuk jika error cepat terjadi beruntun
       Get.closeCurrentSnackbar();
     }
     Get.snackbar(
@@ -209,19 +264,8 @@ class RegisterController extends GetxController {
       colorText: Colors.white,
       margin: const EdgeInsets.all(10),
       borderRadius: 8,
-      duration: const Duration(
-        seconds: 3,
-      ), // Durasi default GetX adalah 3 detik
-      isDismissible: true, // Memungkinkan pengguna untuk swipe-to-dismiss
+      duration: const Duration(seconds: 3),
+      isDismissible: true,
     );
-  }
-
-  @override
-  void onClose() {
-    namaController.dispose();
-    emailController.dispose();
-    passwordController.dispose();
-    confirmPasswordController.dispose();
-    super.onClose();
   }
 }

@@ -65,14 +65,42 @@ class ProfileController extends GetxController {
 
   Future<void> logout() async {
     try {
-      await box.erase(); // Clear all data in GetStorage
-      userName.value = '';
-      userEmail.value = '';
-      userPhone.value = '';
-      Get.snackbar("Logout", "Anda telah keluar dari akun.");
-      Get.offAllNamed('/login'); // Redirect to the login page
+      // Call the combined logout method from ApiService
+      // This will remove your app's token AND sign out from Google (using disconnect)
+      final Map<String, dynamic> apiLogoutResult = await ApiService.logout();
+
+      if (apiLogoutResult['success'] == true) {
+        // Clear all local data in GetStorage after successful API logout
+        await box.erase();
+        userName.value = '';
+        userEmail.value = '';
+        userPhone.value = '';
+
+        Get.snackbar(
+          "Logout Berhasil",
+          apiLogoutResult['message'] ?? "Anda telah keluar dari akun.",
+        );
+
+        // Redirect to the login page
+        // Use Get.offAllNamed to clear the navigation stack
+        Get.offAllNamed('/login');
+      } else {
+        // If API logout failed, show an error message
+        Get.snackbar(
+          "Logout Gagal",
+          apiLogoutResult['message'] ?? "Terjadi kesalahan saat logout.",
+          snackPosition:
+              SnackPosition.BOTTOM, // Optional: for better visibility
+        );
+        debugPrint('Logout failed from API: ${apiLogoutResult['message']}');
+      }
     } catch (e) {
-      debugPrint('Logout failed: $e');
+      debugPrint('Unexpected error during logout: $e');
+      Get.snackbar(
+        "Error",
+        "Terjadi kesalahan tak terduga saat logout.",
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 

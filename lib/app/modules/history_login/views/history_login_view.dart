@@ -8,9 +8,6 @@ import '../controllers/history_login_controller.dart';
 class HistoryLoginView extends GetView<HistoryLoginController> {
   const HistoryLoginView({super.key});
 
-  // Warna biru tua kustom yang akan kita gunakan
-  static const Color _darkBlue = Color(0xFF1A237E);
-
   // Fungsi helper untuk memformat timestamp ke WIB (Waktu Indonesia Barat)
   String _formatTimestamp(String? isoString) {
     if (isoString == null || isoString.isEmpty) return 'Tanggal tidak tersedia';
@@ -100,400 +97,6 @@ class HistoryLoginView extends GetView<HistoryLoginController> {
     return match?.group(1); // Mengambil hanya grup pertama (versi)
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white, // Memastikan latar belakang Scaffold putih
-      body: ClipRRect(
-        // Menerapkan lengkungan di sudut atas body
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(24), // Radius lengkungan yang konsisten
-          topRight: Radius.circular(24), // Radius lengkungan yang konsisten
-        ),
-        child: SafeArea(
-          // Menjaga area aman dari status bar
-          child: Column(
-            // Menggunakan Column untuk menata header kustom dan konten utama
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header Kustom
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  20,
-                  20,
-                  20,
-                  16,
-                ), // Padding untuk header
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        IconButton(
-                          // Menggunakan IconButton untuk ikon kembali
-                          icon: const Icon(Icons.arrow_back),
-                          color: _darkBlue,
-                          iconSize: 28,
-                          onPressed:
-                              () =>
-                                  Get.back(), // Fungsi untuk kembali ke halaman sebelumnya
-                        ),
-                        const SizedBox(width: 12),
-                        const Text(
-                          'Riwayat Login',
-                          style: TextStyle(
-                            fontSize:
-                                22, // Ukuran font judul yang sedikit lebih besar
-                            fontWeight: FontWeight.bold,
-                            color: _darkBlue,
-                          ),
-                        ),
-                      ],
-                    ),
-                    // Anda bisa menambahkan ikon lain di sini jika diperlukan, misalnya ikon pengaturan
-                    // const Icon(Ionicons.settings_outline, color: _darkBlue),
-                  ],
-                ),
-              ),
-              Expanded(
-                // Memastikan ListView mengambil sisa ruang yang tersedia
-                child: Obx(() {
-                  if (controller.isLoading.value) {
-                    return const Center(
-                      child: CircularProgressIndicator(color: _darkBlue),
-                    );
-                  } else if (controller.errorMessage.isNotEmpty) {
-                    return Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.error_outline,
-                              color: Colors.red[700],
-                              size: 50,
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              'Terjadi kesalahan: ${controller.errorMessage.value}',
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: Colors.red,
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                            ElevatedButton.icon(
-                              onPressed: () => controller.fetchLoginHistory(),
-                              icon: const Icon(Icons.refresh),
-                              label: const Text('Coba Lagi'),
-                              style: ElevatedButton.styleFrom(
-                                foregroundColor: Colors.white,
-                                backgroundColor: _darkBlue,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  } else if (controller.loginHistory.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Ionicons.hourglass_outline,
-                            color: Colors.grey[400],
-                            size: 60,
-                          ),
-                          const SizedBox(height: 10),
-                          const Text(
-                            'Tidak ada riwayat login ditemukan.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 18, color: Colors.grey),
-                          ),
-                          const SizedBox(height: 20),
-                          ElevatedButton.icon(
-                            onPressed: () => controller.fetchLoginHistory(),
-                            icon: const Icon(Icons.refresh),
-                            label: const Text('Refresh Data'),
-                            style: ElevatedButton.styleFrom(
-                              foregroundColor: Colors.white,
-                              backgroundColor: _darkBlue,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  } else {
-                    return ListView.builder(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12.0,
-                        vertical: 0,
-                      ), // Menyesuaikan padding untuk ListView
-                      itemCount: controller.loginHistory.length,
-                      itemBuilder: (context, index) {
-                        final entry = controller.loginHistory[index];
-                        const bool isSuccess =
-                            true; // Asumsi selalu sukses untuk riwayat login yang tercatat
-
-                        final String? androidVersionFromDeviceName =
-                            _extractAndroidVersion(
-                              entry['device_name'] as String?,
-                            );
-
-                        return Card(
-                          margin: const EdgeInsets.symmetric(vertical: 8.0),
-                          elevation: 6,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18.0),
-                          ),
-                          shadowColor: _darkBlue.withOpacity(0.3),
-                          clipBehavior: Clip.antiAliasWithSaveLayer,
-                          child: Theme(
-                            data: Theme.of(
-                              context,
-                            ).copyWith(dividerColor: Colors.transparent),
-                            child: ExpansionTile(
-                              tilePadding: const EdgeInsets.symmetric(
-                                horizontal: 16.0,
-                                vertical: 10.0,
-                              ),
-                              collapsedBackgroundColor: Colors.white,
-                              backgroundColor: Colors.white,
-                              leading: Container(
-                                padding: const EdgeInsets.all(10.0),
-                                decoration: BoxDecoration(
-                                  color: _darkBlue.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(12.0),
-                                ),
-                                child: Icon(
-                                  _getDeviceIcon(
-                                    entry['device_name'] as String?,
-                                  ),
-                                  color: _darkBlue,
-                                  size: 30,
-                                ),
-                              ),
-                              title: Text(
-                                (androidVersionFromDeviceName != null &&
-                                        entry['device_name'] != null)
-                                    ? (entry['device_name'] as String)
-                                        .replaceFirst(
-                                          ' (Android $androidVersionFromDeviceName)', // Menghapus bagian versi Android
-                                          '',
-                                        )
-                                        .trim()
-                                    : (entry['device_name'] ??
-                                        'Perangkat Tidak Dikenali'),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 17,
-                                  color: _darkBlue,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              subtitle: Text(
-                                _formatTimestamp(entry['timestamp'] as String?),
-                                style: TextStyle(
-                                  color: Colors.grey[700],
-                                  fontSize: 13,
-                                ),
-                              ),
-                              trailing: Icon(
-                                isSuccess
-                                    ? Icons.check_circle_outline
-                                    : Icons.cancel_outlined,
-                                color:
-                                    isSuccess
-                                        ? Colors.green[700]
-                                        : Colors.red[700],
-                                size: 28,
-                              ),
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0,
-                                    vertical: 10.0,
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      // Menampilkan metode login
-                                      _buildLoginMethodWidget(
-                                        entry['method'] as String?,
-                                      ),
-                                      if (entry['ip_address'] != null)
-                                        _buildDetailRow(
-                                          'IP Address',
-                                          entry['ip_address'] as String,
-                                          Ionicons.globe_outline,
-                                        ),
-                                      // Menghapus 'Nama Perangkat' karena diminta untuk dihapus
-                                      // if (entry['device_name'] != null)
-                                      //   _buildDetailRow(
-                                      //       'Nama Perangkat',
-                                      //       entry['device_name'] as String,
-                                      //       Ionicons.hardware_chip_outline),
-                                      if (androidVersionFromDeviceName != null)
-                                        _buildDetailRow(
-                                          'Versi Android',
-                                          androidVersionFromDeviceName,
-                                          Ionicons.logo_android,
-                                        ),
-                                      // Jika bukan Android, tampilkan info OS/Browser jika ada
-                                      if (androidVersionFromDeviceName ==
-                                              null &&
-                                          entry['device_info'] != null) ...[
-                                        // Menambahkan detail OS dan Browser jika ada
-                                        if (_getOSNameFromUserAgent(
-                                                  entry['device_info']
-                                                      as String?,
-                                                ) !=
-                                                'Unknown OS' &&
-                                            _getOSNameFromUserAgent(
-                                                  entry['device_info']
-                                                      as String?,
-                                                ) !=
-                                                'Android')
-                                          _buildDetailRow(
-                                            'Sistem Operasi',
-                                            _getOSNameFromUserAgent(
-                                              entry['device_info'] as String?,
-                                            ),
-                                            Ionicons.information_circle_outline,
-                                          ),
-                                        if (_getOSVersionFromUserAgent(
-                                              entry['device_info'] as String?,
-                                            ) !=
-                                            'Unknown Version')
-                                          _buildDetailRow(
-                                            'Versi OS',
-                                            _getOSVersionFromUserAgent(
-                                              entry['device_info'] as String?,
-                                            ),
-                                            Ionicons.cube_outline,
-                                          ),
-                                        if (_getBrowserNameFromUserAgent(
-                                              entry['device_info'] as String?,
-                                            ) !=
-                                            'Unknown Browser')
-                                          _buildDetailRow(
-                                            'Browser',
-                                            _getBrowserNameFromUserAgent(
-                                              entry['device_info'] as String?,
-                                            ),
-                                            Ionicons.browsers_outline,
-                                          ),
-                                        if (_getBrowserVersionFromUserAgent(
-                                              entry['device_info'] as String?,
-                                            ) !=
-                                            'Unknown Version')
-                                          _buildDetailRow(
-                                            'Versi Browser',
-                                            _getBrowserVersionFromUserAgent(
-                                              entry['device_info'] as String?,
-                                            ),
-                                            Ionicons.git_branch_outline,
-                                          ),
-                                      ],
-                                      if (entry['location'] != null)
-                                        _buildDetailRow(
-                                          'Lokasi',
-                                          entry['location'] as String,
-                                          Ionicons.location_outline,
-                                        ),
-                                      // Menghapus 'User Agent (Lengkap)' karena diminta untuk dihapus
-                                      // if (entry['device_info'] != null)
-                                      //   _buildDetailRow(
-                                      //       'User Agent (Lengkap)',
-                                      //       entry['device_info'] as String, // Gunakan device_info untuk User Agent mentah
-                                      //       Ionicons.text_outline),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  }
-                }),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // Fungsi helper untuk membuat baris detail dengan label, nilai, dan ikon
-  Widget _buildDetailRow(String label, String value, IconData icon) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        vertical: 4.0,
-      ), // Padding vertikal untuk pemisah antar baris
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, size: 18, color: Colors.grey[600]),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '$label:',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
-                    color: Colors.grey[800],
-                  ),
-                ),
-                Text(
-                  value,
-                  style: TextStyle(fontSize: 13, color: Colors.grey[700]),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Widget baru untuk menampilkan metode login dengan ikonnya
-  Widget _buildLoginMethodWidget(String? method) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Icon(_getLoginMethodIcon(method), size: 20, color: _darkBlue),
-          const SizedBox(width: 10),
-          Text(
-            _formatLoginMethodName(method),
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-              color: _darkBlue,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   // Fungsi untuk mengekstrak nama OS dari user agent
   String _getOSNameFromUserAgent(String? userAgent) {
     if (userAgent == null) return 'Unknown OS';
@@ -531,7 +134,6 @@ class HistoryLoginView extends GetView<HistoryLoginController> {
         if (version == '6.3') return '8.1';
         if (version == '6.2') return '8';
         if (version == '6.1') return '7';
-        // Add more mappings if needed
         return version;
       }
     }
@@ -542,7 +144,6 @@ class HistoryLoginView extends GetView<HistoryLoginController> {
         return match.group(1)!.replaceAll('_', '.');
     }
     if (userAgent.contains('Linux')) {
-      // Linux version is often harder to pinpoint from User-Agent alone
       return 'Linux Kernel';
     }
     return 'Unknown Version';
@@ -601,5 +202,452 @@ class HistoryLoginView extends GetView<HistoryLoginController> {
       if (match != null && match.groupCount >= 1) return match.group(1)!;
     }
     return 'Unknown Version';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Determine if dark mode is active based on system brightness
+    final isDarkMode =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
+
+    // Warna biru tua kustom yang akan kita gunakan
+    // Sesuaikan warna untuk mode gelap jika diperlukan
+    final Color _darkBlue =
+        isDarkMode
+            ? const Color(0xFFBBDEFB)
+            : const Color(
+              0xFF1A237E,
+            ); // Light blue for dark, dark blue for light
+    final Color _scaffoldBackgroundColor =
+        isDarkMode ? Colors.black : Colors.white;
+    final Color _cardBackgroundColor =
+        isDarkMode
+            ? const Color(0xFF212121)
+            : Colors.white; // Darker grey for cards in dark mode
+    final Color _textColor =
+        isDarkMode
+            ? Colors.white70
+            : Colors.grey[800]!; // Lighter text for dark mode
+    final Color _subtitleColor =
+        isDarkMode
+            ? Colors.grey[400]!
+            : Colors.grey[700]!; // Lighter grey for subtitle in dark mode
+
+    return Scaffold(
+      backgroundColor:
+          _scaffoldBackgroundColor, // Menggunakan warna latar belakang yang adaptif
+      body: ClipRRect(
+        // Menerapkan lengkungan di sudut atas body
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(24), // Radius lengkungan yang konsisten
+          topRight: Radius.circular(24), // Radius lengkungan yang konsisten
+        ),
+        child: SafeArea(
+          // Menjaga area aman dari status bar
+          child: Column(
+            // Menggunakan Column untuk menata header kustom dan konten utama
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header Kustom
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  20,
+                  20,
+                  20,
+                  16,
+                ), // Padding untuk header
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        IconButton(
+                          // Menggunakan IconButton untuk ikon kembali
+                          icon: Icon(
+                            Icons.arrow_back,
+                            color: _darkBlue,
+                          ), // Ikon kembali juga adaptif
+                          iconSize: 28,
+                          onPressed:
+                              () =>
+                                  Get.back(), // Fungsi untuk kembali ke halaman sebelumnya
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          'Riwayat Login',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: _darkBlue, // Judul juga adaptif
+                          ),
+                        ),
+                      ],
+                    ),
+                    // Anda bisa menambahkan ikon lain di sini jika diperlukan, misalnya ikon pengaturan
+                    // const Icon(Ionicons.settings_outline, color: _darkBlue),
+                  ],
+                ),
+              ),
+              Expanded(
+                // Memastikan ListView mengambil sisa ruang yang tersedia
+                child: Obx(() {
+                  if (controller.isLoading.value) {
+                    return Center(
+                      child: CircularProgressIndicator(color: _darkBlue),
+                    );
+                  } else if (controller.errorMessage.isNotEmpty) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.error_outline,
+                              color: Colors.red[700],
+                              size: 50,
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              'Terjadi kesalahan: ${controller.errorMessage.value}',
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.red,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            ElevatedButton.icon(
+                              onPressed: () => controller.fetchLoginHistory(),
+                              icon: const Icon(Icons.refresh),
+                              label: const Text('Coba Lagi'),
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor:
+                                    Colors.white, // Teks tombol putih
+                                backgroundColor:
+                                    _darkBlue, // Warna tombol adaptif
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  } else if (controller.loginHistory.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Ionicons.hourglass_outline,
+                            color: Colors.grey[400],
+                            size: 60,
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            'Tidak ada riwayat login ditemukan.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: _subtitleColor,
+                            ), // Warna teks adaptif
+                          ),
+                          const SizedBox(height: 20),
+                          ElevatedButton.icon(
+                            onPressed: () => controller.fetchLoginHistory(),
+                            icon: const Icon(Icons.refresh),
+                            label: const Text('Refresh Data'),
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor:
+                                  Colors.white, // Teks tombol putih
+                              backgroundColor:
+                                  _darkBlue, // Warna tombol adaptif
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  } else {
+                    return ListView.builder(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12.0,
+                        vertical: 0,
+                      ), // Menyesuaikan padding untuk ListView
+                      itemCount: controller.loginHistory.length,
+                      itemBuilder: (context, index) {
+                        final entry = controller.loginHistory[index];
+                        const bool isSuccess =
+                            true; // Asumsi selalu sukses untuk riwayat login yang tercatat
+
+                        final String? androidVersionFromDeviceName =
+                            _extractAndroidVersion(
+                              entry['device_name'] as String?,
+                            );
+
+                        return Card(
+                          margin: const EdgeInsets.symmetric(vertical: 8.0),
+                          elevation: 6,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18.0),
+                          ),
+                          shadowColor: _darkBlue.withOpacity(0.3),
+                          clipBehavior: Clip.antiAliasWithSaveLayer,
+                          child: Theme(
+                            data: Theme.of(context).copyWith(
+                              dividerColor: Colors.transparent,
+                            ), // Menghilangkan divider
+                            child: ExpansionTile(
+                              tilePadding: const EdgeInsets.symmetric(
+                                horizontal: 16.0,
+                                vertical: 10.0,
+                              ),
+                              collapsedBackgroundColor:
+                                  _cardBackgroundColor, // Warna latar belakang kartu adaptif
+                              backgroundColor:
+                                  _cardBackgroundColor, // Warna latar belakang kartu adaptif
+                              leading: Container(
+                                padding: const EdgeInsets.all(10.0),
+                                decoration: BoxDecoration(
+                                  color: _darkBlue.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(12.0),
+                                ),
+                                child: Icon(
+                                  _getDeviceIcon(
+                                    entry['device_name'] as String?,
+                                  ),
+                                  color: _darkBlue, // Ikon perangkat adaptif
+                                  size: 30,
+                                ),
+                              ),
+                              title: Text(
+                                (androidVersionFromDeviceName != null &&
+                                        entry['device_name'] != null)
+                                    ? (entry['device_name'] as String)
+                                        .replaceFirst(
+                                          ' (Android $androidVersionFromDeviceName)', // Menghapus bagian versi Android
+                                          '',
+                                        )
+                                        .trim()
+                                    : (entry['device_name'] ??
+                                        'Perangkat Tidak Dikenali'),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 17,
+                                  color: _darkBlue, // Teks judul adaptif
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              subtitle: Text(
+                                _formatTimestamp(entry['timestamp'] as String?),
+                                style: TextStyle(
+                                  color:
+                                      _subtitleColor, // Teks subjudul adaptif
+                                  fontSize: 13,
+                                ),
+                              ),
+                              trailing: Icon(
+                                isSuccess
+                                    ? Icons.check_circle_outline
+                                    : Icons.cancel_outlined,
+                                color:
+                                    isSuccess
+                                        ? Colors.green[700]
+                                        : Colors.red[700],
+                                size: 28,
+                              ),
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0,
+                                    vertical: 10.0,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      // Menampilkan metode login
+                                      _buildLoginMethodWidget(
+                                        entry['method'] as String?,
+                                        _darkBlue,
+                                      ), // Warna teks adaptif
+                                      if (entry['ip_address'] != null)
+                                        _buildDetailRow(
+                                          'IP Address',
+                                          entry['ip_address'] as String,
+                                          Ionicons.globe_outline,
+                                          _textColor,
+                                          _subtitleColor,
+                                        ), // Warna teks adaptif
+                                      if (androidVersionFromDeviceName != null)
+                                        _buildDetailRow(
+                                          'Versi Android',
+                                          androidVersionFromDeviceName,
+                                          Ionicons.logo_android,
+                                          _textColor,
+                                          _subtitleColor,
+                                        ), // Warna teks adaptif
+                                      if (androidVersionFromDeviceName ==
+                                              null &&
+                                          entry['device_info'] != null) ...[
+                                        if (_getOSNameFromUserAgent(
+                                                  entry['device_info']
+                                                      as String?,
+                                                ) !=
+                                                'Unknown OS' &&
+                                            _getOSNameFromUserAgent(
+                                                  entry['device_info']
+                                                      as String?,
+                                                ) !=
+                                                'Android')
+                                          _buildDetailRow(
+                                            'Sistem Operasi',
+                                            _getOSNameFromUserAgent(
+                                              entry['device_info'] as String?,
+                                            ),
+                                            Ionicons.information_circle_outline,
+                                            _textColor,
+                                            _subtitleColor,
+                                          ), // Warna teks adaptif
+                                        if (_getOSVersionFromUserAgent(
+                                              entry['device_info'] as String?,
+                                            ) !=
+                                            'Unknown Version')
+                                          _buildDetailRow(
+                                            'Versi OS',
+                                            _getOSVersionFromUserAgent(
+                                              entry['device_info'] as String?,
+                                            ),
+                                            Ionicons.cube_outline,
+                                            _textColor,
+                                            _subtitleColor,
+                                          ), // Warna teks adaptif
+                                        if (_getBrowserNameFromUserAgent(
+                                              entry['device_info'] as String?,
+                                            ) !=
+                                            'Unknown Browser')
+                                          _buildDetailRow(
+                                            'Browser',
+                                            _getBrowserNameFromUserAgent(
+                                              entry['device_info'] as String?,
+                                            ),
+                                            Ionicons.browsers_outline,
+                                            _textColor,
+                                            _subtitleColor,
+                                          ), // Warna teks adaptif
+                                        if (_getBrowserVersionFromUserAgent(
+                                              entry['device_info'] as String?,
+                                            ) !=
+                                            'Unknown Version')
+                                          _buildDetailRow(
+                                            'Versi Browser',
+                                            _getBrowserVersionFromUserAgent(
+                                              entry['device_info'] as String?,
+                                            ),
+                                            Ionicons.git_branch_outline,
+                                            _textColor,
+                                            _subtitleColor,
+                                          ), // Warna teks adaptif
+                                      ],
+                                      if (entry['location'] != null)
+                                        _buildDetailRow(
+                                          'Lokasi',
+                                          entry['location'] as String,
+                                          Ionicons.location_outline,
+                                          _textColor,
+                                          _subtitleColor,
+                                        ), // Warna teks adaptif
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }
+                }),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Fungsi helper untuk membuat baris detail dengan label, nilai, dan ikon
+  Widget _buildDetailRow(
+    String label,
+    String value,
+    IconData icon,
+    Color labelColor,
+    Color valueColor,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        vertical: 4.0,
+      ), // Padding vertikal untuk pemisah antar baris
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 18, color: valueColor), // Warna ikon adaptif
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '$label:',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                    color: labelColor, // Warna label adaptif
+                  ),
+                ),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: valueColor,
+                  ), // Warna nilai adaptif
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Widget baru untuk menampilkan metode login dengan ikonnya
+  Widget _buildLoginMethodWidget(String? method, Color color) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(
+            _getLoginMethodIcon(method),
+            size: 20,
+            color: color,
+          ), // Warna ikon adaptif
+          const SizedBox(width: 10),
+          Text(
+            _formatLoginMethodName(method),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+              color: color, // Warna teks adaptif
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

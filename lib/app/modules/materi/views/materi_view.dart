@@ -14,16 +14,49 @@ class MateriView extends GetView<MateriController> {
   Widget build(BuildContext context) {
     Get.put(MateriController()); // Inisialisasi controller
 
-    // Definisikan skema warna utama
-    final Color primaryColor = Colors.blue.shade700;
-    final Color secondaryColor = Colors.blue.shade50;
-    final Color accentColor = Colors.pink.shade400; // Warna aksen untuk YouTube
-    final Color textColor = Colors.grey.shade800;
-    final Color subtleTextColor = Colors.grey.shade600;
-    final Color backgroundColor = const Color(
-      0xFFF0F4F8,
-    ); // Latar belakang lebih sejuk
-    final Color cardBackgroundColor = Colors.white;
+    // Determine if dark mode is active based on system brightness
+    final isDarkMode =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
+
+    // Define dynamic color scheme
+    final Color primaryColor =
+        isDarkMode ? Colors.blue.shade300 : Colors.blue.shade700;
+    final Color secondaryColor =
+        isDarkMode ? Colors.blue.shade900 : Colors.blue.shade50;
+    final Color accentColor =
+        Colors.pink.shade400; // YouTube red/pink generally stays consistent
+    final Color textColor =
+        isDarkMode ? Colors.grey.shade100 : Colors.grey.shade800;
+    final Color subtleTextColor =
+        isDarkMode ? Colors.grey.shade400 : Colors.grey.shade600;
+    final Color backgroundColor =
+        isDarkMode
+            ? const Color(0xFF121212)
+            : const Color(0xFFF0F4F8); // Dark background for dark mode
+    final Color cardBackgroundColor =
+        isDarkMode
+            ? const Color(0xFF1E1E1E)
+            : Colors.white; // Darker surface for dark mode
+    final Color appBarColor =
+        isDarkMode
+            ? const Color(0xFF1F1F1F)
+            : primaryColor; // Dark AppBar for dark mode
+    final Color appBarContentColor =
+        isDarkMode
+            ? Colors.white
+            : Colors.white; // White title/icons for both app bars (dark/light)
+    final Color shadowColor =
+        isDarkMode
+            ? Colors.black.withOpacity(0.5)
+            : Colors.grey.withOpacity(0.1);
+    final Color cardShadowColor =
+        isDarkMode
+            ? Colors.black.withOpacity(0.4)
+            : Colors.grey.withOpacity(0.06);
+    final Color borderCardColor =
+        isDarkMode
+            ? Colors.grey.shade800.withOpacity(0.7)
+            : Colors.grey.shade200.withOpacity(0.7);
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -33,17 +66,17 @@ class MateriView extends GetView<MateriController> {
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 22, // Sedikit lebih besar
-            color: Colors.white, // Mengubah warna teks judul menjadi putih
+            color:
+                appBarContentColor, // Mengubah warna teks judul menjadi putih
           ),
         ),
         centerTitle: true,
         backgroundColor:
-            primaryColor, // Mengubah warna app bar menjadi primaryColor (biru)
+            appBarColor, // Mengubah warna app bar menjadi primaryColor (biru)
         foregroundColor:
-            Colors
-                .white, // Mengubah warna ikon dan teks default di app bar menjadi putih
+            appBarContentColor, // Mengubah warna ikon dan teks default di app bar menjadi putih
         elevation: 1.0, // Bayangan lebih halus
-        shadowColor: Colors.grey.withOpacity(0.2),
+        shadowColor: shadowColor,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
             bottom: Radius.circular(16), // Radius lebih besar
@@ -68,7 +101,7 @@ class MateriView extends GetView<MateriController> {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.grey.withOpacity(0.1),
+                            color: shadowColor,
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -82,18 +115,6 @@ class MateriView extends GetView<MateriController> {
                           hintStyle: TextStyle(
                             color: subtleTextColor.withOpacity(0.8),
                           ),
-                          // Bagian prefixIcon ini dihapus/dikomentari
-                          // prefixIcon: Padding(
-                          //   padding: const EdgeInsets.only(
-                          //     left: 16.0,
-                          //     right: 12.0,
-                          //   ),
-                          //   child: Icon(
-                          //     Ionicons.search_circle_outline,
-                          //     color: primaryColor,
-                          //     size: 26,
-                          //   ),
-                          // ),
                           filled: false, // fillColor diatur oleh Container
                           contentPadding: const EdgeInsets.symmetric(
                             vertical: 16,
@@ -160,14 +181,21 @@ class MateriView extends GetView<MateriController> {
                     controller,
                     primaryColor,
                     cardBackgroundColor,
+                    textColor,
+                    isDarkMode, // Pass isDarkMode to error state
                   );
                 } else if (controller.materiList.isEmpty) {
-                  return _buildEmptyState(subtleTextColor, cardBackgroundColor);
+                  return _buildEmptyState(
+                    subtleTextColor,
+                    cardBackgroundColor,
+                    isDarkMode,
+                  );
                 } else {
                   return RefreshIndicator(
                     onRefresh: () => controller.refreshMateri(),
                     color: primaryColor,
-                    backgroundColor: cardBackgroundColor,
+                    backgroundColor:
+                        cardBackgroundColor, // Adapt refresh indicator background
                     child: ListView.builder(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 20,
@@ -195,6 +223,9 @@ class MateriView extends GetView<MateriController> {
                           textColor,
                           subtleTextColor,
                           cardBackgroundColor,
+                          cardShadowColor,
+                          borderCardColor,
+                          isDarkMode, // Pass isDarkMode to materi card
                         );
                       },
                     ),
@@ -213,6 +244,8 @@ class MateriView extends GetView<MateriController> {
     MateriController controller,
     Color primaryColor,
     Color cardBackgroundColor,
+    Color textColor,
+    bool isDarkMode, // Added isDarkMode
   ) {
     return Center(
       child: Container(
@@ -223,7 +256,12 @@ class MateriView extends GetView<MateriController> {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.red.withOpacity(0.1),
+              color:
+                  isDarkMode
+                      ? Colors.red.withOpacity(0.3)
+                      : Colors.red.withOpacity(
+                        0.1,
+                      ), // Darker shadow in dark mode
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -236,13 +274,19 @@ class MateriView extends GetView<MateriController> {
             Icon(
               Ionicons.alert_circle_outline,
               size: 70,
-              color: Colors.red.shade400,
+              color:
+                  isDarkMode
+                      ? Colors.red.shade300
+                      : Colors.red.shade400, // Adapt icon color
             ),
             const SizedBox(height: 20),
             Text(
               "Oops! Terjadi Kesalahan",
               style: TextStyle(
-                color: Colors.red.shade700,
+                color:
+                    isDarkMode
+                        ? Colors.red.shade200
+                        : Colors.red.shade700, // Adapt text color
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
@@ -251,7 +295,10 @@ class MateriView extends GetView<MateriController> {
             Text(
               controller.errorMessage.value,
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.red.shade600, fontSize: 15),
+              style: TextStyle(
+                color: isDarkMode ? Colors.red.shade300 : Colors.red.shade600,
+                fontSize: 15,
+              ), // Adapt text color
             ),
             const SizedBox(height: 24),
             ElevatedButton.icon(
@@ -277,7 +324,11 @@ class MateriView extends GetView<MateriController> {
   }
 
   // Helper widget untuk tampilan kosong
-  Widget _buildEmptyState(Color subtleTextColor, Color cardBackgroundColor) {
+  Widget _buildEmptyState(
+    Color subtleTextColor,
+    Color cardBackgroundColor,
+    bool isDarkMode,
+  ) {
     return Center(
       child: Container(
         margin: const EdgeInsets.all(20.0),
@@ -287,7 +338,12 @@ class MateriView extends GetView<MateriController> {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.08),
+              color:
+                  isDarkMode
+                      ? Colors.grey.withOpacity(0.2)
+                      : Colors.grey.withOpacity(
+                        0.08,
+                      ), // Darker shadow in dark mode
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -340,6 +396,9 @@ class MateriView extends GetView<MateriController> {
     Color textColor,
     Color subtleTextColor,
     Color cardBackgroundColor,
+    Color cardShadowColor, // Added dynamic shadow color
+    Color borderCardColor, // Added dynamic border color
+    bool isDarkMode, // Added isDarkMode
   ) {
     return Card(
       color: cardBackgroundColor,
@@ -386,7 +445,9 @@ class MateriView extends GetView<MateriController> {
               'Info',
               'Navigasi ke detail materi ini belum tersedia.',
               snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: primaryColor.withOpacity(0.9),
+              backgroundColor: primaryColor.withOpacity(
+                0.9,
+              ), // Use dynamic primary color
               colorText: Colors.white,
               borderRadius: 12,
               margin: const EdgeInsets.all(12),
@@ -413,15 +474,15 @@ class MateriView extends GetView<MateriController> {
         child: Container(
           // Tambahkan Container untuk bayangan dan border yang lebih baik
           decoration: BoxDecoration(
-            color: cardBackgroundColor,
+            color: cardBackgroundColor, // Use dynamic background color
             borderRadius: BorderRadius.circular(18.0),
             border: Border.all(
-              color: Colors.grey.shade200.withOpacity(0.7),
+              color: borderCardColor, // Use dynamic border color
               width: 0.8,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.06), // Bayangan lebih halus
+                color: cardShadowColor, // Use dynamic shadow color
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
@@ -440,7 +501,9 @@ class MateriView extends GetView<MateriController> {
                     color:
                         isYoutube
                             ? accentColor.withOpacity(0.1)
-                            : secondaryColor,
+                            : (isDarkMode
+                                ? secondaryColor.withOpacity(0.2)
+                                : secondaryColor), // Adapt secondary color for dark mode
                     borderRadius: BorderRadius.circular(
                       16,
                     ), // Radius lebih besar
@@ -449,7 +512,10 @@ class MateriView extends GetView<MateriController> {
                     isYoutube
                         ? Ionicons.logo_youtube
                         : Ionicons.document_text_outline,
-                    color: isYoutube ? accentColor : primaryColor,
+                    color:
+                        isYoutube
+                            ? accentColor
+                            : primaryColor, // Use dynamic primary color for document icon
                     size: 38, // Ukuran ikon tetap
                   ),
                 ),
@@ -465,7 +531,7 @@ class MateriView extends GetView<MateriController> {
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 17, // Sedikit lebih besar
-                          color: textColor,
+                          color: textColor, // Use dynamic text color
                           height: 1.35, // Jarak antar baris
                         ),
                         maxLines: 2,
@@ -482,7 +548,9 @@ class MateriView extends GetView<MateriController> {
                             color:
                                 isYoutube
                                     ? accentColor.withOpacity(0.8)
-                                    : primaryColor.withOpacity(0.7),
+                                    : primaryColor.withOpacity(
+                                      0.7,
+                                    ), // Use dynamic primary color
                           ),
                           const SizedBox(width: 6),
                           Text(
@@ -492,7 +560,9 @@ class MateriView extends GetView<MateriController> {
                               color:
                                   isYoutube
                                       ? accentColor.withOpacity(0.9)
-                                      : primaryColor.withOpacity(0.8),
+                                      : primaryColor.withOpacity(
+                                        0.8,
+                                      ), // Use dynamic primary color
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -506,7 +576,9 @@ class MateriView extends GetView<MateriController> {
                   padding: const EdgeInsets.only(left: 8.0),
                   child: Icon(
                     Ionicons.chevron_forward_outline,
-                    color: subtleTextColor.withOpacity(0.6),
+                    color: subtleTextColor.withOpacity(
+                      0.6,
+                    ), // Use dynamic subtle text color
                     size: 22,
                   ),
                 ),

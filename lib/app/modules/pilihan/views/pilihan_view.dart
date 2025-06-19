@@ -39,7 +39,7 @@ class PilihanView extends GetView<PilihanController> {
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      'Mulai Perjalananmu\nDengan SMART SMASH',
+                      'Mulai Perjalananmu\nDengan HARCIMOTION',
                       textAlign: TextAlign.center,
                       style: GoogleFonts.poppins(
                         fontSize: 28,

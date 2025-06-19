@@ -6,15 +6,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:smartsmashapp/app/data/service/api_service.dart';
 
 class LoginController extends GetxController {
-  // TextEditingController TIDAK LAGI dideklarasikan di sini.
-  // Mereka akan dikelola di LoginView (StatefulWidget).
-
   // Observable variables untuk UI state
   final isLoading = false.obs;
   final errorMessage = ''.obs;
   final isPasswordVisible = false.obs;
   final isButtonEnabled =
       false.obs; // Digunakan untuk mengaktifkan/menonaktifkan tombol login
+  final isLoadingOverlay =
+      false.obs; // NEW: Untuk mengontrol visibilitas overlay loading
 
   // Integrasi Google Sign-In dan Firebase Auth
   final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
@@ -26,12 +25,10 @@ class LoginController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // Listener untuk TextEditingController akan ditangani di LoginView.
   }
 
   @override
   void onClose() {
-    // TextEditingController TIDAK LAGI perlu dibuang di sini karena sudah tidak ada di controller ini.
     super.onClose(); // Selalu panggil super.onClose() terakhir
   }
 
@@ -47,7 +44,6 @@ class LoginController extends GetxController {
     final bool isValidEmail = GetUtils.isEmail(email.trim());
     final bool isPasswordNotEmpty = password.trim().isNotEmpty;
     isButtonEnabled.value = isValidEmail && isPasswordNotEmpty;
-    // errorMessage tidak perlu di-clear di sini, akan di-clear di awal fungsi login
   }
 
   /// Menampilkan notifikasi pop-up di tengah layar dengan pesan kustom dan tampilan yang dipercantik
@@ -124,6 +120,7 @@ class LoginController extends GetxController {
   /// Menerima email dan password sebagai parameter dari View
   Future<void> login({required String email, required String password}) async {
     isLoading.value = true;
+    isLoadingOverlay.value = true; // NEW: Aktifkan overlay loading
     errorMessage.value = ''; // Hapus pesan error sebelumnya
 
     // Validasi input di awal
@@ -136,6 +133,8 @@ class LoginController extends GetxController {
         icon: Icons.warning_amber_rounded,
       );
       isLoading.value = false;
+      isLoadingOverlay.value =
+          false; // NEW: Sembunyikan overlay jika validasi gagal
       return;
     }
     if (password.trim().isEmpty) {
@@ -147,6 +146,8 @@ class LoginController extends GetxController {
         icon: Icons.warning_amber_rounded,
       );
       isLoading.value = false;
+      isLoadingOverlay.value =
+          false; // NEW: Sembunyikan overlay jika validasi gagal
       return;
     }
 
@@ -249,12 +250,15 @@ class LoginController extends GetxController {
       );
     } finally {
       isLoading.value = false;
+      isLoadingOverlay.value =
+          false; // NEW: Sembunyikan overlay di akhir proses
     }
   }
 
   /// **Fungsi Login dengan Google**
   Future<void> loginWithGoogle() async {
     isLoading.value = true;
+    isLoadingOverlay.value = true; // NEW: Aktifkan overlay loading
     errorMessage.value = ''; // Hapus pesan error sebelumnya
 
     try {
@@ -262,6 +266,8 @@ class LoginController extends GetxController {
       if (googleUser == null) {
         // Pengguna membatalkan proses login Google
         isLoading.value = false;
+        isLoadingOverlay.value =
+            false; // NEW: Sembunyikan overlay jika dibatalkan
         return;
       }
 
@@ -282,6 +288,7 @@ class LoginController extends GetxController {
           icon: Icons.person_off_outlined,
         );
         isLoading.value = false;
+        isLoadingOverlay.value = false; // NEW: Sembunyikan overlay jika gagal
         return;
       }
 
@@ -294,6 +301,7 @@ class LoginController extends GetxController {
           icon: Icons.vpn_key_off_outlined,
         );
         isLoading.value = false;
+        isLoadingOverlay.value = false; // NEW: Sembunyikan overlay jika gagal
         return;
       }
 
@@ -312,6 +320,7 @@ class LoginController extends GetxController {
             icon: Icons.error_outline,
           );
           isLoading.value = false;
+          isLoadingOverlay.value = false; // NEW: Sembunyikan overlay jika gagal
           return;
         }
 
@@ -382,6 +391,8 @@ class LoginController extends GetxController {
       await _auth.signOut();
     } finally {
       isLoading.value = false;
+      isLoadingOverlay.value =
+          false; // NEW: Sembunyikan overlay di akhir proses
     }
   }
 
