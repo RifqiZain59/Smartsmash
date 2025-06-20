@@ -12,8 +12,18 @@ import '../modules/berita/bindings/berita_binding.dart';
 import '../modules/berita/views/berita_view.dart';
 import '../modules/camera/bindings/camera_binding.dart';
 import '../modules/camera/views/camera_view.dart';
+import '../modules/camera_backhand/bindings/camera_backhand_binding.dart';
+import '../modules/camera_backhand/views/camera_backhand_view.dart';
 import '../modules/chatdengankami/bindings/chatdengankami_binding.dart';
 import '../modules/chatdengankami/views/chatdengankami_view.dart';
+import '../modules/detail_backhand/bindings/detail_backhand_binding.dart';
+import '../modules/detail_backhand/views/detail_backhand_view.dart';
+import '../modules/detail_forehand/bindings/detail_forehand_binding.dart';
+import '../modules/detail_forehand/views/detail_forehand_view.dart';
+import '../modules/detail_serve/bindings/detail_serve_binding.dart';
+import '../modules/detail_serve/views/detail_serve_view.dart';
+import '../modules/detail_smash/bindings/detail_smash_binding.dart';
+import '../modules/detail_smash/views/detail_smash_view.dart';
 import '../modules/forgot_password/bindings/forgot_password_binding.dart';
 import '../modules/forgot_password/views/forgot_password_view.dart';
 import '../modules/grafik/bindings/grafik_binding.dart';
@@ -155,6 +165,31 @@ class AppPages {
       name: _Paths.HISTORY_LOGIN,
       page: () => const HistoryLoginView(),
       binding: HistoryLoginBinding(),
+    ),
+    GetPage(
+      name: _Paths.DETAIL_FOREHAND,
+      page: () => const DetailForehandView(),
+      binding: DetailForehandBinding(),
+    ),
+    GetPage(
+      name: _Paths.DETAIL_BACKHAND,
+      page: () => const DetailBackhandView(),
+      binding: DetailBackhandBinding(),
+    ),
+    GetPage(
+      name: _Paths.DETAIL_SERVE,
+      page: () => const DetailServeView(),
+      binding: DetailServeBinding(),
+    ),
+    GetPage(
+      name: _Paths.DETAIL_SMASH,
+      page: () => const DetailSmashView(),
+      binding: DetailSmashBinding(),
+    ),
+    GetPage(
+      name: _Paths.CAMERA_BACKHAND,
+      page: () => const CameraBackhandView(),
+      binding: CameraBackhandBinding(),
     ),
   ];
 }

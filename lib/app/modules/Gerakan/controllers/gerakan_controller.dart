@@ -20,4 +20,21 @@ class GerakanController extends GetxController {
   }
 
   void increment() => count.value++;
+
+  // Methods to navigate to specific detail pages
+  void goToDetailForehand() {
+    Get.toNamed('/detail-forehand');
+  }
+
+  void goToDetailBackhand() {
+    Get.toNamed('/detail-backhand');
+  }
+
+  void goToDetailServe() {
+    Get.toNamed('/detail-serve');
+  }
+
+  void goToDetailSmash() {
+    Get.toNamed('/detail-smash');
+  }
 }

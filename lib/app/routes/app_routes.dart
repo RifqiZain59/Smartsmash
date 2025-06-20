@@ -25,6 +25,11 @@ abstract class Routes {
   static const PUSAT_BANTUAN = _Paths.PUSAT_BANTUAN;
   static const CHATDENGANKAMI = _Paths.CHATDENGANKAMI;
   static const HISTORY_LOGIN = _Paths.HISTORY_LOGIN;
+  static const DETAIL_FOREHAND = _Paths.DETAIL_FOREHAND;
+  static const DETAIL_BACKHAND = _Paths.DETAIL_BACKHAND;
+  static const DETAIL_SERVE = _Paths.DETAIL_SERVE;
+  static const DETAIL_SMASH = _Paths.DETAIL_SMASH;
+  static const CAMERA_BACKHAND = _Paths.CAMERA_BACKHAND;
 }
 
 abstract class _Paths {
@@ -51,4 +56,9 @@ abstract class _Paths {
   static const PUSAT_BANTUAN = '/pusat-bantuan';
   static const CHATDENGANKAMI = '/chatdengankami';
   static const HISTORY_LOGIN = '/history-login';
+  static const DETAIL_FOREHAND = '/detail-forehand';
+  static const DETAIL_BACKHAND = '/detail-backhand';
+  static const DETAIL_SERVE = '/detail-serve';
+  static const DETAIL_SMASH = '/detail-smash';
+  static const CAMERA_BACKHAND = '/camera-backhand';
 }
