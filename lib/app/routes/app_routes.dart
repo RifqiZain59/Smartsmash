@@ -30,6 +30,7 @@ abstract class Routes {
   static const DETAIL_SERVE = _Paths.DETAIL_SERVE;
   static const DETAIL_SMASH = _Paths.DETAIL_SMASH;
   static const CAMERA_BACKHAND = _Paths.CAMERA_BACKHAND;
+  static const HAPUS_DATA = _Paths.HAPUS_DATA;
 }
 
 abstract class _Paths {
@@ -61,4 +62,5 @@ abstract class _Paths {
   static const DETAIL_SERVE = '/detail-serve';
   static const DETAIL_SMASH = '/detail-smash';
   static const CAMERA_BACKHAND = '/camera-backhand';
+  static const HAPUS_DATA = '/hapus-data';
 }

@@ -1,14 +1,13 @@
+import 'package:flutter/material.dart'; // Import ini sudah ada dan dipastikan ada
 import 'package:get/get.dart';
-import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
-
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:smartsmashapp/app/data/service/api_service.dart';
 import 'package:smartsmashapp/app/modules/camera/views/camera_view.dart';
 import 'package:smartsmashapp/app/modules/grafik/views/grafik_view.dart';
 import 'package:smartsmashapp/app/modules/home/views/home_view.dart';
 import 'package:smartsmashapp/app/modules/materi/views/materi_view.dart';
 import 'package:smartsmashapp/app/modules/profile/views/profile_view.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 
 class HomeController extends GetxController {
   // Index navigasi BottomNavigationBar
@@ -16,6 +15,33 @@ class HomeController extends GetxController {
 
   // Nama user untuk ditampilkan di UI
   final RxString namaUser = 'User'.obs;
+
+  // Observable untuk daftar pelatih
+  // pelatihList saat ini tidak lagi digunakan secara langsung untuk tampilan,
+  // melainkan untuk debugging atau jika diperlukan kembali di masa depan.
+  final RxList<Map<String, dynamic>> pelatihList = <Map<String, dynamic>>[].obs;
+
+  // Observable untuk status loading pelatih
+  final RxBool isLoadingPelatih = true.obs;
+  // Observable untuk pesan error pelatih
+  final RxString errorMessagePelatih = ''.obs;
+
+  // List internal untuk menyimpan semua data pelatih yang diambil dari API (tidak difilter)
+  // Ini adalah sumber data utama sebelum difilter.
+  List<Map<String, dynamic>> _allPelatihList = [];
+
+  // Observable untuk query pencarian
+  // Nilai ini diubah oleh TextField di HomeView dan memicu pemfilteran.
+  final RxString searchQuery = ''.obs;
+
+  // Observable untuk daftar pelatih yang difilter
+  // List ini yang akan ditampilkan di UI HomeView.
+  final RxList<Map<String, dynamic>> filteredPelatihList =
+      <Map<String, dynamic>>[].obs;
+
+  // TextEditingController untuk mengelola input teks pada search box di HomeView.
+  // Dikelola di sini untuk memastikan siklus hidup yang benar dengan GetX.
+  final TextEditingController searchInputController = TextEditingController();
 
   // Item navigasi bawah (ikon & label)
   final List<Map<String, dynamic>> navItems = [
@@ -34,7 +60,7 @@ class HomeController extends GetxController {
     },
   ];
 
-  // Daftar halaman untuk setiap tab
+  // Daftar halaman untuk setiap tab BottomNavigationBar
   final List<Widget> pages = [
     const HomeView(),
     const GrafikView(),
@@ -43,7 +69,7 @@ class HomeController extends GetxController {
     ProfileView(),
   ];
 
-  // Mengubah tab yang dipilih
+  // Mengubah tab yang dipilih di BottomNavigationBar
   void changePage(int index) {
     if (index >= 0 && index < pages.length) {
       selectedIndex.value = index;
@@ -55,47 +81,29 @@ class HomeController extends GetxController {
   // Ambil data user dari backend dan set namaUser
   Future<void> fetchUser() async {
     try {
-      final profile = await ApiService.getProfile();
+      final result = await ApiService.getProfile();
 
-      debugPrint('✅ Full profile response: $profile');
+      debugPrint('✅ Full profile response: $result');
 
-      if (profile == null) {
-        debugPrint('⚠️ Profile null: Token mungkin invalid/expired');
-        namaUser.value = 'User';
-        return;
-      }
+      // Pastikan respons sukses dan memiliki data pengguna
+      if (result['success'] == true && result['data'] is Map<String, dynamic>) {
+        final userData = result['data'] as Map<String, dynamic>;
+        // Mengakses 'nama' karena app.py sekarang mengembalikan 'nama'
+        var nama = userData['nama'];
 
-      if (profile is! Map) {
-        debugPrint('⚠️ Profile bukan Map, tipe: ${profile.runtimeType}');
-        namaUser.value = 'User';
-        return;
-      }
-
-      // Cek jika nama ada langsung di level atas
-      var nama = profile['nama'];
-
-      // Jika nama null atau kosong, cek di dalam "data"
-      if ((nama == null || nama.toString().trim().isEmpty) &&
-          profile.containsKey('data')) {
-        final data = profile['data'];
-        if (data is Map) {
-          nama = data['nama'];
+        if (nama != null && nama.toString().trim().isNotEmpty) {
+          namaUser.value = nama.toString();
+          debugPrint('✅ Nama user ditemukan: ${namaUser.value}');
+        } else {
+          debugPrint(
+            '⚠️ Nama tidak ditemukan atau kosong di data pengguna, pakai default',
+          );
+          namaUser.value = 'User';
         }
-      }
-
-      // Cek alternatif key lain, misal "user" atau "userName"
-      if (nama == null || nama.toString().trim().isEmpty) {
-        if (profile.containsKey('user') && profile['user'] is Map) {
-          final userMap = profile['user'] as Map;
-          nama = userMap['nama'] ?? userMap['userName'];
-        }
-      }
-
-      if (nama != null && nama.toString().trim().isNotEmpty) {
-        namaUser.value = nama.toString();
-        debugPrint('✅ Nama user ditemukan: ${namaUser.value}');
       } else {
-        debugPrint('⚠️ Nama tidak ditemukan atau kosong, pakai default');
+        debugPrint(
+          '⚠️ Gagal mengambil profil user atau format data tidak sesuai: ${result['message']}',
+        );
         namaUser.value = 'User';
       }
     } catch (e, stack) {
@@ -115,24 +123,107 @@ class HomeController extends GetxController {
 
     if (hour >= 4 && hour < 10) {
       greetingText = 'Selamat Pagi';
-      greetingIcon = Ionicons.sunny_outline; // Ikon matahari untuk pagi
+      greetingIcon = LucideIcons.sun; // Ikon matahari untuk pagi
     } else if (hour >= 10 && hour < 15) {
       greetingText = 'Selamat Siang';
-      greetingIcon = Ionicons.sunny_outline; // Ikon matahari untuk siang
+      greetingIcon = LucideIcons.cloudSun; // Ikon matahari & awan untuk siang
     } else if (hour >= 15 && hour < 18) {
       greetingText = 'Selamat Sore';
-      greetingIcon = Ionicons.cloudy_night_outline; // Ikon sore (bisa diubah)
+      greetingIcon = LucideIcons.cloudy; // Ikon berawan untuk sore
     } else {
       greetingText = 'Selamat Malam';
-      greetingIcon = Ionicons.moon_outline; // Ikon bulan untuk malam
+      greetingIcon = LucideIcons.moon; // Ikon bulan untuk malam
     }
 
     return {'text': greetingText, 'icon': greetingIcon};
+  }
+
+  // Fungsi untuk mengambil data pelatih dari API
+  Future<void> fetchPelatih() async {
+    isLoadingPelatih.value = true;
+    errorMessagePelatih.value = '';
+    try {
+      final result = await ApiService.getPelatih();
+      if (result['success']) {
+        final List<dynamic> data = result['data'];
+        _allPelatihList =
+            data.cast<Map<String, dynamic>>(); // Simpan semua data
+        filterPelatihByName(
+          searchQuery.value,
+        ); // Terapkan filter awal jika ada query
+
+        // Perbarui pelatihList (opsional, jika masih digunakan di tempat lain)
+        pelatihList.assignAll(_allPelatihList);
+
+        if (_allPelatihList.isEmpty) {
+          // Periksa terhadap _allPelatihList untuk status data awal
+          errorMessagePelatih.value = 'Belum ada data pelatih tersedia.';
+        }
+      } else {
+        errorMessagePelatih.value =
+            result['message'] ?? 'Gagal mengambil data pelatih.';
+      }
+    } catch (e) {
+      errorMessagePelatih.value = 'Terjadi kesalahan jaringan: $e';
+      debugPrint('Error fetching pelatih: $e'); // Debugging
+    } finally {
+      isLoadingPelatih.value = false;
+    }
+  }
+
+  // Fungsi untuk memfilter daftar pelatih berdasarkan nama
+  void filterPelatihByName(String query) {
+    if (query.isEmpty) {
+      filteredPelatihList.assignAll(_allPelatihList);
+    } else {
+      final lowerCaseQuery = query.toLowerCase();
+      filteredPelatihList.assignAll(
+        _allPelatihList.where((pelatih) {
+          final namaPelatih = pelatih['nama']?.toLowerCase() ?? '';
+          return namaPelatih.contains(lowerCaseQuery);
+        }).toList(),
+      );
+    }
+    // Logika pesan kesalahan yang lebih robust
+    if (_allPelatihList.isEmpty) {
+      errorMessagePelatih.value = 'Belum ada data pelatih tersedia.';
+    } else if (filteredPelatihList.isEmpty && query.isNotEmpty) {
+      errorMessagePelatih.value =
+          'Tidak ada pelatih yang ditemukan dengan nama "$query".';
+    } else {
+      errorMessagePelatih.value = ''; // Hapus pesan error jika ada hasil
+    }
   }
 
   @override
   void onInit() {
     super.onInit();
     fetchUser(); // Panggil saat controller pertama kali dibuat
+    fetchPelatih(); // Panggil untuk mengambil data pelatih
+
+    // Sinkronkan nilai initial searchQuery dengan searchInputController.
+    // Penting agar TextField menampilkan nilai yang benar saat pertama kali dimuat.
+    searchInputController.text = searchQuery.value;
+
+    // Dengarkan perubahan pada searchQuery dan panggil filterPelatihByName.
+    // debounce membantu mencegah panggilan berlebihan ke filter saat pengguna mengetik cepat.
+    debounce(searchQuery, (String query) {
+      filterPelatihByName(query);
+    }, time: const Duration(milliseconds: 300));
+
+    // Tambahkan listener untuk memantau perubahan pada searchInputController
+    // dan memperbarui searchQuery. Ini akan memicu debounce di atas.
+    searchInputController.addListener(() {
+      if (searchQuery.value != searchInputController.text) {
+        searchQuery.value = searchInputController.text;
+      }
+    });
+  }
+
+  @override
+  void onClose() {
+    searchInputController
+        .dispose(); // Pastikan controller di-dispose untuk mencegah kebocoran memori
+    super.onClose();
   }
 }

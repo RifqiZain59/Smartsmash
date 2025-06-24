@@ -1252,228 +1252,6 @@ class ApiService {
     }
   }
 
-  // --- New API Methods for single Materi item ---
-
-  static Future<Map<String, dynamic>> getMateriById(String materiId) async {
-    final token = await getToken();
-    if (token == null) {
-      return _errorResponse(
-        'Sesi tidak valid atau Anda belum login untuk mengakses materi.',
-      );
-    }
-
-    final url = Uri.parse('$baseUrl/materi/$materiId');
-    if (kDebugMode) {
-      print('Calling API Get Materi By ID URL: $url');
-    }
-
-    try {
-      final http.Response response = await http
-          .get(
-            url,
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-              'Authorization': 'Bearer $token',
-              'X-API-Key': apiKey,
-            },
-          )
-          .timeout(timeoutDuration);
-
-      final body = tryDecode(response);
-      if (kDebugMode) {
-        print(
-          'Respons API Get Materi By ID: Status Code: ${response.statusCode}, Raw Body: ${response.body}',
-        );
-      }
-
-      bool isSuccessFromServer = body['success'] == true;
-      final dynamic responseData = body['data'];
-
-      if (response.statusCode == 200 && isSuccessFromServer) {
-        // Server mengembalikan {"data": {"materi": {...}}}
-        if (responseData is Map<String, dynamic> &&
-            responseData.containsKey('materi') &&
-            responseData['materi'] is Map<String, dynamic>) {
-          final Map<String, dynamic> materiItem =
-              responseData['materi'] as Map<String, dynamic>;
-          return {
-            'success': true,
-            'message': body['message'] as String? ?? 'Materi berhasil diambil.',
-            'data': materiItem, // Mengembalikan satu objek materi
-          };
-        } else {
-          return _errorResponse(
-            'Format data materi tidak valid dari server (kunci "materi" tidak ditemukan atau bukan objek).',
-            data: responseData,
-            statusCode: response.statusCode,
-          );
-        }
-      } else if (response.statusCode == 404) {
-        return _errorResponse(
-          body['message'] as String? ?? 'Materi tidak ditemukan.',
-          data: body['data'],
-          statusCode: response.statusCode,
-        );
-      } else if (response.statusCode == 400) {
-        return _errorResponse(
-          body['message'] as String? ?? 'ID materi tidak valid.',
-          data: body['data'],
-          statusCode: response.statusCode,
-        );
-      } else if (response.statusCode == 401 || response.statusCode == 403) {
-        await removeToken();
-        return _errorResponse(
-          body['message'] as String? ??
-              'Sesi Anda telah berakhir atau tidak valid untuk mengakses materi ini.',
-          data: body['data'],
-          statusCode: response.statusCode,
-        );
-      } else {
-        return _errorResponse(
-          body['message'] as String? ?? 'Gagal mengambil materi.',
-          data: body['data'],
-          statusCode: response.statusCode,
-        );
-      }
-    } on SocketException {
-      return _errorResponse('Tidak ada koneksi internet.');
-    } on TimeoutException {
-      return _errorResponse('Koneksi ke server timeout.');
-    } // ignore: avoid_catches_without_on_clauses
-    catch (e) {
-      if (kDebugMode) {
-        print('Exception saat ambil materi berdasarkan ID: $e');
-      }
-      return _errorResponse(
-        'Gagal mengambil materi berdasarkan ID: Terjadi kesalahan.',
-      );
-    }
-  }
-
-  static Future<Map<String, dynamic>> updateMateri(
-    String materiId, {
-    String? title,
-    String? description,
-    String? youtubeLink,
-  }) async {
-    final token = await getToken();
-    if (token == null) {
-      return _errorResponse(
-        'Sesi tidak valid atau Anda belum login untuk memperbarui materi.',
-      );
-    }
-
-    final url = Uri.parse('$baseUrl/materi/$materiId');
-    Map<String, dynamic> bodyDataToSend = {};
-
-    if (title != null && title.isNotEmpty) {
-      bodyDataToSend['title'] = title;
-    }
-    if (description != null && description.isNotEmpty) {
-      bodyDataToSend['description'] = description;
-    }
-    if (youtubeLink != null && youtubeLink.isNotEmpty) {
-      bodyDataToSend['youtube_link'] = youtubeLink;
-    }
-
-    if (bodyDataToSend.isEmpty) {
-      return {
-        'success': false,
-        'message': 'Tidak ada data yang disediakan untuk diperbarui.',
-        'data': null,
-      };
-    }
-
-    final requestBody = jsonEncode(bodyDataToSend);
-    if (kDebugMode) {
-      print('Calling API Update Materi URL: $url');
-    }
-
-    try {
-      final http.Response response = await http
-          .put(
-            url,
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-              'Authorization': 'Bearer $token',
-              'X-API-Key': apiKey,
-            },
-            body: requestBody,
-          )
-          .timeout(timeoutDuration);
-
-      final body = tryDecode(response);
-      if (kDebugMode) {
-        print(
-          'Respons API Update Materi: Status Code: ${response.statusCode}, Raw Body: ${response.body}',
-        );
-      }
-
-      bool isSuccessFromServer = body['success'] == true;
-      final dynamic responseData = body['data'];
-
-      if (response.statusCode == 200 && isSuccessFromServer) {
-        if (responseData is Map<String, dynamic> &&
-            responseData.containsKey('materi') &&
-            responseData['materi'] is Map<String, dynamic>) {
-          final Map<String, dynamic> updatedMateriItem =
-              responseData['materi'] as Map<String, dynamic>;
-          return {
-            'success': true,
-            'message':
-                body['message'] as String? ?? 'Materi berhasil diperbarui.',
-            'data': updatedMateriItem,
-          };
-        } else {
-          return _errorResponse(
-            'Format data materi yang diperbarui tidak valid dari server.',
-            data: responseData,
-            statusCode: response.statusCode,
-          );
-        }
-      } else if (response.statusCode == 404) {
-        return _errorResponse(
-          body['message'] as String? ?? 'Materi tidak ditemukan.',
-          data: body['data'],
-          statusCode: response.statusCode,
-        );
-      } else if (response.statusCode == 400) {
-        return _errorResponse(
-          body['message'] as String? ??
-              'ID materi atau format link YouTube tidak valid.',
-          data: body['data'],
-          statusCode: response.statusCode,
-        );
-      } else if (response.statusCode == 401 || response.statusCode == 403) {
-        await removeToken();
-        return _errorResponse(
-          body['message'] as String? ??
-              'Anda tidak diizinkan untuk memperbarui materi ini atau sesi telah berakhir.',
-          data: body['data'],
-          statusCode: response.statusCode,
-        );
-      } else {
-        return _errorResponse(
-          body['message'] as String? ?? 'Gagal memperbarui materi.',
-          data: body['data'],
-          statusCode: response.statusCode,
-        );
-      }
-    } on SocketException {
-      return _errorResponse('Tidak ada koneksi internet.');
-    } on TimeoutException {
-      return _errorResponse('Koneksi ke server timeout.');
-    } // ignore: avoid_catches_without_on_clauses
-    catch (e) {
-      if (kDebugMode) {
-        print('Exception saat update materi: $e');
-      }
-      return _errorResponse('Gagal memperbarui materi: Terjadi kesalahan.');
-    }
-  }
-
   // NEW METHOD: Send message to chatbot endpoint
   static Future<Map<String, dynamic>> sendMessageToChatbot(
     String message,
@@ -1526,7 +1304,7 @@ class ApiService {
       } else {
         return _errorResponse(
           body['message'] as String? ?? 'Gagal mendapatkan respons chatbot.',
-          data: body['data'],
+          data: responseData,
           statusCode: response.statusCode,
         );
       }
@@ -1541,6 +1319,222 @@ class ApiService {
       return _errorResponse(
         'Terjadi kesalahan saat berinteraksi dengan chatbot.',
       );
+    }
+  }
+
+  // --- New API Methods for 'pelatih' collection ---
+  // Fungsi untuk membuat, memperbarui, dan menghapus pelatih telah dihapus sesuai permintaan.
+  // Hanya fungsi untuk mengambil data pelatih yang tersisa.
+
+  static Future<Map<String, dynamic>> getPelatih() async {
+    // Tidak memerlukan token jika endpoint di backend tidak dilindungi JWT
+    // final token = await getToken();
+    // if (token == null) {
+    //   return _errorResponse('Sesi tidak valid atau Anda belum login.');
+    // }
+
+    final url = Uri.parse('$baseUrl/pelatih');
+    if (kDebugMode) {
+      print('Calling API Get All Pelatih URL: $url');
+    }
+
+    try {
+      final http.Response response = await http
+          .get(
+            url,
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'X-API-Key': apiKey,
+              // 'Authorization': 'Bearer $token', // Sertakan jika diperlukan JWT
+            },
+          )
+          .timeout(timeoutDuration);
+
+      final body = tryDecode(response);
+      if (kDebugMode) {
+        print(
+          'Respons API Get All Pelatih: Status Code: ${response.statusCode}, Raw Body: ${response.body}',
+        );
+      }
+
+      bool isSuccessFromServer = body['success'] == true;
+      final dynamic responseData = body['data']; // Ini adalah List pelatih
+
+      if (response.statusCode == 200 &&
+          isSuccessFromServer &&
+          responseData is List) {
+        final List<dynamic> pelatihListFromServer = responseData;
+        if (kDebugMode) {
+          print(
+            'Pelatih berhasil diekstrak. Jumlah pelatih: ${pelatihListFromServer.length}, Data: $pelatihListFromServer',
+          );
+        }
+        return {
+          'success': true,
+          'message':
+              body['message'] as String? ?? 'Data pelatih berhasil diambil.',
+          'data':
+              pelatihListFromServer, // Mengembalikan List pelatih (bisa kosong)
+        };
+      } else {
+        return _errorResponse(
+          body['message'] as String? ?? 'Gagal mengambil data pelatih.',
+          data: responseData,
+          statusCode: response.statusCode,
+        );
+      }
+    } on SocketException {
+      return _errorResponse('Tidak ada koneksi internet.');
+    } on TimeoutException {
+      return _errorResponse('Koneksi ke server timeout.');
+    } catch (e) {
+      if (kDebugMode) {
+        print('Exception saat ambil pelatih: $e');
+      }
+      return _errorResponse('Gagal mengambil data pelatih: Terjadi kesalahan.');
+    }
+  }
+
+  // --- NEW API Method for 'juara' collection ---
+  static Future<Map<String, dynamic>> getJuara() async {
+    final url = Uri.parse('$baseUrl/juara'); // Endpoint /juara di server Flask
+    if (kDebugMode) {
+      print('Calling API Get All Juara URL: $url');
+    }
+
+    try {
+      final http.Response response = await http
+          .get(
+            url,
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'X-API-Key': apiKey,
+              // Tambahkan Authorization header jika endpoint juara di Flask dilindungi JWT
+              // 'Authorization': 'Bearer ${await getToken()}',
+            },
+          )
+          .timeout(timeoutDuration);
+
+      final body = tryDecode(response);
+      if (kDebugMode) {
+        print(
+          'Respons API Get All Juara: Status Code: ${response.statusCode}, Raw Body: ${response.body}',
+        );
+      }
+
+      bool isSuccessFromServer = body['success'] == true;
+      final dynamic responseData = body['data']; // Ini adalah List juara
+
+      if (response.statusCode == 200 &&
+          isSuccessFromServer &&
+          responseData is List) {
+        final List<dynamic> juaraListFromServer = responseData;
+        if (kDebugMode) {
+          print(
+            'Juara berhasil diekstrak. Jumlah juara: ${juaraListFromServer.length}, Data: $juaraListFromServer',
+          );
+        }
+        return {
+          'success': true,
+          'message':
+              body['message'] as String? ?? 'Data juara berhasil diambil.',
+          'data': juaraListFromServer, // Mengembalikan List juara (bisa kosong)
+        };
+      } else {
+        return _errorResponse(
+          body['message'] as String? ?? 'Gagal mengambil data juara.',
+          data: responseData,
+          statusCode: response.statusCode,
+        );
+      }
+    } on SocketException {
+      return _errorResponse('Tidak ada koneksi internet.');
+    } on TimeoutException {
+      return _errorResponse('Koneksi ke server timeout.');
+    } catch (e) {
+      if (kDebugMode) {
+        print('Exception saat ambil juara: $e');
+      }
+      return _errorResponse('Gagal mengambil data juara: Terjadi kesalahan.');
+    }
+  }
+
+  // NEW METHOD: Delete user account
+  static Future<Map<String, dynamic>> deleteAccount({
+    required String password,
+  }) async {
+    final token = await getToken();
+    if (token == null) {
+      return _errorResponse('Sesi tidak valid atau Anda belum login.');
+    }
+
+    final url = Uri.parse(
+      '$baseUrl/delete-account',
+    ); // New endpoint for deletion
+    final requestBody = jsonEncode({'password': password});
+    if (kDebugMode) {
+      print('Calling API Delete Account URL: $url');
+      print('Request Body: $requestBody');
+    }
+
+    try {
+      final http.Response response = await http
+          .delete(
+            // Use DELETE method
+            url,
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'Authorization': 'Bearer $token',
+              'X-API-Key': apiKey,
+            },
+            body: requestBody,
+          )
+          .timeout(timeoutDuration);
+
+      final body = tryDecode(response);
+      if (kDebugMode) {
+        print(
+          'Respons API Delete Account: Status Code: ${response.statusCode}, Raw Body: ${response.body}',
+        );
+      }
+
+      bool isSuccessFromServer = body['success'] == true;
+
+      if (response.statusCode == 200 && isSuccessFromServer) {
+        await removeToken(); // Remove token after successful account deletion
+        return {
+          'success': true,
+          'message':
+              body['message'] as String? ?? 'Akun berhasil dihapus permanen.',
+          'data': body['data'],
+        };
+      } else if (response.statusCode == 401 || response.statusCode == 403) {
+        await removeToken();
+        return _errorResponse(
+          body['message'] as String? ??
+              'Sesi Anda telah berakhir, silakan login kembali.',
+          data: body['data'],
+          statusCode: response.statusCode,
+        );
+      } else {
+        return _errorResponse(
+          body['message'] as String? ?? 'Gagal menghapus akun.',
+          data: body['data'],
+          statusCode: response.statusCode,
+        );
+      }
+    } on SocketException {
+      return _errorResponse('Tidak ada koneksi internet.');
+    } on TimeoutException {
+      return _errorResponse('Koneksi ke server timeout.');
+    } catch (e) {
+      if (kDebugMode) {
+        print('Exception saat menghapus akun: $e');
+      }
+      return _errorResponse('Terjadi kesalahan saat menghapus akun.');
     }
   }
 }

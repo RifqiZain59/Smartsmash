@@ -17,49 +17,26 @@ class MateriView extends GetView<MateriController> {
     // Jika Anda sudah mendaftarkannya di Binding, Anda bisa menghapus baris ini.
     Get.put(MateriController());
 
-    // Determine if dark mode is active based on system brightness
-    final isDarkMode =
-        MediaQuery.of(context).platformBrightness == Brightness.dark;
-
-    // Define dynamic color scheme
-    final Color primaryColor =
-        isDarkMode ? Colors.blue.shade300 : Colors.blue.shade700;
-    final Color secondaryColor =
-        isDarkMode ? Colors.blue.shade900 : Colors.blue.shade50;
+    // Removed isDarkMode detection.
+    // Hardcoded colors to light theme values.
+    final Color primaryColor = Colors.blue.shade700;
+    final Color secondaryColor = Colors.blue.shade50;
     final Color accentColor =
         Colors.pink.shade400; // YouTube red/pink generally stays consistent
-    final Color textColor =
-        isDarkMode ? Colors.grey.shade100 : Colors.grey.shade800;
-    final Color subtleTextColor =
-        isDarkMode ? Colors.grey.shade400 : Colors.grey.shade600;
-    final Color backgroundColor =
-        isDarkMode
-            ? const Color(0xFF121212)
-            : const Color(0xFFF0F4F8); // Dark background for dark mode
+    final Color textColor = Colors.grey.shade800;
+    final Color subtleTextColor = Colors.grey.shade600;
+    final Color backgroundColor = const Color(
+      0xFFF0F4F8,
+    ); // Light background for light mode
     final Color cardBackgroundColor =
-        isDarkMode
-            ? const Color(0xFF1E1E1E)
-            : Colors.white; // Darker surface for dark mode
+        Colors.white; // Light surface for light mode
     final Color appBarColor =
-        isDarkMode
-            ? const Color(0xFF1F1F1F)
-            : primaryColor; // Dark AppBar for dark mode
+        primaryColor; // Standard blue AppBar for light mode
     final Color appBarContentColor =
-        isDarkMode
-            ? Colors.white
-            : Colors.white; // White title/icons for both app bars (dark/light)
-    final Color shadowColor =
-        isDarkMode
-            ? Colors.black.withOpacity(0.5)
-            : Colors.grey.withOpacity(0.1);
-    final Color cardShadowColor =
-        isDarkMode
-            ? Colors.black.withOpacity(0.4)
-            : Colors.grey.withOpacity(0.06);
-    final Color borderCardColor =
-        isDarkMode
-            ? Colors.grey.shade800.withOpacity(0.7)
-            : Colors.grey.shade200.withOpacity(0.7);
+        Colors.white; // White title/icons for app bar
+    final Color shadowColor = Colors.grey.withOpacity(0.1);
+    final Color cardShadowColor = Colors.grey.withOpacity(0.06);
+    final Color borderCardColor = Colors.grey.shade200.withOpacity(0.7);
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -192,13 +169,13 @@ class MateriView extends GetView<MateriController> {
                           primaryColor,
                           cardBackgroundColor,
                           textColor,
-                          isDarkMode, // Pass isDarkMode to error state
+                          // Removed isDarkMode parameter
                         );
                       } else if (controller.materiList.isEmpty) {
                         return _buildEmptyState(
                           subtleTextColor,
                           cardBackgroundColor,
-                          isDarkMode,
+                          // Removed isDarkMode parameter
                         );
                       } else {
                         return RefreshIndicator(
@@ -238,7 +215,7 @@ class MateriView extends GetView<MateriController> {
                                 cardBackgroundColor,
                                 cardShadowColor,
                                 borderCardColor,
-                                isDarkMode, // Pass isDarkMode to materi card
+                                // Removed isDarkMode parameter
                               );
                             },
                           ),
@@ -284,8 +261,14 @@ class MateriView extends GetView<MateriController> {
     Color primaryColor,
     Color cardBackgroundColor,
     Color textColor,
-    bool isDarkMode, // Added isDarkMode
+    // Removed isDarkMode
   ) {
+    // Hardcoded colors for light mode
+    final Color errorShadowColor = Colors.red.withOpacity(0.1);
+    final Color errorIconColor = Colors.red.shade400;
+    final Color errorTitleColor = Colors.red.shade700;
+    final Color errorMessageColor = Colors.red.shade600;
+
     return Center(
       child: Container(
         margin: const EdgeInsets.all(20.0),
@@ -295,12 +278,7 @@ class MateriView extends GetView<MateriController> {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color:
-                  isDarkMode
-                      ? Colors.red.withOpacity(0.3)
-                      : Colors.red.withOpacity(
-                        0.1,
-                      ), // Darker shadow in dark mode
+              color: errorShadowColor, // Hardcoded shadow for light mode
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -313,19 +291,13 @@ class MateriView extends GetView<MateriController> {
             Icon(
               Ionicons.alert_circle_outline,
               size: 70,
-              color:
-                  isDarkMode
-                      ? Colors.red.shade300
-                      : Colors.red.shade400, // Adapt icon color
+              color: errorIconColor, // Hardcoded icon color for light mode
             ),
             const SizedBox(height: 20),
             Text(
               "Oops! Terjadi Kesalahan",
               style: TextStyle(
-                color:
-                    isDarkMode
-                        ? Colors.red.shade200
-                        : Colors.red.shade700, // Adapt text color
+                color: errorTitleColor, // Hardcoded text color for light mode
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
@@ -335,9 +307,9 @@ class MateriView extends GetView<MateriController> {
               controller.errorMessage.value,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: isDarkMode ? Colors.red.shade300 : Colors.red.shade600,
+                color: errorMessageColor, // Hardcoded text color for light mode
                 fontSize: 15,
-              ), // Adapt text color
+              ),
             ),
             const SizedBox(height: 24),
             ElevatedButton.icon(
@@ -366,8 +338,11 @@ class MateriView extends GetView<MateriController> {
   Widget _buildEmptyState(
     Color subtleTextColor,
     Color cardBackgroundColor,
-    bool isDarkMode,
+    // Removed isDarkMode
   ) {
+    // Hardcoded colors for light mode
+    final Color emptyShadowColor = Colors.grey.withOpacity(0.08);
+
     return Center(
       child: Container(
         margin: const EdgeInsets.all(20.0),
@@ -377,12 +352,7 @@ class MateriView extends GetView<MateriController> {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color:
-                  isDarkMode
-                      ? Colors.grey.withOpacity(0.2)
-                      : Colors.grey.withOpacity(
-                        0.08,
-                      ), // Darker shadow in dark mode
+              color: emptyShadowColor, // Hardcoded shadow for light mode
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -437,8 +407,19 @@ class MateriView extends GetView<MateriController> {
     Color cardBackgroundColor,
     Color cardShadowColor, // Added dynamic shadow color
     Color borderCardColor, // Added dynamic border color
-    bool isDarkMode, // Added isDarkMode
+    // Removed isDarkMode
   ) {
+    // Hardcoded colors for light mode for the card's internal elements
+    final Color cardIconBackgroundSecondary =
+        secondaryColor; // Always use light secondary for background
+    final Color cardDocumentIconColor =
+        primaryColor; // Always use primary for document icon
+    final Color cardPlayIconColor = accentColor.withOpacity(0.8);
+    final Color cardPlayTextColor = accentColor.withOpacity(0.9);
+    final Color cardReadIconColor = primaryColor.withOpacity(0.7);
+    final Color cardReadTextColor = primaryColor.withOpacity(0.8);
+    final Color cardChevronColor = subtleTextColor.withOpacity(0.6);
+
     return Card(
       color: cardBackgroundColor,
       elevation: 0, // Bayangan dikelola oleh Container di bawah
@@ -540,9 +521,7 @@ class MateriView extends GetView<MateriController> {
                     color:
                         isYoutube
                             ? accentColor.withOpacity(0.1)
-                            : (isDarkMode
-                                ? secondaryColor.withOpacity(0.2)
-                                : secondaryColor), // Adapt secondary color for dark mode
+                            : cardIconBackgroundSecondary, // Hardcoded secondary color for light mode
                     borderRadius: BorderRadius.circular(
                       16,
                     ), // Radius lebih besar
@@ -554,7 +533,7 @@ class MateriView extends GetView<MateriController> {
                     color:
                         isYoutube
                             ? accentColor
-                            : primaryColor, // Use dynamic primary color for document icon
+                            : cardDocumentIconColor, // Hardcoded primary color for document icon
                     size: 38, // Ukuran ikon tetap
                   ),
                 ),
@@ -586,10 +565,8 @@ class MateriView extends GetView<MateriController> {
                             size: 17,
                             color:
                                 isYoutube
-                                    ? accentColor.withOpacity(0.8)
-                                    : primaryColor.withOpacity(
-                                      0.7,
-                                    ), // Use dynamic primary color
+                                    ? cardPlayIconColor
+                                    : cardReadIconColor, // Hardcoded colors
                           ),
                           const SizedBox(width: 6),
                           Text(
@@ -598,10 +575,8 @@ class MateriView extends GetView<MateriController> {
                               fontSize: 13.5,
                               color:
                                   isYoutube
-                                      ? accentColor.withOpacity(0.9)
-                                      : primaryColor.withOpacity(
-                                        0.8,
-                                      ), // Use dynamic primary color
+                                      ? cardPlayTextColor
+                                      : cardReadTextColor, // Hardcoded colors
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -615,9 +590,7 @@ class MateriView extends GetView<MateriController> {
                   padding: const EdgeInsets.only(left: 8.0),
                   child: Icon(
                     Ionicons.chevron_forward_outline,
-                    color: subtleTextColor.withOpacity(
-                      0.6,
-                    ), // Use dynamic subtle text color
+                    color: cardChevronColor, // Hardcoded subtle text color
                     size: 22,
                   ),
                 ),

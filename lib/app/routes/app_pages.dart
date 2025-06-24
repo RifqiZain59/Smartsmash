@@ -28,6 +28,8 @@ import '../modules/forgot_password/bindings/forgot_password_binding.dart';
 import '../modules/forgot_password/views/forgot_password_view.dart';
 import '../modules/grafik/bindings/grafik_binding.dart';
 import '../modules/grafik/views/grafik_view.dart';
+import '../modules/hapus_data/bindings/hapus_data_binding.dart';
+import '../modules/hapus_data/views/hapus_data_view.dart';
 import '../modules/history_login/bindings/history_login_binding.dart';
 import '../modules/history_login/views/history_login_view.dart';
 import '../modules/home/bindings/home_binding.dart';
@@ -190,6 +192,11 @@ class AppPages {
       name: _Paths.CAMERA_BACKHAND,
       page: () => const CameraBackhandView(),
       binding: CameraBackhandBinding(),
+    ),
+    GetPage(
+      name: _Paths.HAPUS_DATA,
+      page: () => const HapusDataView(),
+      binding: HapusDataBinding(),
     ),
   ];
 }

@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart'; // <--- UBAH IMPORT INI
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import '../controllers/login_controller.dart';
 
 class LoginView extends StatefulWidget {
@@ -51,37 +51,40 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    // Determine if dark mode is active based on system brightness
-    final bool isDarkMode =
-        MediaQuery.of(context).platformBrightness == Brightness.dark;
+    // Force light mode by setting isDarkMode to false
+    final bool isDarkMode = false; // <--- UBAH BARIS INI
 
-    // Define adaptive colors
-    final Color adaptivePrimaryBlue =
-        isDarkMode ? const Color(0xFF90CAF9) : const Color(0xFF0D47A1);
-    final Color adaptiveAccentBlue =
-        isDarkMode ? const Color(0xFF64B5F6) : const Color(0xFF1976D2);
+    // Define fixed light mode colors
+    final Color adaptivePrimaryBlue = const Color(
+      0xFF0D47A1,
+    ); // Darker blue for light mode
+    final Color adaptiveAccentBlue = const Color(
+      0xFF1976D2,
+    ); // Lighter blue for light mode
     final Color adaptiveBackgroundColor =
-        isDarkMode ? const Color(0xFF121212) : Colors.white;
+        Colors.white; // White background for light mode
     final Color adaptiveSurfaceColor =
-        isDarkMode ? const Color(0xFF1E1E1E) : Colors.white;
-    final Color adaptiveTextDark =
-        isDarkMode ? Colors.white : const Color(0xFF222222);
-    final Color adaptiveTextLight = isDarkMode ? Colors.black : Colors.white;
+        Colors.white; // White surface for light mode
+    final Color adaptiveTextDark = const Color(
+      0xFF222222,
+    ); // Dark text for light mode
+    final Color adaptiveTextLight =
+        Colors.white; // White text for light mode (used on blue backgrounds)
     final Color adaptiveHintColor =
-        isDarkMode ? Colors.grey[400]! : Colors.grey[600]!;
-    final Color adaptiveButtonDisabledColor =
-        isDarkMode ? Colors.grey[700]! : const Color(0xFFBBDEFB);
+        Colors.grey[600]!; // Grey hint text for light mode
+    final Color adaptiveButtonDisabledColor = const Color(
+      0xFFBBDEFB,
+    ); // Light blue for disabled button
     final Color adaptiveDividerColor =
-        isDarkMode ? Colors.grey[800]! : Colors.grey[300]!;
+        Colors.grey[300]!; // Light grey for dividers
     final Color adaptiveGoogleButtonTextColor =
-        isDarkMode ? Colors.white : Colors.black87;
+        Colors.black87; // Dark text for Google button
     final Color adaptiveGoogleButtonBorderColor =
-        isDarkMode ? Colors.grey[700]! : Colors.grey.shade300;
+        Colors.grey.shade300; // Light grey border for Google button
 
     return Scaffold(
       backgroundColor: adaptiveBackgroundColor,
       body: Obx(() {
-        // Use Obx to rebuild when isLoadingOverlay changes
         return Stack(
           children: [
             // Latar Belakang Biru Atas (Gradient)
@@ -115,7 +118,7 @@ class _LoginViewState extends State<LoginView> {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: isDarkMode ? Colors.black54 : Colors.black12,
+                      color: Colors.black12, // Always use light mode shadow
                       blurRadius: 15,
                       offset: const Offset(0, -5),
                     ),
@@ -151,7 +154,7 @@ class _LoginViewState extends State<LoginView> {
                       ),
                       const SizedBox(height: 32),
                       _emailInput(
-                        isDarkMode,
+                        isDarkMode, // This parameter is now effectively ignored within this method as isDarkMode is fixed to false
                         adaptivePrimaryBlue,
                         adaptiveHintColor,
                         adaptiveTextDark,
@@ -159,7 +162,7 @@ class _LoginViewState extends State<LoginView> {
                       ),
                       const SizedBox(height: 16),
                       _passwordInput(
-                        isDarkMode,
+                        isDarkMode, // This parameter is now effectively ignored within this method as isDarkMode is fixed to false
                         adaptivePrimaryBlue,
                         adaptiveHintColor,
                         adaptiveTextDark,
@@ -185,20 +188,20 @@ class _LoginViewState extends State<LoginView> {
                       _errorText(adaptiveTextDark),
                       const SizedBox(height: 20),
                       _loginButton(
-                        isDarkMode,
+                        isDarkMode, // This parameter is now effectively ignored within this method as isDarkMode is fixed to false
                         adaptivePrimaryBlue,
                         adaptiveButtonDisabledColor,
                         adaptiveTextLight,
                       ),
                       const SizedBox(height: 24),
                       _dividerWithText(
-                        isDarkMode,
+                        isDarkMode, // This parameter is now effectively ignored within this method as isDarkMode is fixed to false
                         adaptiveDividerColor,
                         adaptiveHintColor,
                       ),
                       const SizedBox(height: 16),
                       _googleSignInButton(
-                        isDarkMode,
+                        isDarkMode, // This parameter is now effectively ignored within this method as isDarkMode is fixed to false
                         adaptiveGoogleButtonTextColor,
                         adaptiveGoogleButtonBorderColor,
                         adaptiveSurfaceColor,
@@ -208,7 +211,7 @@ class _LoginViewState extends State<LoginView> {
                 ),
               ),
             ),
-            // Bagian App Bar (teks Selamat Datang dan SMART SMASH APP Anda)
+            // Bagian App Bar (teks Selamat Datang dan HARCIMOTION APP Anda)
             Positioned(
               top: 0,
               left: 0,
@@ -320,9 +323,8 @@ class _LoginViewState extends State<LoginView> {
                       children: [
                         // Menggunakan threeArchedCircle dari loading_animation_widget
                         LoadingAnimationWidget.threeArchedCircle(
-                          // <--- UBAH DI SINI
-                          color: adaptivePrimaryBlue, // <--- Warna indikator
-                          size: 100, // <--- Ukuran indikator
+                          color: adaptivePrimaryBlue, // Warna indikator
+                          size: 100, // Ukuran indikator
                         ),
                         const SizedBox(height: 25),
                         Text(
@@ -346,7 +348,8 @@ class _LoginViewState extends State<LoginView> {
 
   // Helper widget for email input
   Widget _emailInput(
-    bool isDarkMode,
+    bool
+    isDarkMode, // This parameter is now effectively ignored within this method
     Color adaptivePrimaryBlue,
     Color adaptiveHintColor,
     Color adaptiveTextDark,
@@ -392,7 +395,8 @@ class _LoginViewState extends State<LoginView> {
 
   // Helper widget for password input
   Widget _passwordInput(
-    bool isDarkMode,
+    bool
+    isDarkMode, // This parameter is now effectively ignored within this method
     Color adaptivePrimaryBlue,
     Color adaptiveHintColor,
     Color adaptiveTextDark,
@@ -473,7 +477,8 @@ class _LoginViewState extends State<LoginView> {
 
   // Helper widget for login button
   Widget _loginButton(
-    bool isDarkMode,
+    bool
+    isDarkMode, // This parameter is now effectively ignored within this method
     Color adaptivePrimaryBlue,
     Color adaptiveButtonDisabledColor,
     Color adaptiveTextLight,
@@ -496,14 +501,8 @@ class _LoginViewState extends State<LoginView> {
                   ? adaptivePrimaryBlue
                   : adaptiveButtonDisabledColor,
           shape:
-              isDarkMode
-                  ? RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    side: const BorderSide(color: Colors.white, width: 1.5),
-                  )
-                  : RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+          // Always use light mode border radius for the button
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           elevation: 5,
           shadowColor: adaptivePrimaryBlue.withOpacity(0.4),
         ),
@@ -533,7 +532,8 @@ class _LoginViewState extends State<LoginView> {
 
   // Helper widget for divider with text
   Widget _dividerWithText(
-    bool isDarkMode,
+    bool
+    isDarkMode, // This parameter is now effectively ignored within this method
     Color adaptiveDividerColor,
     Color adaptiveHintColor,
   ) {
@@ -554,7 +554,8 @@ class _LoginViewState extends State<LoginView> {
 
   // Helper widget for Google sign-in button
   Widget _googleSignInButton(
-    bool isDarkMode,
+    bool
+    isDarkMode, // This parameter is now effectively ignored within this method
     Color adaptiveGoogleButtonTextColor,
     Color adaptiveGoogleButtonBorderColor,
     Color adaptiveSurfaceColor,
@@ -579,10 +580,9 @@ class _LoginViewState extends State<LoginView> {
         side: BorderSide(color: adaptiveGoogleButtonBorderColor, width: 1.5),
         backgroundColor: adaptiveSurfaceColor,
         elevation: 2,
-        shadowColor:
-            isDarkMode
-                ? Colors.black.withOpacity(0.3)
-                : Colors.black.withOpacity(0.1),
+        shadowColor: Colors.black.withOpacity(
+          0.1,
+        ), // Always use light mode shadow
       ),
     );
   }

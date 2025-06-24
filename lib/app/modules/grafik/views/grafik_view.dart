@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-// Removed webview_flutter imports as they are not needed for this UI
 
 // Assuming GrafikController is still used for other logic, otherwise it can be removed
 class GrafikController extends GetxController {
@@ -12,31 +11,14 @@ class GrafikView extends GetView<GrafikController> {
 
   @override
   Widget build(BuildContext context) {
-    // Determine if dark mode is active based on system brightness
-    final isDarkMode =
-        MediaQuery.of(context).platformBrightness == Brightness.dark;
-
-    // Define dynamic color scheme
-    final Color primaryColor =
-        isDarkMode ? Colors.blue.shade300 : Colors.blueAccent;
-    final Color backgroundColor =
-        isDarkMode
-            ? const Color(0xFF121212)
-            : Colors.white; // Dark background for dark mode
-    final Color cardBackgroundColor =
-        isDarkMode
-            ? const Color(0xFF1E1E1E)
-            : Colors.white; // Darker surface for dark mode
-    final Color textColor =
-        isDarkMode ? Colors.grey.shade100 : Colors.grey.shade800;
-    final Color subtleTextColor =
-        isDarkMode ? Colors.grey.shade400 : Colors.grey;
-    final Color appBarContentColor =
-        Colors.white; // AppBar content remains white for contrast
-    final Color accentColor =
-        isDarkMode
-            ? Colors.blue.shade200
-            : Colors.blueAccent; // Used for date picker icon
+    // Fixed light mode color scheme
+    const Color primaryColor = Colors.blueAccent;
+    const Color backgroundColor = Colors.white;
+    const Color cardBackgroundColor = Colors.white;
+    final Color textColor = Colors.grey.shade800;
+    const Color subtleTextColor = Colors.grey;
+    const Color appBarContentColor = Colors.white;
+    const Color accentColor = Colors.blueAccent; // Used for date picker icon
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -48,8 +30,7 @@ class GrafikView extends GetView<GrafikController> {
           ),
         ),
         centerTitle: true,
-        backgroundColor:
-            primaryColor, // Set AppBar background color dynamically
+        backgroundColor: primaryColor, // Set AppBar background color
         // elevation: 0, // No shadow in the image
       ),
       body: SingleChildScrollView(
@@ -66,22 +47,22 @@ class GrafikView extends GetView<GrafikController> {
                   style: TextStyle(
                     fontSize: 16,
                     color: subtleTextColor,
-                  ), // Dynamic color
+                  ), // Fixed color
                 ),
                 Row(
                   children: [
                     Text(
                       '2025-05-14',
                       style: TextStyle(fontSize: 16, color: textColor),
-                    ), // Dynamic color
+                    ), // Fixed color
                     IconButton(
                       icon: Icon(
                         Icons.calendar_today,
                         color: accentColor,
-                      ), // Dynamic color
+                      ), // Fixed color
                       onPressed: () {
                         // Implement date picker logic
-                        // Example date picker (consider using Get.dialog or a custom dialog for better theming)
+                        // Example date picker
                         showDatePicker(
                           context: context,
                           initialDate: DateTime.now(),
@@ -118,7 +99,7 @@ class GrafikView extends GetView<GrafikController> {
 
             // Total Detections Card
             Card(
-              color: cardBackgroundColor, // Dynamic color
+              color: cardBackgroundColor, // Fixed color
               elevation: 0, // No shadow
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -133,7 +114,7 @@ class GrafikView extends GetView<GrafikController> {
                       style: TextStyle(
                         fontSize: 16,
                         color: subtleTextColor,
-                      ), // Dynamic color
+                      ), // Fixed color
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -141,7 +122,7 @@ class GrafikView extends GetView<GrafikController> {
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
-                        color: textColor, // Dynamic color
+                        color: textColor, // Fixed color
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -153,14 +134,14 @@ class GrafikView extends GetView<GrafikController> {
                             Text(
                               'Max',
                               style: TextStyle(color: subtleTextColor),
-                            ), // Dynamic color
+                            ), // Fixed color
                             const SizedBox(height: 4),
                             Text(
                               '20',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: textColor,
-                              ), // Dynamic color
+                              ), // Fixed color
                             ),
                           ],
                         ),
@@ -169,14 +150,14 @@ class GrafikView extends GetView<GrafikController> {
                             Text(
                               'Avg',
                               style: TextStyle(color: subtleTextColor),
-                            ), // Dynamic color
+                            ), // Fixed color
                             const SizedBox(height: 4),
                             Text(
                               '10',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: textColor,
-                              ), // Dynamic color
+                              ), // Fixed color
                             ),
                           ],
                         ),
@@ -185,14 +166,14 @@ class GrafikView extends GetView<GrafikController> {
                             Text(
                               'Min',
                               style: TextStyle(color: subtleTextColor),
-                            ), // Dynamic color
+                            ), // Fixed color
                             const SizedBox(height: 4),
                             Text(
                               '2',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: textColor,
-                              ), // Dynamic color
+                              ), // Fixed color
                             ),
                           ],
                         ),
@@ -206,7 +187,7 @@ class GrafikView extends GetView<GrafikController> {
 
             // Bar Chart (Placeholder)
             Card(
-              color: cardBackgroundColor, // Dynamic color
+              color: cardBackgroundColor, // Fixed color
               elevation: 0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -223,7 +204,7 @@ class GrafikView extends GetView<GrafikController> {
                         child: Text(
                           'Bar Chart Placeholder',
                           style: TextStyle(color: subtleTextColor),
-                        ), // Dynamic color
+                        ), // Fixed color
                         // You'd replace this with actual chart drawing
                       ),
                     ),
@@ -234,7 +215,7 @@ class GrafikView extends GetView<GrafikController> {
                         6,
                         (index) => Text(
                           '$index',
-                          style: TextStyle(color: textColor), // Dynamic color
+                          style: TextStyle(color: textColor), // Fixed color
                         ),
                       ),
                     ),
@@ -251,7 +232,7 @@ class GrafikView extends GetView<GrafikController> {
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: textColor,
-              ), // Dynamic color
+              ), // Fixed color
             ),
             const SizedBox(height: 10),
 
@@ -259,37 +240,37 @@ class GrafikView extends GetView<GrafikController> {
             DetectionTimelineItem(
               time: '00:00',
               detections: 2,
-              cardBackgroundColor: cardBackgroundColor, // Pass dynamic color
-              textColor: textColor, // Pass dynamic color
-              subtleTextColor: subtleTextColor, // Pass dynamic color
+              cardBackgroundColor: cardBackgroundColor, // Pass fixed color
+              textColor: textColor, // Pass fixed color
+              subtleTextColor: subtleTextColor, // Pass fixed color
             ),
             DetectionTimelineItem(
               time: '04:00',
               detections: 5,
-              cardBackgroundColor: cardBackgroundColor, // Pass dynamic color
-              textColor: textColor, // Pass dynamic color
-              subtleTextColor: subtleTextColor, // Pass dynamic color
+              cardBackgroundColor: cardBackgroundColor, // Pass fixed color
+              textColor: textColor, // Pass fixed color
+              subtleTextColor: subtleTextColor, // Pass fixed color
             ),
             DetectionTimelineItem(
               time: '08:00',
               detections: 12,
-              cardBackgroundColor: cardBackgroundColor, // Pass dynamic color
-              textColor: textColor, // Pass dynamic color
-              subtleTextColor: subtleTextColor, // Pass dynamic color
+              cardBackgroundColor: cardBackgroundColor, // Pass fixed color
+              textColor: textColor, // Pass fixed color
+              subtleTextColor: subtleTextColor, // Pass fixed color
             ),
             DetectionTimelineItem(
               time: '12:00',
               detections: 20,
-              cardBackgroundColor: cardBackgroundColor, // Pass dynamic color
-              textColor: textColor, // Pass dynamic color
-              subtleTextColor: subtleTextColor, // Pass dynamic color
+              cardBackgroundColor: cardBackgroundColor, // Pass fixed color
+              textColor: textColor, // Pass fixed color
+              subtleTextColor: subtleTextColor, // Pass fixed color
             ),
             DetectionTimelineItem(
               time: '16:00',
               detections: 15,
-              cardBackgroundColor: cardBackgroundColor, // Pass dynamic color
-              textColor: textColor, // Pass dynamic color
-              subtleTextColor: subtleTextColor, // Pass dynamic color
+              cardBackgroundColor: cardBackgroundColor, // Pass fixed color
+              textColor: textColor, // Pass fixed color
+              subtleTextColor: subtleTextColor, // Pass fixed color
             ),
             // Add more items as needed
           ],
@@ -303,9 +284,9 @@ class GrafikView extends GetView<GrafikController> {
 class DetectionTimelineItem extends StatelessWidget {
   final String time;
   final int detections;
-  final Color cardBackgroundColor; // Added for dynamic background
-  final Color textColor; // Added for dynamic text
-  final Color subtleTextColor; // Added for dynamic text
+  final Color cardBackgroundColor; // Added for fixed background
+  final Color textColor; // Added for fixed text
+  final Color subtleTextColor; // Added for fixed text
 
   const DetectionTimelineItem({
     Key? key,
@@ -319,7 +300,7 @@ class DetectionTimelineItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: cardBackgroundColor, // Dynamic color
+      color: cardBackgroundColor, // Fixed color
       elevation: 0,
       margin: const EdgeInsets.symmetric(vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -331,13 +312,13 @@ class DetectionTimelineItem extends StatelessWidget {
             Text(
               time,
               style: TextStyle(fontSize: 16, color: textColor),
-            ), // Dynamic color
+            ), // Fixed color
             Text(
               '$detections detections',
               style: TextStyle(
                 fontSize: 16,
                 color: subtleTextColor,
-              ), // Dynamic color
+              ), // Fixed color
             ),
           ],
         ),

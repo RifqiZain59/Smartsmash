@@ -206,36 +206,16 @@ class HistoryLoginView extends GetView<HistoryLoginController> {
 
   @override
   Widget build(BuildContext context) {
-    // Determine if dark mode is active based on system brightness
-    final isDarkMode =
-        MediaQuery.of(context).platformBrightness == Brightness.dark;
-
-    // Warna biru tua kustom yang akan kita gunakan
-    // Sesuaikan warna untuk mode gelap jika diperlukan
-    final Color _darkBlue =
-        isDarkMode
-            ? const Color(0xFFBBDEFB)
-            : const Color(
-              0xFF1A237E,
-            ); // Light blue for dark, dark blue for light
-    final Color _scaffoldBackgroundColor =
-        isDarkMode ? Colors.black : Colors.white;
-    final Color _cardBackgroundColor =
-        isDarkMode
-            ? const Color(0xFF212121)
-            : Colors.white; // Darker grey for cards in dark mode
-    final Color _textColor =
-        isDarkMode
-            ? Colors.white70
-            : Colors.grey[800]!; // Lighter text for dark mode
-    final Color _subtitleColor =
-        isDarkMode
-            ? Colors.grey[400]!
-            : Colors.grey[700]!; // Lighter grey for subtitle in dark mode
+    // Menghapus deteksi mode gelap, selalu menggunakan warna untuk mode terang
+    const Color darkBlue = Color(0xFF1A237E); // Warna biru tua
+    const Color scaffoldBackgroundColor = Colors.white; // Latar belakang putih
+    const Color cardBackgroundColor = Colors.white; // Warna kartu putih
+    const Color textColor = Colors.black87; // Warna teks gelap
+    const Color subtitleColor = Colors.grey; // Warna subjudul abu-abu
 
     return Scaffold(
       backgroundColor:
-          _scaffoldBackgroundColor, // Menggunakan warna latar belakang yang adaptif
+          scaffoldBackgroundColor, // Menggunakan warna latar belakang
       body: ClipRRect(
         // Menerapkan lengkungan di sudut atas body
         borderRadius: const BorderRadius.only(
@@ -265,8 +245,8 @@ class HistoryLoginView extends GetView<HistoryLoginController> {
                           // Menggunakan IconButton untuk ikon kembali
                           icon: Icon(
                             Icons.arrow_back,
-                            color: _darkBlue,
-                          ), // Ikon kembali juga adaptif
+                            color: darkBlue,
+                          ), // Ikon kembali
                           iconSize: 28,
                           onPressed:
                               () =>
@@ -278,13 +258,13 @@ class HistoryLoginView extends GetView<HistoryLoginController> {
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
-                            color: _darkBlue, // Judul juga adaptif
+                            color: darkBlue, // Judul
                           ),
                         ),
                       ],
                     ),
                     // Anda bisa menambahkan ikon lain di sini jika diperlukan, misalnya ikon pengaturan
-                    // const Icon(Ionicons.settings_outline, color: _darkBlue),
+                    // const Icon(Ionicons.settings_outline, color: darkBlue),
                   ],
                 ),
               ),
@@ -293,7 +273,7 @@ class HistoryLoginView extends GetView<HistoryLoginController> {
                 child: Obx(() {
                   if (controller.isLoading.value) {
                     return Center(
-                      child: CircularProgressIndicator(color: _darkBlue),
+                      child: CircularProgressIndicator(color: darkBlue),
                     );
                   } else if (controller.errorMessage.isNotEmpty) {
                     return Center(
@@ -324,8 +304,7 @@ class HistoryLoginView extends GetView<HistoryLoginController> {
                               style: ElevatedButton.styleFrom(
                                 foregroundColor:
                                     Colors.white, // Teks tombol putih
-                                backgroundColor:
-                                    _darkBlue, // Warna tombol adaptif
+                                backgroundColor: darkBlue, // Warna tombol
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
@@ -351,8 +330,8 @@ class HistoryLoginView extends GetView<HistoryLoginController> {
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 18,
-                              color: _subtitleColor,
-                            ), // Warna teks adaptif
+                              color: subtitleColor,
+                            ), // Warna teks
                           ),
                           const SizedBox(height: 20),
                           ElevatedButton.icon(
@@ -362,8 +341,7 @@ class HistoryLoginView extends GetView<HistoryLoginController> {
                             style: ElevatedButton.styleFrom(
                               foregroundColor:
                                   Colors.white, // Teks tombol putih
-                              backgroundColor:
-                                  _darkBlue, // Warna tombol adaptif
+                              backgroundColor: darkBlue, // Warna tombol
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
@@ -395,7 +373,7 @@ class HistoryLoginView extends GetView<HistoryLoginController> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18.0),
                           ),
-                          shadowColor: _darkBlue.withOpacity(0.3),
+                          shadowColor: darkBlue.withOpacity(0.3),
                           clipBehavior: Clip.antiAliasWithSaveLayer,
                           child: Theme(
                             data: Theme.of(context).copyWith(
@@ -407,20 +385,20 @@ class HistoryLoginView extends GetView<HistoryLoginController> {
                                 vertical: 10.0,
                               ),
                               collapsedBackgroundColor:
-                                  _cardBackgroundColor, // Warna latar belakang kartu adaptif
+                                  cardBackgroundColor, // Warna latar belakang kartu
                               backgroundColor:
-                                  _cardBackgroundColor, // Warna latar belakang kartu adaptif
+                                  cardBackgroundColor, // Warna latar belakang kartu
                               leading: Container(
                                 padding: const EdgeInsets.all(10.0),
                                 decoration: BoxDecoration(
-                                  color: _darkBlue.withOpacity(0.1),
+                                  color: darkBlue.withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(12.0),
                                 ),
                                 child: Icon(
                                   _getDeviceIcon(
                                     entry['device_name'] as String?,
                                   ),
-                                  color: _darkBlue, // Ikon perangkat adaptif
+                                  color: darkBlue, // Ikon perangkat
                                   size: 30,
                                 ),
                               ),
@@ -438,7 +416,7 @@ class HistoryLoginView extends GetView<HistoryLoginController> {
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 17,
-                                  color: _darkBlue, // Teks judul adaptif
+                                  color: darkBlue, // Teks judul
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -446,8 +424,7 @@ class HistoryLoginView extends GetView<HistoryLoginController> {
                               subtitle: Text(
                                 _formatTimestamp(entry['timestamp'] as String?),
                                 style: TextStyle(
-                                  color:
-                                      _subtitleColor, // Teks subjudul adaptif
+                                  color: subtitleColor, // Teks subjudul
                                   fontSize: 13,
                                 ),
                               ),
@@ -474,24 +451,24 @@ class HistoryLoginView extends GetView<HistoryLoginController> {
                                       // Menampilkan metode login
                                       _buildLoginMethodWidget(
                                         entry['method'] as String?,
-                                        _darkBlue,
-                                      ), // Warna teks adaptif
+                                        darkBlue,
+                                      ), // Warna teks
                                       if (entry['ip_address'] != null)
                                         _buildDetailRow(
                                           'IP Address',
                                           entry['ip_address'] as String,
                                           Ionicons.globe_outline,
-                                          _textColor,
-                                          _subtitleColor,
-                                        ), // Warna teks adaptif
+                                          textColor,
+                                          subtitleColor,
+                                        ), // Warna teks
                                       if (androidVersionFromDeviceName != null)
                                         _buildDetailRow(
                                           'Versi Android',
                                           androidVersionFromDeviceName,
                                           Ionicons.logo_android,
-                                          _textColor,
-                                          _subtitleColor,
-                                        ), // Warna teks adaptif
+                                          textColor,
+                                          subtitleColor,
+                                        ), // Warna teks
                                       if (androidVersionFromDeviceName ==
                                               null &&
                                           entry['device_info'] != null) ...[
@@ -511,9 +488,9 @@ class HistoryLoginView extends GetView<HistoryLoginController> {
                                               entry['device_info'] as String?,
                                             ),
                                             Ionicons.information_circle_outline,
-                                            _textColor,
-                                            _subtitleColor,
-                                          ), // Warna teks adaptif
+                                            textColor,
+                                            subtitleColor,
+                                          ), // Warna teks
                                         if (_getOSVersionFromUserAgent(
                                               entry['device_info'] as String?,
                                             ) !=
@@ -524,9 +501,9 @@ class HistoryLoginView extends GetView<HistoryLoginController> {
                                               entry['device_info'] as String?,
                                             ),
                                             Ionicons.cube_outline,
-                                            _textColor,
-                                            _subtitleColor,
-                                          ), // Warna teks adaptif
+                                            textColor,
+                                            subtitleColor,
+                                          ), // Warna teks
                                         if (_getBrowserNameFromUserAgent(
                                               entry['device_info'] as String?,
                                             ) !=
@@ -537,9 +514,9 @@ class HistoryLoginView extends GetView<HistoryLoginController> {
                                               entry['device_info'] as String?,
                                             ),
                                             Ionicons.browsers_outline,
-                                            _textColor,
-                                            _subtitleColor,
-                                          ), // Warna teks adaptif
+                                            textColor,
+                                            subtitleColor,
+                                          ), // Warna teks
                                         if (_getBrowserVersionFromUserAgent(
                                               entry['device_info'] as String?,
                                             ) !=
@@ -550,18 +527,18 @@ class HistoryLoginView extends GetView<HistoryLoginController> {
                                               entry['device_info'] as String?,
                                             ),
                                             Ionicons.git_branch_outline,
-                                            _textColor,
-                                            _subtitleColor,
-                                          ), // Warna teks adaptif
+                                            textColor,
+                                            subtitleColor,
+                                          ), // Warna teks
                                       ],
                                       if (entry['location'] != null)
                                         _buildDetailRow(
                                           'Lokasi',
                                           entry['location'] as String,
                                           Ionicons.location_outline,
-                                          _textColor,
-                                          _subtitleColor,
-                                        ), // Warna teks adaptif
+                                          textColor,
+                                          subtitleColor,
+                                        ), // Warna teks
                                     ],
                                   ),
                                 ),
@@ -596,7 +573,7 @@ class HistoryLoginView extends GetView<HistoryLoginController> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 18, color: valueColor), // Warna ikon adaptif
+          Icon(icon, size: 18, color: valueColor), // Warna ikon
           const SizedBox(width: 10),
           Expanded(
             child: Column(
@@ -607,7 +584,7 @@ class HistoryLoginView extends GetView<HistoryLoginController> {
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
-                    color: labelColor, // Warna label adaptif
+                    color: labelColor, // Warna label
                   ),
                 ),
                 Text(
@@ -615,7 +592,7 @@ class HistoryLoginView extends GetView<HistoryLoginController> {
                   style: TextStyle(
                     fontSize: 13,
                     color: valueColor,
-                  ), // Warna nilai adaptif
+                  ), // Warna nilai
                 ),
               ],
             ),
@@ -636,14 +613,14 @@ class HistoryLoginView extends GetView<HistoryLoginController> {
             _getLoginMethodIcon(method),
             size: 20,
             color: color,
-          ), // Warna ikon adaptif
+          ), // Warna ikon
           const SizedBox(width: 10),
           Text(
             _formatLoginMethodName(method),
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 14,
-              color: color, // Warna teks adaptif
+              color: color, // Warna teks
             ),
           ),
         ],

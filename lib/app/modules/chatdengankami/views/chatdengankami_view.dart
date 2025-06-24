@@ -9,61 +9,30 @@ class ChatdengankamiView extends GetView<ChatdengankamiController> {
   @override
   Widget build(BuildContext context) {
     final ScrollController scrollController = ScrollController();
-    // Determine if dark mode is active based on system brightness
-    final bool isDarkMode =
-        MediaQuery.of(context).platformBrightness == Brightness.dark;
 
-    // Define adaptive colors
-    final Color _scaffoldBackgroundColor =
-        isDarkMode ? Colors.black : Colors.white;
-    final Color _appBarBackgroundColor =
-        isDarkMode
-            ? const Color(0xFF1E1E1E)
-            : Colors.blue[800]!; // Dark grey for dark mode
-    final Color _appBarIconColor =
-        isDarkMode ? Colors.white : Colors.white; // White icons for contrast
-    final Color _appBarTextColor =
-        isDarkMode ? Colors.white : Colors.white; // White text for contrast
-    final Color _dividerColor =
-        isDarkMode
-            ? Colors.grey[800]!
-            : Colors.grey; // Darker grey for divider in dark mode
-    final Color _inputFillColor =
-        isDarkMode
-            ? const Color(0xFF2C2C2C)
-            : Colors.grey.shade100; // Dark grey for input field
-    final Color _inputIconColor =
-        isDarkMode
-            ? Colors.blue[400]!
-            : Colors.blue[800]!; // Lighter blue for icons in dark mode
-    final Color _hintTextColor =
-        isDarkMode ? Colors.grey[500]! : Colors.grey[700]!; // Lighter hint text
-    final Color _chatbotAvatarBgColor =
-        isDarkMode
-            ? const Color(0xFF424242)
-            : Colors.white; // Darker avatar background
-    final Color _chatbotIconColor =
-        isDarkMode
-            ? Colors.blue[400]!
-            : Colors.blue; // Consistent blue for chatbot icon
-    final Color _chatbotLabelColor =
-        isDarkMode
-            ? Colors.grey[400]!
-            : Colors.grey[600]!; // Lighter grey for chatbot label
-    final Color _userBubbleColor =
-        isDarkMode
-            ? Colors.blue[700]!
-            : Colors.blue[600]!; // Slightly darker blue for user bubble
-    final Color _chatbotBubbleColor =
-        isDarkMode
-            ? const Color(0xFF333333)
-            : Colors.grey[200]!; // Darker grey for chatbot bubble
-    final Color _userTextColor =
-        isDarkMode ? Colors.white : Colors.white; // White text for user bubble
-    final Color _chatbotTextColor =
-        isDarkMode
-            ? Colors.white70
-            : Colors.black87; // Lighter text for chatbot bubble
+    // Warna yang ditentukan untuk mode terang (sebelumnya isDarkMode telah dihapus)
+    const Color scaffoldBackgroundColor = Colors.white;
+    const Color appBarBackgroundColor = Colors.blue; // Dark grey for dark mode
+    const Color appBarIconColor = Colors.white; // White icons for contrast
+    const Color appBarTextColor = Colors.white; // White text for contrast
+    const Color dividerColor =
+        Colors.grey; // Darker grey for divider in dark mode
+    const Color inputFillColor = Colors.white; // Dark grey for input field
+    const Color inputIconColor =
+        Colors.blue; // Lighter blue for icons in dark mode
+    const Color hintTextColor = Colors.grey; // Lighter hint text
+    const Color chatbotAvatarBgColor = Colors.white; // Darker avatar background
+    const Color chatbotIconColor =
+        Colors.blue; // Consistent blue for chatbot icon
+    const Color chatbotLabelColor =
+        Colors.grey; // Lighter grey for chatbot label
+    const Color userBubbleColor =
+        Colors.blue; // Slightly darker blue for user bubble
+    const Color chatbotBubbleColor =
+        Colors.white; // Darker grey for chatbot bubble
+    const Color userTextColor = Colors.white; // White text for user bubble
+    const Color chatbotTextColor =
+        Colors.black; // Lighter text for chatbot bubble
 
     ever(controller.messages, (_) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -78,21 +47,21 @@ class ChatdengankamiView extends GetView<ChatdengankamiController> {
     });
 
     return Scaffold(
-      backgroundColor: _scaffoldBackgroundColor, // Adaptive background
+      backgroundColor: scaffoldBackgroundColor, // Adaptive background
       appBar: AppBar(
-        backgroundColor: _appBarBackgroundColor, // Adaptive AppBar background
+        backgroundColor: appBarBackgroundColor, // Adaptive AppBar background
         elevation: 0,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
-            color: _appBarIconColor,
+            color: appBarIconColor,
           ), // Adaptive icon color
           onPressed: () => Get.back(),
         ),
         title: Text(
           'Chat Dengan Kami',
           style: TextStyle(
-            color: _appBarTextColor,
+            color: appBarTextColor,
             fontWeight: FontWeight.bold,
           ), // Adaptive text color
         ),
@@ -101,7 +70,7 @@ class ChatdengankamiView extends GetView<ChatdengankamiController> {
           IconButton(
             icon: Icon(
               Icons.refresh,
-              color: _appBarIconColor,
+              color: appBarIconColor,
             ), // Adaptive icon color
             tooltip: 'Bersihkan riwayat obrolan',
             onPressed: () => controller.clearChatHistory(),
@@ -120,26 +89,24 @@ class ChatdengankamiView extends GetView<ChatdengankamiController> {
                   final message = controller.messages[index];
                   return _buildMessageRow(
                     message,
-                    isDarkMode,
-                    _chatbotAvatarBgColor,
-                    _chatbotIconColor,
-                    _chatbotLabelColor,
-                    _userBubbleColor,
-                    _chatbotBubbleColor,
-                    _userTextColor,
-                    _chatbotTextColor,
+                    chatbotAvatarBgColor,
+                    chatbotIconColor,
+                    chatbotLabelColor,
+                    userBubbleColor,
+                    chatbotBubbleColor,
+                    userTextColor,
+                    chatbotTextColor,
                   ); // Pass adaptive colors
                 },
               ),
             ),
           ),
-          Divider(height: 1, color: _dividerColor), // Adaptive divider color
+          Divider(height: 1, color: dividerColor), // Adaptive divider color
           _buildMessageInput(
             context,
-            isDarkMode,
-            _inputFillColor,
-            _inputIconColor,
-            _hintTextColor,
+            inputFillColor,
+            inputIconColor,
+            hintTextColor,
           ), // Pass adaptive colors
         ],
       ),
@@ -149,7 +116,6 @@ class ChatdengankamiView extends GetView<ChatdengankamiController> {
   /// Membangun satu baris pesan, menangani perataan dan avatar.
   Widget _buildMessageRow(
     ChatMessage message,
-    bool isDarkMode,
     Color chatbotAvatarBgColor,
     Color chatbotIconColor,
     Color chatbotLabelColor,
@@ -263,7 +229,6 @@ class ChatdengankamiView extends GetView<ChatdengankamiController> {
   /// Membangun bidang input pesan dan tombol kirim.
   Widget _buildMessageInput(
     BuildContext context,
-    bool isDarkMode,
     Color inputFillColor,
     Color inputIconColor,
     Color hintTextColor,
@@ -278,14 +243,8 @@ class ChatdengankamiView extends GetView<ChatdengankamiController> {
                 Get.snackbar(
                   'Fitur',
                   'Fitur attachment belum diimplementasikan',
-                  backgroundColor:
-                      isDarkMode
-                          ? Colors.grey[800]
-                          : Colors.white, // Adaptive snackbar background
-                  colorText:
-                      isDarkMode
-                          ? Colors.white
-                          : Colors.black87, // Adaptive snackbar text color
+                  backgroundColor: Colors.white, // Adaptive snackbar background
+                  colorText: Colors.black87, // Adaptive snackbar text color
                 );
               },
               borderRadius: BorderRadius.circular(25.0),
@@ -302,8 +261,8 @@ class ChatdengankamiView extends GetView<ChatdengankamiController> {
             Expanded(
               child: TextField(
                 controller: controller.messageInputController,
-                style: TextStyle(
-                  color: isDarkMode ? Colors.white : Colors.black,
+                style: const TextStyle(
+                  color: Colors.black,
                 ), // Adaptive text input color
                 decoration: InputDecoration(
                   hintText: 'Ketik pesan...',
@@ -360,4 +319,4 @@ class ChatdengankamiView extends GetView<ChatdengankamiController> {
 ///     required this.timestamp, // Tambahkan ini jika Anda menggunakan timestamp
 ///   });
 /// }
-/// ```
+///

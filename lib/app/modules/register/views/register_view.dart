@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart'; // <--- ADD THIS IMPORT
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import '../controllers/register_controller.dart';
 
 class RegisterView extends GetView<RegisterController> {
@@ -10,44 +10,32 @@ class RegisterView extends GetView<RegisterController> {
 
   @override
   Widget build(BuildContext context) {
-    // Determine if dark mode is active based on system brightness
-    final bool isDarkMode =
-        MediaQuery.of(context).platformBrightness == Brightness.dark;
+    // Define light mode colors directly, as the app is now forced to light mode
+    const Color primaryColor = Color(0xFF0D47A1);
+    const Color mediumBlue = Color(0xFF1976D2);
+    const Color originalBlue = Color(0xFF2196F3);
 
-    // Define adaptive colors
-    final Color primaryColor =
-        isDarkMode ? const Color(0xFF90CAF9) : const Color(0xFF0D47A1);
-    final Color mediumBlue =
-        isDarkMode ? const Color(0xFF64B5F6) : const Color(0xFF1976D2);
-    final Color originalBlue =
-        isDarkMode ? const Color(0xFFBBDEFB) : const Color(0xFF2196F3);
+    const Color backgroundColor = Colors.white;
+    const Color surfaceColor = Colors.white;
 
-    final Color backgroundColor =
-        isDarkMode ? const Color(0xFF121212) : Colors.white;
-    final Color surfaceColor =
-        isDarkMode ? const Color(0xFF1E1E1E) : Colors.white;
-
-    final Color textDarkColor =
-        isDarkMode ? Colors.white : const Color(0xFF212121);
-    final Color textLightColor = isDarkMode ? Colors.black : Colors.white;
-    final Color hintTextColor =
-        isDarkMode ? Colors.grey[400]! : Colors.grey[600]!;
-    final Color inputTextColor = isDarkMode ? Colors.white : Colors.black87;
-    final Color inputBorderColor =
-        isDarkMode ? primaryColor.withOpacity(0.5) : const Color(0xFF0D47A1);
-    final Color suffixIconColor =
-        isDarkMode ? Colors.grey[400]! : Colors.grey[600]!;
-    final Color successColor = Colors.green;
-    final Color disabledButtonColor =
-        isDarkMode ? Colors.grey[700]! : const Color(0xFFBBDEFB);
+    const Color textDarkColor = Color(0xFF212121);
+    const Color textLightColor =
+        Colors.white; // Used for text on the gradient background
+    final Color hintTextColor = Colors.grey[600]!;
+    const Color inputTextColor = Colors.black87;
+    const Color inputBorderColor = Color(0xFF0D47A1);
+    final Color suffixIconColor = Colors.grey[600]!;
+    const Color successColor = Colors.green;
+    const Color errorColor =
+        Colors.red; // Define a specific error color for the cross icon
+    const Color disabledButtonColor = Color(0xFFBBDEFB);
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value:
-          isDarkMode ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
+      // Set status bar icons for light theme (dark icons on light background)
+      value: SystemUiOverlayStyle.dark,
       child: Scaffold(
         resizeToAvoidBottomInset: true,
         body: Obx(() {
-          // Wrap with Obx to react to isLoadingOverlay
           return Stack(
             children: [
               Container(
@@ -161,10 +149,7 @@ class RegisterView extends GetView<RegisterController> {
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color:
-                                        isDarkMode
-                                            ? Colors.black.withOpacity(0.4)
-                                            : Colors.black.withOpacity(0.1),
+                                    color: Colors.black.withOpacity(0.1),
                                     blurRadius: 20,
                                     offset: const Offset(0, -10),
                                   ),
@@ -191,10 +176,10 @@ class RegisterView extends GetView<RegisterController> {
                                     keyboardType: TextInputType.emailAddress,
                                     labelText: 'Email',
                                     hintText: 'user@gmail.com',
-                                    isDarkMode: isDarkMode,
                                     primaryColor: primaryColor,
                                     inputTextColor: inputTextColor,
                                     inputBorderColor: inputBorderColor,
+                                    hintTextColor: hintTextColor,
                                   ),
                                   const SizedBox(height: 16),
 
@@ -203,10 +188,10 @@ class RegisterView extends GetView<RegisterController> {
                                     controller: controller.namaController,
                                     labelText: 'Nama',
                                     hintText: 'User',
-                                    isDarkMode: isDarkMode,
                                     primaryColor: primaryColor,
                                     inputTextColor: inputTextColor,
                                     inputBorderColor: inputBorderColor,
+                                    hintTextColor: hintTextColor,
                                   ),
                                   const SizedBox(height: 16),
 
@@ -229,7 +214,6 @@ class RegisterView extends GetView<RegisterController> {
                                             controller.togglePasswordVisibility,
                                         splashRadius: 24,
                                       ),
-                                      isDarkMode: isDarkMode,
                                       primaryColor: primaryColor,
                                       inputTextColor: inputTextColor,
                                       inputBorderColor: inputBorderColor,
@@ -241,30 +225,37 @@ class RegisterView extends GetView<RegisterController> {
                                   // Password validation criteria
                                   Obx(
                                     () => Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment
+                                              .start, // Align criteria to start
                                       children: [
                                         _buildPasswordCriteriaRow(
                                           'Minimal 8 karakter',
                                           controller.hasMinLength.value,
                                           textDarkColor,
                                           successColor,
+                                          errorColor, // Pass error color
                                         ),
                                         _buildPasswordCriteriaRow(
                                           'Satu huruf kapital',
                                           controller.hasUppercase.value,
                                           textDarkColor,
                                           successColor,
+                                          errorColor, // Pass error color
                                         ),
                                         _buildPasswordCriteriaRow(
                                           'Satu huruf kecil',
                                           controller.hasLowercase.value,
                                           textDarkColor,
                                           successColor,
+                                          errorColor, // Pass error color
                                         ),
                                         _buildPasswordCriteriaRow(
                                           'Satu angka',
                                           controller.hasDigit.value,
                                           textDarkColor,
                                           successColor,
+                                          errorColor, // Pass error color
                                         ),
                                       ],
                                     ),
@@ -297,7 +288,6 @@ class RegisterView extends GetView<RegisterController> {
                                         splashRadius: 24,
                                       ),
                                       showStrengthIndicator: false,
-                                      isDarkMode: isDarkMode,
                                       primaryColor: primaryColor,
                                       inputTextColor: inputTextColor,
                                       inputBorderColor: inputBorderColor,
@@ -400,7 +390,7 @@ class RegisterView extends GetView<RegisterController> {
                 ),
               ),
 
-              // Loading Overlay (add this section)
+              // Loading Overlay
               if (controller.isLoadingOverlay.value)
                 Positioned.fill(
                   child: Container(
@@ -444,10 +434,10 @@ class RegisterView extends GetView<RegisterController> {
     required String hintText,
     Widget? suffixIcon,
     bool obscureText = false,
-    required bool isDarkMode,
     required Color primaryColor,
     required Color inputTextColor,
     required Color inputBorderColor,
+    required Color hintTextColor,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -464,11 +454,9 @@ class RegisterView extends GetView<RegisterController> {
             labelText: labelText,
             labelStyle: GoogleFonts.poppins(color: primaryColor),
             suffixIcon: suffixIcon,
-            hintStyle: GoogleFonts.poppins(
-              color: isDarkMode ? Colors.grey[400]! : primaryColor,
-            ),
+            hintStyle: GoogleFonts.poppins(color: hintTextColor),
             filled: true,
-            fillColor: isDarkMode ? const Color(0xFF2C2C2C) : Colors.white,
+            fillColor: Colors.white,
             counterText: '',
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
@@ -508,7 +496,6 @@ class RegisterView extends GetView<RegisterController> {
     Widget? suffixIcon,
     bool obscureText = false,
     bool showStrengthIndicator = true,
-    required bool isDarkMode,
     required Color primaryColor,
     required Color inputTextColor,
     required Color inputBorderColor,
@@ -531,7 +518,7 @@ class RegisterView extends GetView<RegisterController> {
             suffixIcon: suffixIcon,
             hintStyle: GoogleFonts.poppins(color: hintTextColor),
             filled: true,
-            fillColor: isDarkMode ? const Color(0xFF2C2C2C) : Colors.white,
+            fillColor: Colors.white,
             counterText: '',
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
@@ -560,20 +547,26 @@ class RegisterView extends GetView<RegisterController> {
     );
   }
 
-  // New widget to build a password criteria row with a checkmark
+  // Updated widget to build a password criteria row with a checkmark/cross
   Widget _buildPasswordCriteriaRow(
     String text,
     bool isValid,
     Color textColor,
     Color successColor,
+    Color errorColor, // New parameter for error color
   ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
         children: [
           Icon(
-            isValid ? Icons.check_circle : Icons.circle,
-            color: isValid ? successColor : Colors.grey,
+            isValid
+                ? Icons.check_circle
+                : Icons.cancel, // Change icon to cancel for invalid
+            color:
+                isValid
+                    ? successColor
+                    : errorColor, // Use errorColor for invalid
             size: 18,
           ),
           const SizedBox(width: 8),
@@ -581,7 +574,10 @@ class RegisterView extends GetView<RegisterController> {
             text,
             style: GoogleFonts.poppins(
               fontSize: 14,
-              color: isValid ? successColor : textColor,
+              color:
+                  isValid
+                      ? successColor
+                      : errorColor, // Use errorColor for text too
               fontWeight: FontWeight.w500,
             ),
           ),

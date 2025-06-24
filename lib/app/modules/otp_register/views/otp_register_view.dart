@@ -57,16 +57,14 @@ class _OtpViewState extends State<OtpRegisterView> {
   }
 
   // Widget untuk membangun tombol keyboard numerik tunggal
+  // Removed isDarkMode parameter as it's no longer needed
   Widget _buildKeyboardButton(
     String text, {
     IconData? icon,
     VoidCallback? onPressed,
-    required bool isDarkMode, // Added isDarkMode parameter
   }) {
-    final Color textColor =
-        isDarkMode
-            ? Colors.white
-            : const Color(0xFF212529); // Adaptive text color
+    // Hardcoded text color for light mode
+    final Color textColor = const Color(0xFF212529);
     return Expanded(
       child: InkWell(
         onTap: onPressed,
@@ -81,14 +79,14 @@ class _OtpViewState extends State<OtpRegisterView> {
                     ? Icon(
                       icon,
                       size: 22,
-                      color: textColor, // Adaptive icon color
+                      color: textColor, // Hardcoded icon color for light mode
                     )
                     : Text(
                       text,
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.w600,
-                        color: textColor, // Adaptive text color
+                        color: textColor, // Hardcoded text color for light mode
                       ),
                     ),
           ),
@@ -98,68 +96,32 @@ class _OtpViewState extends State<OtpRegisterView> {
   }
 
   // Widget untuk membangun seluruh keyboard numerik kustom
-  Widget _buildNumericKeyboard(bool isDarkMode) {
-    // Pass isDarkMode
+  // Removed isDarkMode parameter
+  Widget _buildNumericKeyboard() {
     return Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _buildKeyboardButton(
-              '1',
-              onPressed: () => _inputNumber('1'),
-              isDarkMode: isDarkMode,
-            ),
-            _buildKeyboardButton(
-              '2',
-              onPressed: () => _inputNumber('2'),
-              isDarkMode: isDarkMode,
-            ),
-            _buildKeyboardButton(
-              '3',
-              onPressed: () => _inputNumber('3'),
-              isDarkMode: isDarkMode,
-            ),
+            _buildKeyboardButton('1', onPressed: () => _inputNumber('1')),
+            _buildKeyboardButton('2', onPressed: () => _inputNumber('2')),
+            _buildKeyboardButton('3', onPressed: () => _inputNumber('3')),
           ],
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _buildKeyboardButton(
-              '4',
-              onPressed: () => _inputNumber('4'),
-              isDarkMode: isDarkMode,
-            ),
-            _buildKeyboardButton(
-              '5',
-              onPressed: () => _inputNumber('5'),
-              isDarkMode: isDarkMode,
-            ),
-            _buildKeyboardButton(
-              '6',
-              onPressed: () => _inputNumber('6'),
-              isDarkMode: isDarkMode,
-            ),
+            _buildKeyboardButton('4', onPressed: () => _inputNumber('4')),
+            _buildKeyboardButton('5', onPressed: () => _inputNumber('5')),
+            _buildKeyboardButton('6', onPressed: () => _inputNumber('6')),
           ],
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _buildKeyboardButton(
-              '7',
-              onPressed: () => _inputNumber('7'),
-              isDarkMode: isDarkMode,
-            ),
-            _buildKeyboardButton(
-              '8',
-              onPressed: () => _inputNumber('8'),
-              isDarkMode: isDarkMode,
-            ),
-            _buildKeyboardButton(
-              '9',
-              onPressed: () => _inputNumber('9'),
-              isDarkMode: isDarkMode,
-            ),
+            _buildKeyboardButton('7', onPressed: () => _inputNumber('7')),
+            _buildKeyboardButton('8', onPressed: () => _inputNumber('8')),
+            _buildKeyboardButton('9', onPressed: () => _inputNumber('9')),
           ],
         ),
         Row(
@@ -168,16 +130,11 @@ class _OtpViewState extends State<OtpRegisterView> {
             const Expanded(
               child: SizedBox(),
             ), // Ruang kosong untuk penyelarasan
-            _buildKeyboardButton(
-              '0',
-              onPressed: () => _inputNumber('0'),
-              isDarkMode: isDarkMode,
-            ),
+            _buildKeyboardButton('0', onPressed: () => _inputNumber('0')),
             _buildKeyboardButton(
               '',
               icon: Ionicons.backspace_outline,
               onPressed: _deleteNumber,
-              isDarkMode: isDarkMode, // Pass isDarkMode
             ),
           ],
         ),
@@ -187,52 +144,21 @@ class _OtpViewState extends State<OtpRegisterView> {
 
   @override
   Widget build(BuildContext context) {
-    // Determine if dark mode is active based on system brightness
-    final bool isDarkMode =
-        MediaQuery.of(context).platformBrightness == Brightness.dark;
-
-    // Define adaptive colors
-    final Color primaryBlue =
-        isDarkMode
-            ? const Color(0xFF90CAF9)
-            : const Color(
-              0xFF007BFF,
-            ); // Lighter blue for dark, standard blue for light
-    final Color lightBackground =
-        isDarkMode
-            ? const Color(0xFF121212)
-            : const Color(
-              0xFFF8F8F8,
-            ); // Dark grey for dark, light grey for light
-    final Color textColorDark =
-        isDarkMode
-            ? Colors.white
-            : const Color(0xFF212529); // White for dark, darker for light
-    final Color textColorGrey =
-        isDarkMode
-            ? Colors.grey[400]!
-            : const Color(
-              0xFF6C757D,
-            ); // Lighter grey for dark, standard grey for light
-    final Color textFieldBorderColor =
-        isDarkMode
-            ? const Color(0xFF333333)
-            : const Color(
-              0xFFDEE2E6,
-            ); // Darker border for dark, light for light
-    final Color textFieldFillColor =
-        isDarkMode
-            ? const Color(0xFF1E1E1E)
-            : const Color(0xFFF8F9FA); // Darker fill for dark, light for light
+    // Removed isDarkMode detection
+    // Hardcoded colors to light theme values
+    final Color primaryBlue = const Color(0xFF007BFF);
+    final Color lightBackground = const Color(0xFFF8F8F8);
+    final Color textColorDark = const Color(0xFF212529);
+    final Color textColorGrey = const Color(0xFF6C757D);
+    final Color textFieldBorderColor = const Color(0xFFDEE2E6);
+    final Color textFieldFillColor = const Color(0xFFF8F9FA);
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value:
-          isDarkMode
-              ? SystemUiOverlayStyle.light
-              : SystemUiOverlayStyle
-                  .dark, // Set status bar icons based on theme
+      // Always set status bar icons for light theme
+      value: SystemUiOverlayStyle.dark,
       child: Scaffold(
-        backgroundColor: lightBackground, // Adaptive background color
+        backgroundColor:
+            lightBackground, // Hardcoded background color for light mode
         body: Obx(() {
           // Wrap with Obx to react to controller.isLoadingOverlay
           return Stack(
@@ -257,14 +183,14 @@ class _OtpViewState extends State<OtpRegisterView> {
                           decoration: BoxDecoration(
                             color: primaryBlue.withOpacity(
                               0.1,
-                            ), // Adaptive icon background color
+                            ), // Hardcoded icon background color
                             shape: BoxShape.circle,
                           ),
                           child: Center(
                             child: Icon(
                               Ionicons.mail_outline,
                               size: 70,
-                              color: primaryBlue, // Adaptive icon color
+                              color: primaryBlue, // Hardcoded icon color
                             ),
                           ),
                         ),
@@ -274,7 +200,7 @@ class _OtpViewState extends State<OtpRegisterView> {
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
-                            color: textColorDark, // Adaptive text color
+                            color: textColorDark, // Hardcoded text color
                           ),
                         ),
                         const SizedBox(height: 10),
@@ -285,7 +211,7 @@ class _OtpViewState extends State<OtpRegisterView> {
                             style: TextStyle(
                               color: textColorGrey,
                               fontSize: 14,
-                            ), // Adaptive text color
+                            ), // Hardcoded text color
                           ),
                         ),
                         const SizedBox(height: 30),
@@ -304,7 +230,7 @@ class _OtpViewState extends State<OtpRegisterView> {
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
-                              color: textColorDark, // Adaptive text color
+                              color: textColorDark, // Hardcoded text color
                               letterSpacing: 8.0,
                             ),
                             decoration: InputDecoration(
@@ -314,12 +240,12 @@ class _OtpViewState extends State<OtpRegisterView> {
                               ),
                               filled: true,
                               fillColor:
-                                  textFieldFillColor, // Adaptive fill color
+                                  textFieldFillColor, // Hardcoded fill color
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
                                 borderSide: BorderSide(
                                   color:
-                                      textFieldBorderColor, // Adaptive border color
+                                      textFieldBorderColor, // Hardcoded border color
                                   width: 1.0,
                                 ),
                               ),
@@ -327,7 +253,7 @@ class _OtpViewState extends State<OtpRegisterView> {
                                 borderRadius: BorderRadius.circular(8),
                                 borderSide: BorderSide(
                                   color:
-                                      textFieldBorderColor, // Adaptive border color
+                                      textFieldBorderColor, // Hardcoded border color
                                   width: 1.0,
                                 ),
                               ),
@@ -335,7 +261,7 @@ class _OtpViewState extends State<OtpRegisterView> {
                                 borderRadius: BorderRadius.circular(8),
                                 borderSide: BorderSide(
                                   color:
-                                      primaryBlue, // Adaptive focused border color
+                                      primaryBlue, // Hardcoded focused border color
                                   width: 2.0,
                                 ),
                               ),
@@ -345,7 +271,7 @@ class _OtpViewState extends State<OtpRegisterView> {
                               hintStyle: TextStyle(
                                 color: textColorGrey.withOpacity(
                                   0.5,
-                                ), // Adaptive hint style
+                                ), // Hardcoded hint style
                                 letterSpacing: 8.0,
                               ),
                             ),
@@ -379,12 +305,12 @@ class _OtpViewState extends State<OtpRegisterView> {
                             style: TextStyle(
                               color: textColorGrey,
                               fontSize: 14,
-                            ), // Adaptive text color
+                            ), // Hardcoded text color
                             children: [
                               TextSpan(
                                 text: "Resend code",
                                 style: TextStyle(
-                                  color: primaryBlue, // Adaptive link color
+                                  color: primaryBlue, // Hardcoded link color
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14,
                                 ),
@@ -416,7 +342,7 @@ class _OtpViewState extends State<OtpRegisterView> {
                                       : () => controller.verifyOtp(),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor:
-                                    primaryBlue, // Adaptive button background color
+                                    primaryBlue, // Hardcoded button background color
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 14,
                                 ),
@@ -426,7 +352,7 @@ class _OtpViewState extends State<OtpRegisterView> {
                                 disabledBackgroundColor: primaryBlue
                                     .withOpacity(
                                       0.5,
-                                    ), // Adaptive disabled color
+                                    ), // Hardcoded disabled color
                               ),
                               child:
                                   controller.isLoading.value
@@ -451,9 +377,7 @@ class _OtpViewState extends State<OtpRegisterView> {
                         const SizedBox(
                           height: 30,
                         ), // Jarak setelah tombol Verify
-                        _buildNumericKeyboard(
-                          isDarkMode,
-                        ), // Pass isDarkMode to the keyboard builder
+                        _buildNumericKeyboard(), // Removed isDarkMode parameter
                       ],
                     ),
                   ),

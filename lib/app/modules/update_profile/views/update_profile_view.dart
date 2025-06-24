@@ -10,54 +10,42 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
 
   @override
   Widget build(BuildContext context) {
-    // Determine if dark mode is active based on system brightness
-    final isDarkMode =
-        MediaQuery.of(context).platformBrightness == Brightness.dark;
-
-    // Define colors based on the theme mode, consistent with ProfileView
-    final Color primaryColor =
-        isDarkMode ? const Color(0xFF90CAF9) : const Color(0xFF0D47A1);
-    final Color accentColor =
-        isDarkMode ? const Color(0xFF64B5F6) : const Color(0xFF1976D2);
-    final Color backgroundColor =
-        isDarkMode ? const Color(0xFF121212) : const Color(0xFFE3F2FD);
-    final Color surfaceColor =
-        isDarkMode ? const Color(0xFF1E1E1E) : Colors.white;
-    final Color textColor =
-        isDarkMode ? const Color(0xFFE0E0E0) : const Color(0xFF222222);
-    final Color hintColor =
-        isDarkMode ? const Color(0xFFA0A0A0) : const Color(0xFF666666);
-    final Color inputFillColor =
-        isDarkMode ? const Color(0xFF2C2C2C) : Colors.grey[100]!;
-    final Color iconColor =
-        isDarkMode ? const Color(0xFFB0B0B0) : Colors.grey[600]!;
+    // Removed isDarkMode detection.
+    // Hardcoded colors to light theme values, consistent with MateriView's "super bagus" aesthetic.
+    final Color primaryColor = const Color(0xFF0D47A1); // Deep Blue
+    final Color accentColor = const Color(0xFF1976D2); // Medium Blue
+    final Color backgroundColor = Colors.white; // Changed to white
+    final Color surfaceColor = Colors.white; // Pure White
+    final Color textColor = const Color(0xFF222222); // Dark Grey
+    final Color hintColor = const Color(0xFF666666); // Medium Grey
+    final Color inputFillColor = Colors.grey[100]!; // Very Light Grey
+    final Color iconColor = Colors.grey[600]!; // Medium Grey
 
     return Obx(
       () => Stack(
         // Menggunakan Stack untuk menempatkan overlay di atas Scaffold
         children: [
           Scaffold(
-            backgroundColor: backgroundColor, // Use dynamic background color
+            backgroundColor:
+                backgroundColor, // Use hardcoded light background color
             appBar: AppBar(
               title: Text(
                 'Edit Profil',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color:
-                      isDarkMode
-                          ? Colors.white
-                          : Colors.black87, // Adapt app bar title color
+                      Colors
+                          .black87, // Hardcoded app bar title color for light mode
                 ),
               ),
               centerTitle: true,
               backgroundColor:
-                  backgroundColor, // Use dynamic background color for app bar
+                  backgroundColor, // Use hardcoded background color for app bar
               elevation: 0,
               iconTheme: IconThemeData(
                 color:
-                    isDarkMode
-                        ? Colors.white
-                        : Colors.black87, // Adapt app bar icon color
+                    Colors
+                        .black87, // Hardcoded app bar icon color for light mode
               ),
             ),
             body: SingleChildScrollView(
@@ -72,7 +60,7 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                           radius: 60,
                           backgroundColor: surfaceColor.withOpacity(
                             0.95,
-                          ), // Adapt to surface color
+                          ), // Uses hardcoded surface color
                           // Mengganti URL placeholder gambar
                           backgroundImage: const NetworkImage(
                             'https://placehold.co/150x150/0000FF/FFFFFF?text=User', // Menggunakan placehold.co
@@ -83,7 +71,7 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                             size: 60,
                             color: primaryColor.withOpacity(
                               0.8,
-                            ), // Adapt to primary color
+                            ), // Uses hardcoded primary color
                           ),
                         ),
                         Positioned(
@@ -91,7 +79,8 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                           right: 0,
                           child: CircleAvatar(
                             radius: 20,
-                            backgroundColor: primaryColor, // Use primary color
+                            backgroundColor:
+                                primaryColor, // Uses hardcoded primary color
                             child: IconButton(
                               icon: const Icon(
                                 Ionicons.camera, // Use Ionicons for consistency
@@ -106,12 +95,10 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                                   'Fungsi ubah gambar profil akan segera hadir!',
                                   snackPosition: SnackPosition.BOTTOM,
                                   backgroundColor:
-                                      accentColor, // Use accent color for snackbar
+                                      accentColor, // Uses hardcoded accent color for snackbar
                                   colorText:
-                                      isDarkMode
-                                          ? Colors.black87
-                                          : Colors
-                                              .white, // Text color on accent
+                                      Colors
+                                          .white, // Hardcoded text color on accent
                                   duration: const Duration(seconds: 2),
                                 );
                               },
@@ -132,7 +119,7 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                             .nameController, // <-- Terhubung dengan nameController
                     icon: Ionicons.person_outline, // Use Ionicons
                     primaryColor:
-                        primaryColor, // Pass the dynamic primary color
+                        primaryColor, // Pass the hardcoded primary color
                     textColor: textColor,
                     hintColor: hintColor,
                     inputFillColor: inputFillColor,
@@ -150,7 +137,7 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                     icon: Ionicons.mail_outline, // Use Ionicons
                     keyboardType: TextInputType.emailAddress,
                     primaryColor:
-                        primaryColor, // Pass the dynamic primary color
+                        primaryColor, // Pass the hardcoded primary color
                     textColor: textColor,
                     hintColor: hintColor,
                     inputFillColor: inputFillColor,
@@ -163,9 +150,8 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: sectionTitleColor(
-                        isDarkMode,
-                      ), // Use consistent section title color logic
+                      color:
+                          sectionTitleColor(), // Uses hardcoded section title color logic
                     ),
                   ),
                   const SizedBox(height: 16.0),
@@ -175,7 +161,7 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                     hintText: 'Masukkan kata sandi lama Anda',
                     controller: controller.oldPasswordController,
                     primaryColor:
-                        primaryColor, // Pass the dynamic primary color
+                        primaryColor, // Pass the hardcoded primary color
                     textColor: textColor,
                     hintColor: hintColor,
                     inputFillColor: inputFillColor,
@@ -188,7 +174,7 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                     hintText: 'Masukkan kata sandi baru Anda',
                     controller: controller.newPasswordController,
                     primaryColor:
-                        primaryColor, // Pass the dynamic primary color
+                        primaryColor, // Pass the hardcoded primary color
                     textColor: textColor,
                     hintColor: hintColor,
                     inputFillColor: inputFillColor,
@@ -201,7 +187,7 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                     hintText: 'Ketik ulang kata sandi baru Anda',
                     controller: controller.confirmPasswordController,
                     primaryColor:
-                        primaryColor, // Pass the dynamic primary color
+                        primaryColor, // Pass the hardcoded primary color
                     textColor: textColor,
                     hintColor: hintColor,
                     inputFillColor: inputFillColor,
@@ -219,7 +205,7 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                               },
                       style: ElevatedButton.styleFrom(
                         backgroundColor:
-                            primaryColor, // Use dynamic primary color for button
+                            primaryColor, // Uses hardcoded primary color for button
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12.0),
@@ -264,7 +250,7 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                   child: LoadingAnimationWidget.threeArchedCircle(
                     // Mengubah jenis animasi loading
                     color:
-                        primaryColor, // Warna animasi, gunakan primaryColor Anda
+                        primaryColor, // Warna animasi, gunakan hardcoded primaryColor Anda
                     size: 50,
                   ),
                 ),
@@ -276,9 +262,9 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
     );
   }
 
-  // Helper function for section title color, consistent with ProfileView
-  Color sectionTitleColor(bool isDarkMode) {
-    return isDarkMode ? const Color(0xFFB0B0B0) : const Color(0xFF222222);
+  // Helper function for section title color, always returning light mode color
+  Color sectionTitleColor() {
+    return const Color(0xFF222222); // Hardcoded text color for light mode
   }
 
   Widget _buildInputField({

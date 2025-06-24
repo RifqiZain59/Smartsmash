@@ -8,142 +8,122 @@ class SyaratKetentuanView extends GetView<SyaratKetentuanController> {
 
   @override
   Widget build(BuildContext context) {
-    // Determine if dark mode is active based on system brightness
-    final isDarkMode =
-        MediaQuery.of(context).platformBrightness == Brightness.dark;
-
-    // Define colors based on the theme mode
-    final Color _darkBlue =
-        isDarkMode
-            ? const Color(0xFF90CAF9)
-            : const Color(
-              0xFF1A237E,
-            ); // Lighter blue for dark, deep indigo for light
-    final Color _appBarBackgroundColor =
-        isDarkMode ? Colors.black : _darkBlue; // Black AppBar for dark mode
-    final Color _appBarTextColor =
-        isDarkMode
-            ? Colors.white
-            : Colors.white; // White text for AppBar in both modes
-    final Color _scaffoldBackgroundColor =
-        isDarkMode
-            ? Colors.black
-            : Colors.white; // Black background for dark mode, white for light
-    final Color _bodyTextColor =
-        isDarkMode
-            ? Colors.white70
-            : Colors.black87; // Lighter text for dark mode, dark for light
-    final Color _footerTextColor =
-        isDarkMode
-            ? Colors.grey[400]!
-            : Colors.grey[700]!; // Lighter grey for dark mode footer
+    // Warna yang ditentukan untuk mode terang (sebelumnya deteksi isDarkMode telah dihapus)
+    const Color darkBlue = Color(
+      0xFF1A237E,
+    ); // Warna biru indigo tua untuk mode terang
+    const Color appBarBackgroundColor =
+        darkBlue; // AppBar akan menggunakan warna biru tua
+    const Color appBarTextColor = Colors.white; // Teks AppBar tetap putih
+    const Color scaffoldBackgroundColor =
+        Colors.white; // Latar belakang Scaffold putih
+    const Color bodyTextColor = Colors.black87; // Teks isi hitam pekat
+    const Color footerTextColor = Colors.grey; // Teks footer abu-abu
 
     return Scaffold(
-      backgroundColor:
-          _scaffoldBackgroundColor, // Set Scaffold background based on theme
+      backgroundColor: scaffoldBackgroundColor, // Setel latar belakang Scaffold
       appBar: AppBar(
-        // Customize AppBar appearance
+        // Sesuaikan tampilan AppBar
         title: Text(
           'Syarat & Ketentuan',
           style: TextStyle(
-            color: _appBarTextColor, // Text color adapts to theme
+            color: appBarTextColor, // Warna teks
             fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,
-        backgroundColor:
-            _appBarBackgroundColor, // AppBar background color adapts to theme
-        elevation: 0, // Remove shadow for a flatter design
+        backgroundColor: appBarBackgroundColor, // Warna latar belakang AppBar
+        elevation: 0, // Hapus bayangan untuk desain yang lebih datar
         iconTheme: IconThemeData(
-          color: _appBarTextColor, // Back button color adapts to theme
+          color: appBarTextColor, // Warna tombol kembali
         ),
       ),
-      // Wrap the body content with SafeArea to prevent it from encroaching on system UI (e.g., notches, status bar)
+      // Bungkus konten body dengan SafeArea untuk mencegahnya melanggar UI sistem (misalnya, notch, status bar)
       body: SafeArea(
         child: SingleChildScrollView(
-          // Allows content to scroll if it overflows
+          // Memungkinkan konten untuk digulir jika meluap
           padding: const EdgeInsets.symmetric(
             horizontal: 20.0,
             vertical: 25.0,
-          ), // Adjusted padding
+          ), // Padding yang disesuaikan
           child: Column(
             crossAxisAlignment:
-                CrossAxisAlignment.start, // Align text to the start (left)
+                CrossAxisAlignment.start, // Sejajarkan teks ke awal (kiri)
             children: [
-              // --- Introduction Section ---
+              // --- Bagian Pendahuluan ---
               Text(
                 'Selamat datang di aplikasi kami. Dengan menggunakan aplikasi ini, Anda setuju untuk mematuhi dan terikat oleh syarat dan ketentuan berikut:',
                 style: TextStyle(
                   fontSize: 16,
-                  height: 1.5, // Line height for readability
-                  color: _bodyTextColor, // Text color adapts to theme
+                  height: 1.5, // Tinggi baris untuk keterbacaan
+                  color: bodyTextColor, // Warna teks
                 ),
               ),
               const SizedBox(
                 height: 30,
-              ), // Increased space between main sections
-              // --- Section 1: Penggunaan Aplikasi ---
+              ), // Jarak yang ditingkatkan antara bagian utama
+              // --- Bagian 1: Penggunaan Aplikasi ---
               _buildSectionTitle(
                 '1. Penggunaan Aplikasi',
-                _darkBlue,
-              ), // Pass adaptive darkBlue to title
+                darkBlue,
+              ), // Meneruskan warna biru tua ke judul
               const SizedBox(height: 10),
               _buildSectionContent(
                 'Aplikasi ini disediakan untuk penggunaan pribadi dan non-komersial Anda. Anda tidak boleh menggunakan aplikasi ini untuk tujuan ilegal atau tidak sah.',
-                _bodyTextColor,
-              ), // Pass adaptive body text color
+                bodyTextColor,
+              ), // Meneruskan warna teks body
               const SizedBox(height: 10),
               _buildSectionContent(
                 'Anda bertanggung jawab untuk menjaga kerahasiaan akun dan kata sandi Anda serta untuk semua aktivitas yang terjadi di bawah akun Anda.',
-                _bodyTextColor,
-              ), // Pass adaptive body text color
+                bodyTextColor,
+              ), // Meneruskan warna teks body
               const SizedBox(height: 30),
 
-              // --- Section 2: Hak Kekayaan Intelektual ---
-              _buildSectionTitle('2. Hak Kekayaan Intelektual', _darkBlue),
+              // --- Bagian 2: Hak Kekayaan Intelektual ---
+              _buildSectionTitle('2. Hak Kekayaan Intelektual', darkBlue),
               const SizedBox(height: 10),
               _buildSectionContent(
                 'Semua konten, merek dagang, logo, dan materi lain yang ditampilkan dalam aplikasi ini adalah milik kami atau pemberi lisensi kami dan dilindungi oleh undang-undang hak cipta dan merek dagang.',
-                _bodyTextColor,
-              ), // Pass adaptive body text color
+                bodyTextColor,
+              ), // Meneruskan warna teks body
               const SizedBox(height: 30),
 
-              // --- Section 3: Batasan Tanggung Jawab ---
-              _buildSectionTitle('3. Batasan Tanggung Jawab', _darkBlue),
+              // --- Bagian 3: Batasan Tanggung Jawab ---
+              _buildSectionTitle('3. Batasan Tanggung Jawab', darkBlue),
               const SizedBox(height: 10),
               _buildSectionContent(
                 'Kami tidak bertanggung jawab atas kerugian atau kerusakan apa pun yang timbul dari penggunaan atau ketidakmampuan untuk menggunakan aplikasi ini, termasuk namun tidak terbatas pada kerugian langsung, tidak langsung, insidental, atau konsekuensial.',
-                _bodyTextColor,
-              ), // Pass adaptive body text color
+                bodyTextColor,
+              ), // Meneruskan warna teks body
               const SizedBox(height: 30),
 
-              // --- Section 4: Perubahan Syarat & Ketentuan ---
-              _buildSectionTitle('4. Perubahan Syarat & Ketentuan', _darkBlue),
+              // --- Bagian 4: Perubahan Syarat & Ketentuan ---
+              _buildSectionTitle('4. Perubahan Syarat & Ketentuan', darkBlue),
               const SizedBox(height: 10),
               _buildSectionContent(
                 'Kami berhak untuk mengubah syarat dan ketentuan ini kapan saja. Perubahan akan berlaku segera setelah diposting di aplikasi. Penggunaan Anda yang berkelanjutan atas aplikasi ini setelah perubahan tersebut merupakan penerimaan Anda terhadap syarat dan ketentuan yang direvisi.',
-                _bodyTextColor,
-              ), // Pass adaptive body text color
+                bodyTextColor,
+              ), // Meneruskan warna teks body
               const SizedBox(height: 30),
 
-              // --- Section 5: Hukum yang Berlaku ---
-              _buildSectionTitle('5. Hukum yang Berlaku', _darkBlue),
+              // --- Bagian 5: Hukum yang Berlaku ---
+              _buildSectionTitle('5. Hukum yang Berlaku', darkBlue),
               const SizedBox(height: 10),
               _buildSectionContent(
                 'Syarat dan ketentuan ini diatur dan ditafsirkan sesuai dengan hukum yang berlaku di Indonesia.',
-                _bodyTextColor,
-              ), // Pass adaptive body text color
+                bodyTextColor,
+              ), // Meneruskan warna teks body
               const SizedBox(height: 30),
 
-              // --- Section 6: Kontak Kami ---
-              _buildSectionTitle('6. Kontak Kami', _darkBlue),
+              // --- Bagian 6: Kontak Kami ---
+              _buildSectionTitle('6. Kontak Kami', darkBlue),
               const SizedBox(height: 10),
               _buildSectionContent(
                 'Jika Anda memiliki pertanyaan tentang Syarat & Ketentuan ini, silakan hubungi kami melalui [alamat email/informasi kontak Anda].',
-                _bodyTextColor,
-              ), // Pass adaptive body text color
-              const SizedBox(height: 40), // More space before the footer
-              // --- Footer / Date ---
+                bodyTextColor,
+              ), // Meneruskan warna teks body
+              const SizedBox(height: 40), // Ruang lebih banyak sebelum footer
+              // --- Footer / Tanggal ---
               Align(
                 alignment: Alignment.centerRight,
                 child: Text(
@@ -151,7 +131,7 @@ class SyaratKetentuanView extends GetView<SyaratKetentuanController> {
                   style: TextStyle(
                     fontSize: 13,
                     fontStyle: FontStyle.italic,
-                    color: _footerTextColor, // Footer text color adapts
+                    color: footerTextColor, // Warna teks footer
                   ),
                 ),
               ),
@@ -162,27 +142,29 @@ class SyaratKetentuanView extends GetView<SyaratKetentuanController> {
     );
   }
 
-  // Helper method for consistent section titles
+  // Metode pembantu untuk judul bagian yang konsisten
   Widget _buildSectionTitle(String title, Color color) {
     return Text(
       title,
       style: TextStyle(
-        fontSize: 19, // Slightly larger for better hierarchy
+        fontSize: 19, // Sedikit lebih besar untuk hierarki yang lebih baik
         fontWeight: FontWeight.bold,
-        color: color, // Use the passed-in adaptive color
+        color: color, // Menggunakan warna yang diteruskan
       ),
     );
   }
 
-  // Helper method for consistent section content
+  // Metode pembantu untuk konten bagian yang konsisten
   Widget _buildSectionContent(String content, Color textColor) {
     return Text(
       content,
-      textAlign: TextAlign.justify, // Justify text for a cleaner look
+      textAlign:
+          TextAlign.justify, // Ratakan teks untuk tampilan yang lebih bersih
       style: TextStyle(
         fontSize: 16,
-        height: 1.6, // Increased line height for better readability
-        color: textColor, // Use the passed-in adaptive text color
+        height:
+            1.6, // Tinggi baris yang ditingkatkan untuk keterbacaan yang lebih baik
+        color: textColor, // Menggunakan warna teks yang diteruskan
       ),
     );
   }

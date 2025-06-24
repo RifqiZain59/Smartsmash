@@ -5,60 +5,29 @@ import 'package:smartsmashapp/app/modules/Acara/views/acara_view.dart';
 import 'package:smartsmashapp/app/modules/Gerakan/views/gerakan_view.dart';
 import 'package:smartsmashapp/app/modules/Juara/views/juara_view.dart';
 import 'package:smartsmashapp/app/modules/berita/views/berita_view.dart';
+import 'package:marquee/marquee.dart'; // <--- NEW: Import the marquee package
 import '../controllers/home_controller.dart';
+import 'dart:convert'; // Pastikan ini ada!
+import 'package:smartsmashapp/app/modules/profile/views/profile_view.dart'; // Import ProfileView
+import 'package:smartsmashapp/app/modules/hapus_data/views/hapus_data_view.dart'; // NEW: Import HapusDataView
 
 class HomeView extends GetView<HomeController> {
   const HomeView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // Determine if dark mode is active based on system brightness
-    final isDarkMode =
-        MediaQuery.of(context).platformBrightness == Brightness.dark;
-
-    // Define colors based on the theme mode
+    // Define colors explicitly for light mode
     final Color primaryColor = const Color(
       0xFF007BFF,
     ); // Blue (remains constant)
-
-    final Color backgroundColor =
-        isDarkMode
-            ? const Color(0xFF121212)
-            : const Color(0xFFF8F9FA); // Dark or light grey
-    final Color surfaceColor =
-        isDarkMode
-            ? const Color(0xFF1E1E1E)
-            : Colors.white; // Dark or white for cards/containers
-    final Color textColor =
-        isDarkMode
-            ? const Color(0xFFE0E0E0)
-            : Colors.black87; // Light grey or dark for general text
-    final Color hintTextColor =
-        isDarkMode
-            ? const Color(0xFF9E9E9E)
-            : const Color(0xFF6C757D); // Muted grey
-    final Color accentColor =
-        isDarkMode
-            ? const Color(0xFFADB5BD)
-            : const Color(
-              0xFF6C757D,
-            ); // Lighter grey for dark, darker for light
-    final Color shadowColor =
-        isDarkMode
-            ? Colors.black.withOpacity(0.3)
-            : Colors.grey.withOpacity(0.1); // Darker or lighter shadow
+    final Color backgroundColor = const Color(0xFFF8F9FA); // Light grey
+    final Color surfaceColor = Colors.white; // White for cards/containers
+    final Color textColor = Colors.black87; // Dark for general text
+    final Color hintTextColor = const Color(0xFF6C757D); // Muted grey
+    final Color accentColor = const Color(0xFF6C757D); // Darker grey for light
+    final Color shadowColor = Colors.grey.withOpacity(0.1); // Lighter shadow
     final Color avatarPlaceholderColor =
-        isDarkMode
-            ? Colors.grey[700]!
-            : Colors.grey[200]!; // Darker or lighter avatar placeholder
-    final Color chipUnselectedBgColor =
-        isDarkMode
-            ? Colors.grey[800]!
-            : Colors.white; // Darker or white chip background
-    final Color chipUnselectedBorderColor =
-        isDarkMode
-            ? Colors.grey.shade600
-            : Colors.grey.shade300; // Darker or lighter chip border
+        Colors.grey[200]!; // Lighter avatar placeholder
 
     return Obx(() {
       final selectedIndex = controller.selectedIndex.value;
@@ -73,55 +42,82 @@ class HomeView extends GetView<HomeController> {
           children: [
             SafeArea(
               bottom: false,
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 90),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildHeader(
-                      greetingIcon,
-                      greetingText,
-                      primaryColor,
-                      textColor,
-                      surfaceColor,
-                      shadowColor,
-                    ),
-                    const SizedBox(height: 28),
-                    _buildSearchBox(
-                      surfaceColor,
-                      textColor,
-                      hintTextColor,
-                      accentColor,
-                      shadowColor,
-                    ),
-                    const SizedBox(height: 28),
-                    _buildSpecialOffers(textColor),
-                    const SizedBox(height: 28),
-                    Text(
-                      'Menu Apps',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: textColor,
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  await controller
+                      .fetchPelatih(); // Panggil fungsi refresh data pelatih
+                },
+                color: primaryColor, // Warna indikator refresh
+                child: SingleChildScrollView(
+                  physics:
+                      const AlwaysScrollableScrollPhysics(), // Penting agar bisa di-scroll meskipun konten sedikit
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 90),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildHeader(
+                        greetingIcon,
+                        greetingText,
+                        primaryColor,
+                        textColor,
+                        surfaceColor,
+                        shadowColor,
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    _buildServices(
-                      primaryColor,
-                      surfaceColor,
-                      textColor,
-                      shadowColor,
-                    ),
-                    const SizedBox(height: 28),
-                    _buildPopularServices(
-                      primaryColor,
-                      accentColor,
-                      textColor,
-                      surfaceColor,
-                      shadowColor,
-                      avatarPlaceholderColor,
-                    ),
-                  ],
+                      const SizedBox(height: 28),
+                      // --- Marquee Section ---
+                      _buildMotionMarquee(
+                        textColor,
+                      ), // <--- MODIFIED: Calling the new Marquee widget
+                      // --- End Marquee Section ---
+                      const SizedBox(height: 28),
+                      _buildSpecialOffers(textColor),
+                      const SizedBox(height: 28),
+                      Text(
+                        'Menu Apps',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: textColor,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildServices(
+                        primaryColor,
+                        surfaceColor,
+                        textColor,
+                        shadowColor,
+                      ),
+                      const SizedBox(height: 28),
+                      Text(
+                        'Daftar Pelatih', // Judul "Daftar Pelatih"
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: textColor,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      // Kotak pencarian dipindahkan ke sini
+                      _buildSearchBox(
+                        surfaceColor,
+                        textColor,
+                        hintTextColor,
+                        accentColor,
+                        shadowColor,
+                      ),
+                      const SizedBox(
+                        height: 16,
+                      ), // Spasi antara search box dan daftar pelatih
+                      _buildPelatihSection(
+                        primaryColor,
+                        accentColor,
+                        textColor,
+                        surfaceColor,
+                        shadowColor,
+                        avatarPlaceholderColor,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -142,6 +138,63 @@ class HomeView extends GetView<HomeController> {
     });
   }
 
+  // --- NEW: Widget for Marquee Text ---
+  // --- NEW: Widget for Marquee Text ---
+  Widget _buildMotionMarquee(Color textColor) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF333366), // Changed background color to dark blue
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: const Color(0xFF333366), // Dark blue border color
+          width: 2, // Border width
+        ),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        children: [
+          const Icon(
+            Ionicons.information_circle_outline, // Information icon
+            color: Colors.white, // Changed icon color to white for contrast
+            size: 24,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: SizedBox(
+              height: 20, // Adjust height as needed to fit the text
+              child: Marquee(
+                text:
+                    'Ingin coba tenis meja? Atau sudah jago dan ingin tingkatkan skill? Klub kami terbuka untuk semua level! Pelatih profesional siap membimbing Anda. Rasakan keseruan bermain tenis meja bersama kami!', // The text that will scroll
+                style: const TextStyle(
+                  fontSize: 14, // Adjusted font size
+                  fontWeight: FontWeight.bold,
+                  color:
+                      Colors.white, // Changed text color to white for contrast
+                ),
+                scrollAxis: Axis.horizontal, // Horizontal scrolling
+                blankSpace: 20.0, // Space between repetitions of the text
+                velocity: 30.0, // Reduced scrolling speed
+                pauseAfterRound: const Duration(
+                  seconds: 2,
+                ), // Pause after each round
+                startPadding: 0.0, // Initial padding before text starts
+                accelerationDuration: const Duration(
+                  seconds: 1,
+                ), // Acceleration duration
+                accelerationCurve: Curves.easeOut, // Acceleration curve
+                decelerationDuration: const Duration(
+                  milliseconds: 500,
+                ), // Deceleration duration
+                decelerationCurve: Curves.easeIn, // Deceleration curve
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // --- END NEW Widget for Marquee Text ---
   Widget _buildHeader(
     IconData greetingIcon,
     String greetingText,
@@ -181,22 +234,29 @@ class HomeView extends GetView<HomeController> {
             ),
           ],
         ),
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: surfaceColor,
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: shadowColor,
-                blurRadius: 8,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Icon(
-            Ionicons.settings_outline,
-            color: textColor.withOpacity(0.8),
+        GestureDetector(
+          // Added GestureDetector for onTap
+          onTap: () {
+            // Mengubah navigasi ke HapusDataView()
+            Get.to(() => HapusDataView());
+          },
+          child: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: surfaceColor,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: shadowColor,
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Icon(
+              Ionicons.settings_outline,
+              color: textColor.withOpacity(0.8),
+            ),
           ),
         ),
       ],
@@ -230,16 +290,20 @@ class HomeView extends GetView<HomeController> {
           const SizedBox(width: 10),
           Expanded(
             child: TextField(
+              controller:
+                  controller
+                      .searchInputController, // Link to controller's TextEditingController
               decoration: InputDecoration(
-                hintText: 'Cari layanan atau berita...',
+                hintText: 'Cari pelatih...', // Mengubah hint text
                 hintStyle: TextStyle(color: hintColor),
                 border: InputBorder.none,
                 isCollapsed: true,
               ),
               style: TextStyle(color: textColor),
+              // onChanged tidak perlu lagi karena listener sudah ditambahkan di controller's onInit
             ),
           ),
-          Icon(Ionicons.options_outline, color: iconColor),
+          // Icon(Ionicons.options_outline, color: iconColor), // Filter icon removed
         ],
       ),
     );
@@ -330,7 +394,7 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _buildPopularServices(
+  Widget _buildPelatihSection(
     Color primaryColor,
     Color accentColor,
     Color textColor,
@@ -341,71 +405,56 @@ class HomeView extends GetView<HomeController> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Layanan Terpopuler',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: textColor,
-          ),
-        ),
-        const SizedBox(height: 16),
-        ServiceCard(
-          name: 'Kylee Danford',
-          service: 'Pembersihan Rumah',
-          price: 25,
-          rating: 4.8,
-          reviews: 2809,
-          image: 'assets/user1.png',
-          primaryColor: primaryColor,
-          accentColor: accentColor,
-          textColor: textColor,
-          surfaceColor: surfaceColor,
-          shadowColor: shadowColor,
-          avatarPlaceholderColor: avatarPlaceholderColor,
-        ),
-        ServiceCard(
-          name: 'Alfonso Schuessler',
-          service: 'Pembersihan Lantai',
-          price: 20,
-          rating: 4.9,
-          reviews: 6102,
-          image: 'assets/user2.png',
-          primaryColor: primaryColor,
-          accentColor: accentColor,
-          textColor: textColor,
-          surfaceColor: surfaceColor,
-          shadowColor: shadowColor,
-          avatarPlaceholderColor: avatarPlaceholderColor,
-        ),
-        ServiceCard(
-          name: 'Sanjuanita Ordanez',
-          service: 'Mencuci Pakaian',
-          price: 22,
-          rating: 4.7,
-          reviews: 7038,
-          image: 'assets/user3.png',
-          primaryColor: primaryColor,
-          accentColor: accentColor,
-          textColor: textColor,
-          surfaceColor: surfaceColor,
-          shadowColor: shadowColor,
-          avatarPlaceholderColor: avatarPlaceholderColor,
-        ),
-        ServiceCard(
-          name: 'Freda Varnes',
-          service: 'Pembersihan Kamar Mandi',
-          price: 24,
-          rating: 4.9,
-          reviews: 9125,
-          image: 'assets/user4.png',
-          primaryColor: primaryColor,
-          accentColor: accentColor,
-          textColor: textColor,
-          surfaceColor: surfaceColor,
-          shadowColor: shadowColor,
-          avatarPlaceholderColor: avatarPlaceholderColor,
-        ),
+        Obx(() {
+          if (controller.isLoadingPelatih.value) {
+            return Center(
+              child: CircularProgressIndicator(color: primaryColor),
+            );
+          } else if (controller.errorMessagePelatih.isNotEmpty) {
+            return Center(
+              child: Text(
+                controller.errorMessagePelatih.value,
+                style: TextStyle(
+                  color: Colors.red[700],
+                  fontSize: 16,
+                ), // Gaya error
+                textAlign: TextAlign.center,
+              ),
+            );
+          } else if (controller.filteredPelatihList.isEmpty) {
+            // Menggunakan filteredPelatihList di sini
+            return Center(
+              child: Text(
+                'Tidak ada pelatih yang cocok dengan pencarian Anda.',
+                style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+                textAlign: TextAlign.center,
+              ),
+            );
+          } else {
+            return Column(
+              children:
+                  controller.filteredPelatihList.map((pelatih) {
+                    // Menggunakan filteredPelatihList
+                    final String nama =
+                        pelatih['nama'] ?? 'Nama Tidak Diketahui';
+                    final String gambar = pelatih['gambar'] ?? '';
+                    final String alamat =
+                        pelatih['alamat'] ?? 'Alamat Tidak Diketahui';
+
+                    return ServiceCard(
+                      name: nama,
+                      image: gambar, // Pass the image string (Base64 or URL)
+                      address: alamat,
+                      primaryColor: primaryColor,
+                      textColor: textColor,
+                      surfaceColor: surfaceColor,
+                      shadowColor: shadowColor,
+                      avatarPlaceholderColor: avatarPlaceholderColor,
+                    );
+                  }).toList(),
+            );
+          }
+        }),
       ],
     );
   }
@@ -523,8 +572,6 @@ class ServiceIcon extends StatelessWidget {
   }
 }
 
-// Widget FilterChipWidget ini tidak lagi digunakan, tapi saya biarkan di sini
-// jika Anda mungkin memerlukannya lagi di masa depan.
 class FilterChipWidget extends StatelessWidget {
   final String label;
   final bool selected;
@@ -568,14 +615,10 @@ class FilterChipWidget extends StatelessWidget {
 
 class ServiceCard extends StatelessWidget {
   final String name;
-  final String service;
-  final double price;
-  final double rating;
-  final int reviews;
-  final String image;
+  final String address;
+  final String image; // Ini sekarang bisa berupa Base64 atau URL
   final VoidCallback? onTap;
   final Color primaryColor;
-  final Color accentColor;
   final Color textColor;
   final Color surfaceColor;
   final Color shadowColor;
@@ -584,14 +627,10 @@ class ServiceCard extends StatelessWidget {
   const ServiceCard({
     Key? key,
     required this.name,
-    required this.service,
-    required this.price,
-    required this.rating,
-    required this.reviews,
+    required this.address,
     required this.image,
     this.onTap,
     required this.primaryColor,
-    required this.accentColor,
     required this.textColor,
     required this.surfaceColor,
     required this.shadowColor,
@@ -600,6 +639,29 @@ class ServiceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ImageProvider imageProvider;
+    // Tentukan apakah 'image' adalah Base64 atau URL biasa
+    if (image.startsWith('data:image/') && image.contains(';base64,')) {
+      // Ini adalah string Base64, dekode dan gunakan MemoryImage
+      try {
+        final String base64String = image.split(',')[1];
+        imageProvider = MemoryImage(base64Decode(base64String));
+      } catch (e) {
+        debugPrint('Error decoding Base64 image for ServiceCard: $e');
+        imageProvider = const AssetImage(
+          'assets/placeholder_error.png',
+        ); // Fallback error asset
+      }
+    } else if (image.isNotEmpty) {
+      // Asumsi ini adalah URL jaringan jika bukan Base64 dan tidak kosong
+      imageProvider = NetworkImage(image);
+    } else {
+      // Fallback placeholder jika string 'image' kosong
+      imageProvider = const AssetImage(
+        'assets/placeholder_user.png',
+      ); // Fallback no-image asset
+    }
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -608,6 +670,7 @@ class ServiceCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: surfaceColor,
           borderRadius: BorderRadius.circular(16),
+          // FIX IS HERE: Removed 'box ' before 'boxShadow'
           boxShadow: [
             BoxShadow(
               color: shadowColor,
@@ -620,8 +683,12 @@ class ServiceCard extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: 32,
-              backgroundImage: AssetImage(image),
+              backgroundImage:
+                  imageProvider, // Gunakan ImageProvider yang sudah ditentukan
               backgroundColor: avatarPlaceholderColor,
+              onBackgroundImageError: (exception, stackTrace) {
+                debugPrint('Failed to load image for ServiceCard: $exception');
+              },
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -629,59 +696,24 @@ class ServiceCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    service,
+                    name, // Nama pelatih
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 17,
+                      fontSize: 18,
                       color: textColor,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Oleh $name',
+                    address, // Alamat
                     style: TextStyle(
-                      color: textColor.withOpacity(0.7),
-                      fontSize: 13,
+                      color: textColor.withOpacity(0.6),
+                      fontSize:
+                          14, // Ukuran font alamat sedikit lebih besar dari sebelumnya
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      const Icon(Ionicons.star, size: 16, color: Colors.amber),
-                      const SizedBox(width: 6),
-                      Text(
-                        '$rating ($reviews ulasan)',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: textColor.withOpacity(0.8),
-                        ),
-                      ),
-                    ],
                   ),
                 ],
               ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  '\$${price.toStringAsFixed(0)}',
-                  style: TextStyle(
-                    color: primaryColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-                ),
-                Text(
-                  '/jam',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: textColor.withOpacity(0.6),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Icon(Ionicons.bookmark_outline, color: accentColor),
-              ],
             ),
           ],
         ),

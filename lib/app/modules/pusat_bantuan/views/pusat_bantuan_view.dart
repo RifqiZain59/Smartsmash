@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/pusat_bantuan_controller.dart'; // Assuming this controller exists and is still needed
+import '../controllers/pusat_bantuan_controller.dart'; // Asumsi controller ini ada dan masih dibutuhkan
 import 'package:ionicons/ionicons.dart'; // Import Ionicons jika digunakan untuk ikon lain
 
 class PusatBantuanView extends GetView<PusatBantuanController> {
@@ -8,37 +8,22 @@ class PusatBantuanView extends GetView<PusatBantuanController> {
 
   @override
   Widget build(BuildContext context) {
-    // Determine if dark mode is active based on system brightness
-    final isDarkMode =
-        MediaQuery.of(context).platformBrightness == Brightness.dark;
-
-    // Define colors based on the theme mode
-    final Color _adaptiveBlue =
-        isDarkMode
-            ? const Color(0xFF90CAF9)
-            : const Color(
-              0xFF1A237E,
-            ); // Lighter blue for dark, deep indigo for light
-    final Color _scaffoldBackgroundColor =
-        isDarkMode
-            ? Colors.black
-            : Colors.white; // Black background for dark mode, white for light
-    final Color _headerTextColor =
-        isDarkMode
-            ? Colors.white
-            : _adaptiveBlue; // White for dark, adaptive blue for light
-    final Color _bodyTextColor =
-        isDarkMode
-            ? Colors.white70
-            : Colors.black87; // Lighter text for dark mode, dark for light
-    final Color _cardBackgroundColor =
-        isDarkMode
-            ? const Color(0xFF212121)
-            : Colors.white; // Darker grey for cards in dark mode
+    // Warna yang ditentukan untuk mode terang (sebelumnya _adaptiveBlue, _scaffoldBackgroundColor, dll. untuk mode gelap telah dihapus)
+    const Color adaptiveBlue = Color(
+      0xFF1A237E,
+    ); // Warna biru tua untuk mode terang
+    const Color scaffoldBackgroundColor =
+        Colors.white; // Latar belakang putih untuk mode terang
+    const Color headerTextColor =
+        adaptiveBlue; // Warna header akan mengikuti warna biru adaptif
+    const Color bodyTextColor =
+        Colors.black87; // Warna teks tubuh yang lebih gelap untuk mode terang
+    const Color cardBackgroundColor =
+        Colors.white; // Warna kartu putih untuk mode terang
 
     return Scaffold(
       backgroundColor:
-          _scaffoldBackgroundColor, // Memastikan latar belakang Scaffold adaptif
+          scaffoldBackgroundColor, // Memastikan latar belakang Scaffold
       body: ClipRRect(
         // Menerapkan lengkungan di sudut atas body
         borderRadius: const BorderRadius.only(
@@ -68,8 +53,8 @@ class PusatBantuanView extends GetView<PusatBantuanController> {
                       children: [
                         IconButton(
                           // Menggunakan IconButton untuk ikon kembali
-                          icon: Icon(Icons.arrow_back),
-                          color: _headerTextColor, // Warna ikon adaptif
+                          icon: const Icon(Icons.arrow_back),
+                          color: headerTextColor, // Warna ikon
                           iconSize: 28,
                           onPressed:
                               () =>
@@ -84,7 +69,7 @@ class PusatBantuanView extends GetView<PusatBantuanController> {
                             fontSize:
                                 24, // Ukuran font judul tetap besar untuk penekanan
                             fontWeight: FontWeight.bold,
-                            color: _headerTextColor, // Warna judul adaptif
+                            color: headerTextColor, // Warna judul
                           ),
                         ),
                       ],
@@ -112,19 +97,17 @@ class PusatBantuanView extends GetView<PusatBantuanController> {
                           context,
                         ).textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color:
-                              _adaptiveBlue, // Menggunakan warna _adaptiveBlue
+                          color: adaptiveBlue, // Menggunakan warna biru adaptif
                         ),
                       ),
                       const SizedBox(
                         height: 20,
                       ), // Jarak antara judul FAQ dan daftar FAQ
                       _buildFaqSection(
-                        isDarkMode,
-                        _adaptiveBlue,
-                        _bodyTextColor,
-                        _cardBackgroundColor,
-                      ), // Pass theme specific colors
+                        adaptiveBlue,
+                        bodyTextColor,
+                        cardBackgroundColor,
+                      ), // Meneruskan warna-warna spesifik tema
                     ],
                   ),
                 ),
@@ -136,14 +119,13 @@ class PusatBantuanView extends GetView<PusatBantuanController> {
     );
   }
 
-  // Helper widget for FAQ section using ExpansionTile
+  // Widget pembantu untuk bagian FAQ menggunakan ExpansionTile
   Widget _buildFaqSection(
-    bool isDarkMode,
     Color adaptiveBlue,
     Color bodyTextColor,
     Color cardBackgroundColor,
   ) {
-    // Sample FAQ data
+    // Contoh data FAQ
     final List<Map<String, String>> faqs = [
       {
         'question': 'Bagaimana cara mengubah informasi profil saya?',
@@ -190,7 +172,7 @@ class PusatBantuanView extends GetView<PusatBantuanController> {
                   width: 1,
                 ), // Menambahkan border tipis
               ),
-              color: cardBackgroundColor, // Card background adapts to theme
+              color: cardBackgroundColor, // Latar belakang kartu
               child: ExpansionTile(
                 collapsedShape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
@@ -204,7 +186,7 @@ class PusatBantuanView extends GetView<PusatBantuanController> {
                 ), // Padding tile lebih lega
                 leading: Icon(
                   Icons.help_outline,
-                  color: adaptiveBlue, // Menggunakan warna _adaptiveBlue
+                  color: adaptiveBlue, // Menggunakan warna biru adaptif
                   size: 28, // Ukuran ikon lebih besar
                 ),
                 title: Text(
@@ -213,7 +195,7 @@ class PusatBantuanView extends GetView<PusatBantuanController> {
                     fontWeight:
                         FontWeight.bold, // Membuat pertanyaan lebih tebal
                     fontSize: 18, // Ukuran font pertanyaan sedikit lebih besar
-                    color: adaptiveBlue, // Menggunakan warna _adaptiveBlue
+                    color: adaptiveBlue, // Menggunakan warna biru adaptif
                   ),
                 ),
                 children: [
@@ -228,16 +210,16 @@ class PusatBantuanView extends GetView<PusatBantuanController> {
                       faq['answer']!,
                       style: TextStyle(
                         fontSize: 15, // Ukuran font jawaban sedikit lebih besar
-                        color: bodyTextColor, // Text color adapts to theme
+                        color: bodyTextColor, // Warna teks
                         height:
                             1.6, // Menambah tinggi baris untuk keterbacaan yang optimal
                       ),
                     ),
                   ),
                 ],
-                iconColor: adaptiveBlue, // Menggunakan warna _adaptiveBlue
+                iconColor: adaptiveBlue, // Menggunakan warna biru adaptif
                 collapsedIconColor:
-                    adaptiveBlue, // Menggunakan warna _adaptiveBlue
+                    adaptiveBlue, // Menggunakan warna biru adaptif
               ),
             );
           }).toList(),

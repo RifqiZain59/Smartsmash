@@ -53,6 +53,7 @@ dependencies:
   lucide_icons: ^0.257.0
   device_info_plus: ^10.0.0 # Gunakan versi terbaru yang stabil
   loading_animation_widget: ^1.2.0+4 # Gunakan versi terbaru yang tersedia
+  marquee: ^2.2.1
   
 
   # The following adds the Cupertino Icons font to your application.
