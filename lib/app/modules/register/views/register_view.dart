@@ -214,6 +214,7 @@ class RegisterView extends GetView<RegisterController> {
                                             controller.togglePasswordVisibility,
                                         splashRadius: 24,
                                       ),
+                                      showStrengthIndicator: false,
                                       primaryColor: primaryColor,
                                       inputTextColor: inputTextColor,
                                       inputBorderColor: inputBorderColor,
@@ -353,27 +354,15 @@ class RegisterView extends GetView<RegisterController> {
                                             constraints: const BoxConstraints(
                                               minHeight: 55,
                                             ),
-                                            child:
-                                                controller.isLoading.value
-                                                    ? const SizedBox(
-                                                      width: 24,
-                                                      height: 24,
-                                                      child:
-                                                          CircularProgressIndicator(
-                                                            color: Colors.white,
-                                                            strokeWidth: 2,
-                                                          ),
-                                                    )
-                                                    : Text(
-                                                      'Sign up',
-                                                      style:
-                                                          GoogleFonts.poppins(
-                                                            color: Colors.white,
-                                                            fontSize: 18,
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                          ),
-                                                    ),
+                                            // Removed the conditional loading indicator from the button
+                                            child: Text(
+                                              'Sign up',
+                                              style: GoogleFonts.poppins(
+                                                color: Colors.white,
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -390,29 +379,15 @@ class RegisterView extends GetView<RegisterController> {
                 ),
               ),
 
-              // Loading Overlay
+              // Loading Overlay (modified) - Tanpa Kotak dan Tulisan Loading
               if (controller.isLoadingOverlay.value)
                 Positioned.fill(
                   child: Container(
                     color: backgroundColor.withOpacity(0.7),
                     child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          LoadingAnimationWidget.threeArchedCircle(
-                            color: primaryColor,
-                            size: 100,
-                          ),
-                          const SizedBox(height: 25),
-                          Text(
-                            "Loading...",
-                            style: GoogleFonts.poppins(
-                              color: textDarkColor,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
+                      child: LoadingAnimationWidget.threeArchedCircle(
+                        color: primaryColor, // Warna indikator
+                        size: 100, // Ukuran indikator
                       ),
                     ),
                   ),

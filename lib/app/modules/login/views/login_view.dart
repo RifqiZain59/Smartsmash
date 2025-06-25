@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:ionicons/ionicons.dart';
+import 'package:ionicons/ionicons.dart'; // Make sure this import is actually used if not, it can be removed.
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import '../controllers/login_controller.dart';
@@ -312,30 +312,15 @@ class _LoginViewState extends State<LoginView> {
               ),
             ),
 
-            // Loading Overlay
+            // Loading Overlay (modified) - Tanpa Kotak
             if (controller.isLoadingOverlay.value)
               Positioned.fill(
                 child: Container(
                   color: adaptiveBackgroundColor.withOpacity(0.7),
                   child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // Menggunakan threeArchedCircle dari loading_animation_widget
-                        LoadingAnimationWidget.threeArchedCircle(
-                          color: adaptivePrimaryBlue, // Warna indikator
-                          size: 100, // Ukuran indikator
-                        ),
-                        const SizedBox(height: 25),
-                        Text(
-                          "Loading...",
-                          style: GoogleFonts.poppins(
-                            color: adaptiveTextDark,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
+                    child: LoadingAnimationWidget.threeArchedCircle(
+                      color: adaptivePrimaryBlue, // Warna indikator
+                      size: 100, // Ukuran indikator
                     ),
                   ),
                 ),
@@ -506,26 +491,15 @@ class _LoginViewState extends State<LoginView> {
           elevation: 5,
           shadowColor: adaptivePrimaryBlue.withOpacity(0.4),
         ),
-        child:
-            controller
-                    .isLoading
-                    .value // Ini untuk indikator di dalam tombol
-                ? const SizedBox(
-                  height: 28,
-                  width: 28,
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
-                    strokeWidth: 3,
-                  ),
-                )
-                : Text(
-                  "Sign In",
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+        // Removed the conditional loading indicator from the button.
+        child: Text(
+          "Sign In",
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       );
     });
   }

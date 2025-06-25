@@ -197,7 +197,7 @@ class LoginController extends GetxController {
             if (Get.currentRoute == '/home') {
               showPopUpNotification(
                 title: 'Login Berhasil',
-                message: 'Selamat datang di Smart Smash, $userName!',
+                message: 'Selamat Datang Di Hacimotion !',
                 backgroundColor: Colors.green,
                 icon: Icons.check_circle_outline,
               );

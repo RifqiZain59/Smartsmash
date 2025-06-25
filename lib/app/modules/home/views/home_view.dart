@@ -5,11 +5,12 @@ import 'package:smartsmashapp/app/modules/Acara/views/acara_view.dart';
 import 'package:smartsmashapp/app/modules/Gerakan/views/gerakan_view.dart';
 import 'package:smartsmashapp/app/modules/Juara/views/juara_view.dart';
 import 'package:smartsmashapp/app/modules/berita/views/berita_view.dart';
-import 'package:marquee/marquee.dart'; // <--- NEW: Import the marquee package
+import 'package:marquee/marquee.dart';
 import '../controllers/home_controller.dart';
-import 'dart:convert'; // Pastikan ini ada!
-import 'package:smartsmashapp/app/modules/profile/views/profile_view.dart'; // Import ProfileView
-import 'package:smartsmashapp/app/modules/hapus_data/views/hapus_data_view.dart'; // NEW: Import HapusDataView
+import 'dart:convert';
+import 'package:smartsmashapp/app/modules/profile/views/profile_view.dart';
+import 'package:smartsmashapp/app/modules/hapus_data/views/hapus_data_view.dart';
+import 'package:video_player/video_player.dart'; // Import video_player
 
 class HomeView extends GetView<HomeController> {
   const HomeView({Key? key}) : super(key: key);
@@ -64,57 +65,163 @@ class HomeView extends GetView<HomeController> {
                         shadowColor,
                       ),
                       const SizedBox(height: 28),
-                      // --- Marquee Section ---
-                      _buildMotionMarquee(
-                        textColor,
-                      ), // <--- MODIFIED: Calling the new Marquee widget
+                      // --- Marquee Section with White Box (ONLY marquee and "Penawaran Spesial") ---
+                      Container(
+                        decoration: BoxDecoration(
+                          color:
+                              surfaceColor, // White background for the outer box
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: shadowColor,
+                              blurRadius: 10,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Penawaran Spesial', // Teks judul
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: textColor,
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 16,
+                            ), // Spasi antara judul dan marquee
+                            _buildMotionMarquee(textColor),
+                          ],
+                        ),
+                      ),
                       // --- End Marquee Section ---
-                      const SizedBox(height: 28),
-                      _buildSpecialOffers(textColor),
-                      const SizedBox(height: 28),
-                      Text(
-                        'Menu Apps',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: textColor,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      _buildServices(
-                        primaryColor,
-                        surfaceColor,
-                        textColor,
-                        shadowColor,
-                      ),
-                      const SizedBox(height: 28),
-                      Text(
-                        'Daftar Pelatih', // Judul "Daftar Pelatih"
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: textColor,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      // Kotak pencarian dipindahkan ke sini
-                      _buildSearchBox(
-                        surfaceColor,
-                        textColor,
-                        hintTextColor,
-                        accentColor,
-                        shadowColor,
-                      ),
                       const SizedBox(
-                        height: 16,
-                      ), // Spasi antara search box dan daftar pelatih
-                      _buildPelatihSection(
-                        primaryColor,
-                        accentColor,
-                        textColor,
-                        surfaceColor,
-                        shadowColor,
-                        avatarPlaceholderColor,
+                        height: 28,
+                      ), // Spasi antara marquee box dan banner box
+                      // --- NEW: Special Offers Video Banner in its own white box ---
+                      Container(
+                        decoration: BoxDecoration(
+                          color: surfaceColor,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: shadowColor,
+                              blurRadius: 10,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        // Penting: padding 0 agar video mengisi penuh
+                        padding: const EdgeInsets.all(0),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          // Menggunakan VideoBannerWidget di sini
+                          child: const VideoBannerWidget(
+                            videoPath:
+                                'assets/video/Opening.mp4', // Pastikan path ini benar dan video ada
+                          ),
+                        ),
+                      ),
+                      // --- End NEW Special Offers Video Banner ---
+                      const SizedBox(height: 28),
+                      // NEW: Wrap "Menu Apps" and _buildServices in a white box
+                      Container(
+                        decoration: BoxDecoration(
+                          color: surfaceColor,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: shadowColor,
+                              blurRadius: 10,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Menu Apps',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: textColor,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            _buildServices(
+                              primaryColor,
+                              surfaceColor,
+                              textColor,
+                              shadowColor,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 28),
+                      // NEW: Wrap "Daftar Pelatih", search box, and list in a white box
+                      Container(
+                        decoration: BoxDecoration(
+                          color: surfaceColor,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: shadowColor,
+                              blurRadius: 10,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Daftar Pelatih', // Judul "Daftar Pelatih"
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: textColor,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            // Kotak pencarian dipindahkan ke sini
+                            _buildSearchBox(
+                              surfaceColor,
+                              textColor,
+                              hintTextColor,
+                              accentColor,
+                              shadowColor,
+                            ),
+                            const SizedBox(
+                              height: 16,
+                            ), // Spasi antara search box dan daftar pelatih
+                            // START: Perubahan di sini untuk membuat list pelatih bisa di-scroll
+                            ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxHeight:
+                                    MediaQuery.of(context).size.height *
+                                    0.4, // Sesuaikan tinggi maksimal sesuai kebutuhan Anda (misal 40% dari tinggi layar)
+                              ),
+                              child: SingleChildScrollView(
+                                child: _buildPelatihSection(
+                                  primaryColor,
+                                  accentColor,
+                                  textColor,
+                                  surfaceColor,
+                                  shadowColor,
+                                  avatarPlaceholderColor,
+                                ),
+                              ),
+                            ),
+                            // END: Perubahan di sini
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -138,25 +245,22 @@ class HomeView extends GetView<HomeController> {
     });
   }
 
-  // --- NEW: Widget for Marquee Text ---
-  // --- NEW: Widget for Marquee Text ---
+  // --- Widget for Marquee Text ---
   Widget _buildMotionMarquee(Color textColor) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF333366), // Changed background color to dark blue
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: const Color(0xFF333366), // Dark blue border color
-          width: 2, // Border width
-        ),
+        color: const Color(
+          0xFF333366,
+        ), // Dark blue background for the inner box
+        borderRadius: BorderRadius.circular(8),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
           const Icon(
             Ionicons.information_circle_outline, // Information icon
-            color: Colors.white, // Changed icon color to white for contrast
-            size: 24,
+            color: Colors.white, // Icon color
+            size: 20,
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -168,8 +272,7 @@ class HomeView extends GetView<HomeController> {
                 style: const TextStyle(
                   fontSize: 14, // Adjusted font size
                   fontWeight: FontWeight.bold,
-                  color:
-                      Colors.white, // Changed text color to white for contrast
+                  color: Colors.white, // Text color
                 ),
                 scrollAxis: Axis.horizontal, // Horizontal scrolling
                 blankSpace: 20.0, // Space between repetitions of the text
@@ -194,7 +297,6 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  // --- END NEW Widget for Marquee Text ---
   Widget _buildHeader(
     IconData greetingIcon,
     String greetingText,
@@ -309,31 +411,8 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _buildSpecialOffers(Color textColor) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Penawaran Spesial',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: textColor,
-          ),
-        ),
-        const SizedBox(height: 16),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(16),
-          child: Image.asset(
-            'assets/Banner/Banner.jpg',
-            width: double.infinity,
-            height: 160,
-            fit: BoxFit.cover,
-          ),
-        ),
-      ],
-    );
-  }
+  // Fungsi _buildSpecialOffersBanner() diubah menjadi VideoBannerWidget
+  // Widget _buildSpecialOffersBanner() { ... } // Dihapus atau dikomentari
 
   Widget _buildServices(
     Color primaryColor,
@@ -341,56 +420,42 @@ class HomeView extends GetView<HomeController> {
     Color textColor,
     Color shadowColor,
   ) {
-    return Container(
-      decoration: BoxDecoration(
-        color: surfaceColor,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: shadowColor,
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      padding: const EdgeInsets.all(20),
-      child: GridView.count(
-        crossAxisCount: 4,
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        mainAxisSpacing: 16,
-        crossAxisSpacing: 16,
-        children: [
-          ServiceIcon(
-            label: 'Gerakan',
-            icon: Ionicons.body_outline,
-            iconColor: primaryColor,
-            textColor: textColor,
-            onTap: () => Get.to(() => GerakanView()),
-          ),
-          ServiceIcon(
-            label: 'Juara',
-            icon: Ionicons.trophy_outline,
-            iconColor: primaryColor,
-            textColor: textColor,
-            onTap: () => Get.to(() => JuaraView()),
-          ),
-          ServiceIcon(
-            label: 'Acara',
-            icon: Ionicons.calendar_outline,
-            iconColor: primaryColor,
-            textColor: textColor,
-            onTap: () => Get.to(() => AcaraView()),
-          ),
-          ServiceIcon(
-            label: 'Berita',
-            icon: Ionicons.newspaper_outline,
-            iconColor: primaryColor,
-            textColor: textColor,
-            onTap: () => Get.to(() => BeritaView()),
-          ),
-        ],
-      ),
+    return GridView.count(
+      crossAxisCount: 4,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      mainAxisSpacing: 16,
+      crossAxisSpacing: 16,
+      children: [
+        ServiceIcon(
+          label: 'Gerakan',
+          icon: Ionicons.body_outline,
+          iconColor: primaryColor,
+          textColor: textColor,
+          onTap: () => Get.to(() => GerakanView()),
+        ),
+        ServiceIcon(
+          label: 'Juara',
+          icon: Ionicons.trophy_outline,
+          iconColor: primaryColor,
+          textColor: textColor,
+          onTap: () => Get.to(() => JuaraView()),
+        ),
+        ServiceIcon(
+          label: 'Acara',
+          icon: Ionicons.calendar_outline,
+          iconColor: primaryColor,
+          textColor: textColor,
+          onTap: () => Get.to(() => AcaraView()),
+        ),
+        ServiceIcon(
+          label: 'Berita',
+          icon: Ionicons.newspaper_outline,
+          iconColor: primaryColor,
+          textColor: textColor,
+          onTap: () => Get.to(() => BeritaView()),
+        ),
+      ],
     );
   }
 
@@ -536,6 +601,66 @@ class HomeView extends GetView<HomeController> {
   }
 }
 
+// --- NEW WIDGET FOR VIDEO BANNER ---
+class VideoBannerWidget extends StatefulWidget {
+  final String videoPath;
+
+  const VideoBannerWidget({Key? key, required this.videoPath})
+    : super(key: key);
+
+  @override
+  _VideoBannerWidgetState createState() => _VideoBannerWidgetState();
+}
+
+class _VideoBannerWidgetState extends State<VideoBannerWidget> {
+  late VideoPlayerController _controller;
+  bool _isPlaying = false; // Variabel untuk melacak status putar
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = VideoPlayerController.asset(widget.videoPath)
+      ..initialize()
+          .then((_) {
+            setState(() {
+              _controller.setLooping(
+                false,
+              ); // <-- Ubah ini dari true menjadi false
+              _controller.play(); // Auto-play video
+              _isPlaying = true;
+            });
+          })
+          .catchError((error) {
+            debugPrint('Error initializing video: $error');
+            // Anda bisa menambahkan UI feedback di sini, misal:
+            // ScaffoldMessenger.of(context).showSnackBar(
+            //   SnackBar(content: Text('Failed to load video: $error')),
+            // );
+          });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _controller.value.isInitialized
+        ? AspectRatio(
+          aspectRatio:
+              _controller.value.aspectRatio, // Menggunakan rasio aspek video
+          child: VideoPlayer(_controller),
+        )
+        : Container(
+          height: 160, // Ketinggian placeholder jika video belum siap
+          color: Colors.grey[200],
+          child: const Center(child: CircularProgressIndicator()),
+        );
+  }
+}
+
 class ServiceIcon extends StatelessWidget {
   final String label;
   final IconData icon;
@@ -670,7 +795,6 @@ class ServiceCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: surfaceColor,
           borderRadius: BorderRadius.circular(16),
-          // FIX IS HERE: Removed 'box ' before 'boxShadow'
           boxShadow: [
             BoxShadow(
               color: shadowColor,
@@ -708,8 +832,7 @@ class ServiceCard extends StatelessWidget {
                     address, // Alamat
                     style: TextStyle(
                       color: textColor.withOpacity(0.6),
-                      fontSize:
-                          14, // Ukuran font alamat sedikit lebih besar dari sebelumnya
+                      fontSize: 14,
                     ),
                   ),
                 ],
